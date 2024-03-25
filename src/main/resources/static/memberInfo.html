@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>회원 정보</title>
+  </head>
+  <body>
+    <h2>회원 정보</h2>
+    <p><strong>아이디:</strong> <span id="memberId"></span></p>
+    <p><strong>이름:</strong> <span id="memberName"></span></p>
+    <p><strong>이메일:</strong> <span id="memberEmail"></span></p>
+
+    <script>
+      // 페이지 로드 시 회원 정보를 가져오는 함수 호출
+      fetchMemberInfo();
+
+      function fetchMemberInfo() {
+        // sessionStorage에서 id 값을 가져옵니다.
+        const memberId = sessionStorage.getItem("id");
+
+        // 회원 정보를 가져오는 API 엔드포인트에 요청을 보냅니다.
+        fetch("/api/members/info?id=" + memberId)
+          .then((response) => response.json())
+          .then((data) => {
+            // 회원 정보를 화면에 출력합니다.
+            document.getElementById("memberId").textContent = data.id;
+            document.getElementById("memberName").textContent = data.name;
+            document.getElementById("memberEmail").textContent = data.email;
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+    </script>
+  </body>
+</html>

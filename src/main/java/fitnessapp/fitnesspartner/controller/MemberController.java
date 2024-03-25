@@ -3,70 +3,54 @@ package fitnessapp.fitnesspartner.controller;
 import fitnessapp.fitnesspartner.domain.Member;
 import fitnessapp.fitnesspartner.service.MemberService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/members")
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
 
-    /**
-     * 회원가입
-     */
-    @GetMapping("/signup")
-    public String signupForm(Model model) {
-        model.addAttribute("member", new Member());
-        return "signupForm";
-    }
-
     @PostMapping("/signup")
-    public String signup(@ModelAttribute Member member) {
-        memberService.join(member);
-        return "redirect:/login"; // 회원가입 후 로그인 페이지로 이동
+    public String signup(@RequestBody Member member) {
+            int validate = memberService.validateDuplicateMember(member);
+            if(validate==0){
+                return "중복";
+            } else {
+                memberService.join(member);
+                return "회원가입 성공!";
+            }
     }
 
-    /**
-     *로그인
-     */
-    @GetMapping("/login")
-    public String loginForm() {
-        return "loginForm";
-    }
 
     @PostMapping("/login")
-    public String login(String id, String password) {
-        String result = memberService.login(id, password);
-        if (result.startsWith("로그인 성공")) {
-            // 로그인 성공 시 회원 정보 페이지로 리디렉션
-            return "redirect:/memberInfo?id=" + id;
+    public String login(@RequestBody Map<String, String> credentials) {
+        String id = credentials.get("id");
+        String password = credentials.get("pw");
+
+        return memberService.login(id, password);
+    }
+
+
+    @GetMapping("/info")
+    public ResponseEntity<Member> getMemberInfo(@RequestParam String id) {
+        Member member = memberService.findOne(id);
+        if (member != null) {
+            return ResponseEntity.ok().body(member);
         } else {
-            // 로그인 실패 시 다시 로그인 페이지로 이동
-            return "redirect:/login";
+            return ResponseEntity.notFound().build();
         }
     }
 
-    // 로그인 기능은 실제 사용자 인증과 관련된 코드가 필요하므로 여기서는 생략합니다.
-    // 실제로는 Spring Security나 직접 인증 처리를 구현해야 합니다.
 
-    /**
-     * 회원정보 페이지
-     */
-    @GetMapping("/memberInfo")
-    public String showMemberInfo(@RequestParam("id") String memberId, Model model) {
-        // 회원 정보를 조회하여 모델에 추가
-        Member member = memberService.findOne(memberId);
-        model.addAttribute("memberId", member.getId());
-        model.addAttribute("memberName", member.getName());
-        model.addAttribute("memberEmail", member.getEmail());
-        // 추가적인 회원 정보를 필요에 따라 모델에 추가
-
-        // memberInfo.html을 렌더링하도록 리턴
-        return "memberInfo";
+    @GetMapping("/") // 기본 경로에 대한 요청 처리
+    public String redirectToLogin() {
+        return "/login.html"; // 정적 자원 경로를 포함한 절대 경로
     }
+
+    // 추가적인 RESTful 엔드포인트들을 필요에 따라 정의할 수 있습니다.
 }

@@ -23,12 +23,15 @@ public class MemberService {
         return member.getId();
     }
 
-    private void validateDuplicateMember(Member member) {
-        List<Member> findMembers = memberRepository.findByName(member.getName());
-        if(!findMembers.isEmpty()){
-            throw new IllegalStateException("이미 존재하는 회원입니다.");
+    public int validateDuplicateMember(Member member) {
+        Member existingMember = memberRepository.findOne(member.getId());
+        if (existingMember != null) {
+            return 0;
+        } else{
+            return 1;
         }
     }
+
 
     /**
      * 회원 전체 조회
@@ -50,14 +53,14 @@ public class MemberService {
         if (member != null) {
             // 비밀번호가 일치하면 로그인 성공 메시지 반환
             if (member.getPw().equals(password)) {
-                return "로그인 성공! 회원 ID: " + member.getId();
+                return member.getId();
             } else {
                 // 비밀번호가 일치하지 않으면 실패 메시지 반환
-                return "비밀번호가 일치하지 않습니다.";
+                return "0";
             }
         } else {
             // 회원이 존재하지 않으면 실패 메시지 반환
-            return "해당 아이디로 가입된 회원이 없습니다.";
+            return "0";
         }
     }
 }
