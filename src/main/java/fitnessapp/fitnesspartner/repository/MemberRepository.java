@@ -12,12 +12,12 @@ import java.util.List;
 public class MemberRepository {
     private final EntityManager em;
 
-    public Long save(Member member){
+    public String save(Member member){
         em.persist(member);
         return member.getId();
     }
 
-    public Member findOne(Long id){
+    public Member findOne(String id){
         return em.find(Member.class, id);
     }
 
