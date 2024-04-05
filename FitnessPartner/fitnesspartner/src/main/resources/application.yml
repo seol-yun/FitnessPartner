@@ -19,6 +19,14 @@ spring:
     ansi:
       enabled: always
 
+#  servlet:
+#    encoding:
+#      charset : UTF-8
+#      force : true
+#      enabled : true
+#    session:
+#      tracking-modes: cookie
+
 logging:
   level:
     org.hibernate.SQL: debug

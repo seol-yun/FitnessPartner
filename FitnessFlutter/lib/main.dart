@@ -15,7 +15,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: LoginPage(),
+      initialRoute: '/', // 초기 경로 설정
+      routes: {
+        '/': (context) => LoginPage(), // 로그인 페이지
+        '/memberInfo': (context) => MemberInfoPage(), // 회원 정보 페이지
+      },
     );
   }
 }
@@ -49,7 +53,7 @@ class LoginPage extends StatelessWidget {
             SnackBar(content: Text('로그인 성공!')),
           );
           // 회원 정보 페이지로 이동
-          // Navigator.pushReplacementNamed(context, '/memberInfo');
+          Navigator.pushReplacementNamed(context, '/memberInfo');
         }
       } else {
         throw Exception('응답실패.');
@@ -99,6 +103,86 @@ class LoginPage extends StatelessWidget {
             ElevatedButton(
               onPressed: () => _login(context),
               child: Text('로그인'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+
+class MemberInfoPage extends StatefulWidget {
+  @override
+  _MemberInfoPageState createState() => _MemberInfoPageState();
+}
+
+class _MemberInfoPageState extends State<MemberInfoPage> {
+  String memberId = '';
+  String memberName = '';
+  String memberEmail = '';
+
+  @override
+  void initState() {
+    super.initState();
+    fetchMemberInfo();
+  }
+
+  void fetchMemberInfo() async {
+    try {
+      final response = await http.get(Uri.parse("/api/members/info"));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        setState(() {
+          memberId = data['id'];
+          memberName = data['name'];
+          memberEmail = data['email'];
+        });
+      } else {
+        print('Failed to load member info');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('회원 정보'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '아이디:',
+              style: TextStyle(fontSize: 16.0),
+            ),
+            Text(
+              memberId,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16.0),
+            Text(
+              '이름:',
+              style: TextStyle(fontSize: 16.0),
+            ),
+            Text(
+              memberName,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 16.0),
+            Text(
+              '이메일:',
+              style: TextStyle(fontSize: 16.0),
+            ),
+            Text(
+              memberEmail,
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ],
         ),

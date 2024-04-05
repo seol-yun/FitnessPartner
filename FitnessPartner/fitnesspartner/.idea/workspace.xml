@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d1afddfd-d172-4baf-b4ba-2674ac0f14fe" name="Changes" comment="" />
+    <list default="true" id="d1afddfd-d172-4baf-b4ba-2674ac0f14fe" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../../FitnessFlutter/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../../FitnessFlutter/lib/main.dart" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,6 +34,7 @@
       <list>
         <option value="HTML File" />
         <option value="Class" />
+        <option value="JUnit5 Test Class" />
       </list>
     </option>
   </component>
@@ -72,12 +75,14 @@
     "DefaultHtmlFileTemplate": "HTML File",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
+    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
+    "git-widget-placeholder": "syh",
     "last_opened_file_path": "D:/Code/FinalProject/FitnessPartner/fitnesspartner",
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "vcs.Git"
+    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -85,6 +90,12 @@
       <recent name="D:\Code\FitnessPartner\fitnesspartner\src\main\java\fitnessapp\fitnesspartner\service" />
       <recent name="D:\Code\FitnessPartner\fitnesspartner\src\main\resources\templates" />
       <recent name="D:\Code\FitnessPartner\fitnesspartner\src\main\java\fitnessapp\fitnesspartner\domain" />
+    </key>
+    <key name="CreateTestDialog.Recents.Supers">
+      <recent name="" />
+    </key>
+    <key name="CreateTestDialog.RecentsKey">
+      <recent name="fitnessapp.fitnesspartner.controller" />
     </key>
     <key name="CopyClassDialog.RECENTS_KEY">
       <recent name="fitnessapp.fitnesspartner.controller" />
