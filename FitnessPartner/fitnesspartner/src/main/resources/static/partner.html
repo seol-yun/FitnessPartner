@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>파트너 정보</title>
+  </head>
+  <body>
+    <h2>파트너 정보</h2>
+    <ul id="partnerList"></ul>
+
+    <script>
+      fetchAllMembers();
+
+      function fetchAllMembers() {
+        fetch("/api/members/all")
+          .then((response) => response.json())
+          .then((data) => {
+            const partnerList = document.getElementById("partnerList");
+            data.forEach((member) => {
+              const listItem = document.createElement("li");
+              listItem.textContent = `${member.id} - ${member.name} (${member.email})`;
+
+              const addButton = document.createElement("button");
+              addButton.textContent = "친구 추가";
+              addButton.addEventListener("click", () => addFriend(member.id));
+
+              listItem.appendChild(addButton);
+              partnerList.appendChild(listItem);
+            });
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+
+      function addFriend(friendId) {
+        // 친구 추가 API 호출
+        const requestBody = {
+          memberId: sessionStorage.getItem("id"),
+          friendMemberId: friendId,
+        }; // 여기에 친구의 ID를 설정하세요
+        fetch("/api/friends/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        })
+          .then((response) => {
+            if (response.ok) {
+              alert("친구 추가 성공!");
+            } else {
+              alert("친구 추가 실패!");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("친구 추가 중 오류가 발생했습니다.");
+          });
+      }
+    </script>
+  </body>
+</html>

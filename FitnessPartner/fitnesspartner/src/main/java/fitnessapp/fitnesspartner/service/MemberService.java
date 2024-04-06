@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -31,8 +32,6 @@ public class MemberService {
             return 1;
         }
     }
-
-
     /**
      * 회원 전체 조회
      */
@@ -62,5 +61,18 @@ public class MemberService {
             // 회원이 존재하지 않으면 실패 메시지 반환
             return "0";
         }
+    }
+
+    /**
+     * 본인 제외한 멤버 출력
+     */
+    public List<Member> findAllExcept(String loginId) {
+        // 모든 회원 정보 조회
+        List<Member> allMembers = memberRepository.findAll();
+
+        // 로그인한 사용자를 제외한 회원 필터링
+        return allMembers.stream()
+                .filter(member -> !member.getId().equals(loginId))
+                .collect(Collectors.toList());
     }
 }

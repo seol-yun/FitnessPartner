@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -40,7 +41,6 @@ public class MemberController {
             HttpSession session = request.getSession();
             session.setAttribute("loginId", member);
             session.setMaxInactiveInterval(60 * 30);
-            System.out.println(session);
         }
         return member;
     }
@@ -49,7 +49,6 @@ public class MemberController {
     public void logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null) {
-            System.out.println(session+"!!!!!!!!!!!!!!!!!!!");
             session.invalidate();
         }
     }
@@ -71,6 +70,17 @@ public class MemberController {
     }
 
 
+    @GetMapping("/all")
+    public ResponseEntity<List<Member>> getAllMembers(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("loginId") != null) {
+            String loginId = (String) session.getAttribute("loginId");
+            List<Member> allMembers = memberService.findAllExcept(loginId);
+            return ResponseEntity.ok().body(allMembers);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
 
     @GetMapping("/") // 기본 경로에 대한 요청 처리
     public String redirectToLogin() {

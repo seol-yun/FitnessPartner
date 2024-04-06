@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d1afddfd-d172-4baf-b4ba-2674ac0f14fe" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/../../FitnessFlutter/lib/main.dart" beforeDir="false" afterPath="$PROJECT_DIR$/../../FitnessFlutter/lib/main.dart" afterDir="false" />
-    </list>
+    <list default="true" id="d1afddfd-d172-4baf-b4ba-2674ac0f14fe" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -32,9 +30,9 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="JUnit5 Test Class" />
         <option value="HTML File" />
         <option value="Class" />
-        <option value="JUnit5 Test Class" />
       </list>
     </option>
   </component>
@@ -82,7 +80,7 @@
     "project.structure.last.edited": "Project",
     "project.structure.proportion": "0.0",
     "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle"
+    "settings.editor.selected.configurable": "vcs.Git"
   }
 }]]></component>
   <component name="RecentsManager">
@@ -93,6 +91,9 @@
     </key>
     <key name="CreateTestDialog.Recents.Supers">
       <recent name="" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\Code\FinalProject\FitnessPartner\fitnesspartner\src\main\resources\static" />
     </key>
     <key name="CreateTestDialog.RecentsKey">
       <recent name="fitnessapp.fitnesspartner.controller" />

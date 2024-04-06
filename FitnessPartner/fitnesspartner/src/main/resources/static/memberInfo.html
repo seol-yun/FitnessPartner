@@ -25,6 +25,7 @@
             document.getElementById("memberId").textContent = data.id;
             document.getElementById("memberName").textContent = data.name;
             document.getElementById("memberEmail").textContent = data.email;
+            sessionStorage.setItem("id", data.id);
           })
           .catch((error) => console.error("Error:", error));
       }
