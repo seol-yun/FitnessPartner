@@ -1,6 +1,8 @@
 package fitnessapp.fitnesspartner.service;
 
+import fitnessapp.fitnesspartner.domain.Friend;
 import fitnessapp.fitnesspartner.domain.Member;
+import fitnessapp.fitnesspartner.repository.FriendRepository;
 import fitnessapp.fitnesspartner.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +17,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor //final만 사용해서 생성자 만듦(lombok)
 public class MemberService {
     private final MemberRepository memberRepository;
+    private final FriendRepository friendRepository;
     /**
      * 회원 가입
      */
@@ -64,15 +67,20 @@ public class MemberService {
     }
 
     /**
-     * 본인 제외한 멤버 출력
+     * 본인, 친구 제외한 멤버 출력
      */
     public List<Member> findAllExcept(String loginId) {
-        // 모든 회원 정보 조회
-        List<Member> allMembers = memberRepository.findAll();
+        // 로그인한 사용자의 친구 목록 조회
+        List<Friend> friends = friendRepository.findAllByMemberId(loginId);
+        List<String> friendIds = friends.stream()
+                .map(friend -> friend.getFriendMember().getId())
+                .collect(Collectors.toList());
 
-        // 로그인한 사용자를 제외한 회원 필터링
+        // 모든 회원 정보 조회 후 로그인한 사용자와 친구인 회원을 필터링
+        List<Member> allMembers = memberRepository.findAll();
         return allMembers.stream()
-                .filter(member -> !member.getId().equals(loginId))
+                .filter(member -> !member.getId().equals(loginId) && !friendIds.contains(member.getId()))
                 .collect(Collectors.toList());
     }
+
 }

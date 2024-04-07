@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>친구 목록</title>
+  </head>
+  <body>
+    <h2>친구 목록</h2>
+    <ul id="friendList"></ul>
+
+    <script>
+      fetchFriendList();
+
+      function fetchFriendList() {
+        fetch("/api/friends/all")
+          .then((response) => response.json())
+          .then((data) => {
+            const friendList = document.getElementById("friendList");
+            data.forEach((friendship) => {
+              const listItem = document.createElement("li");
+              listItem.textContent = `${friendship.friendName}`;
+              friendList.appendChild(listItem);
+            });
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+    </script>
+  </body>
+</html>

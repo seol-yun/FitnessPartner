@@ -22,11 +22,5 @@ public class Friend {
     @JoinColumn(name = "friend_member_id")
     private Member friendMember;
 
-    // 생성 메소드
-//    public static Friend createFriend(Member member, Member friendMember) {
-//        Friend friend = new Friend();
-//        friend.setMember(member);
-//        friend.setFriendMember(friendMember);
-//        return friend;
-//    }
+
 }

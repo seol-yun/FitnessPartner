@@ -18,7 +18,12 @@
             const partnerList = document.getElementById("partnerList");
             data.forEach((member) => {
               const listItem = document.createElement("li");
-              listItem.textContent = `${member.id} - ${member.name} (${member.email})`;
+
+              // 이름과 이메일만을 표시
+              const nameEmail = document.createTextNode(
+                `${member.name} (${member.email})`
+              );
+              listItem.appendChild(nameEmail);
 
               const addButton = document.createElement("button");
               addButton.textContent = "친구 추가";

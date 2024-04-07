@@ -6,11 +6,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -71,16 +74,37 @@ public class MemberController {
 
 
     @GetMapping("/all")
-    public ResponseEntity<List<Member>> getAllMembers(HttpServletRequest request) {
+    public ResponseEntity<List<MemberInfo>> getAllMembers(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("loginId") != null) {
             String loginId = (String) session.getAttribute("loginId");
             List<Member> allMembers = memberService.findAllExcept(loginId);
-            return ResponseEntity.ok().body(allMembers);
+
+            // 이름과 이메일만을 가지는 MemberInfo 객체 리스트 생성
+            List<MemberInfo> memberInfos = new ArrayList<>();
+            for (Member member : allMembers) {
+                memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getEmail()));
+            }
+            return ResponseEntity.ok().body(memberInfos);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
+
+    // 이름(name)과 이메일(email)만 가지는 MemberInfo 클래스 정의
+    @Setter @Getter
+    class MemberInfo {
+        private String id;
+        private String name;
+        private String email;
+        // 생성자, Getter, Setter
+        public MemberInfo(String id, String name, String email) {
+            this.id = id;
+            this.name = name;
+            this.email = email;
+        }
+    }
+
 
     @GetMapping("/") // 기본 경로에 대한 요청 처리
     public String redirectToLogin() {
