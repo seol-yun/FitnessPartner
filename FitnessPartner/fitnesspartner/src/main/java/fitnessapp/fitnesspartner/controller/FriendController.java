@@ -20,29 +20,12 @@ import java.util.List;
 @RequestMapping("/api/friends")
 @RequiredArgsConstructor
 public class FriendController {
-
-    private final MemberService memberService;
     private final FriendService friendService;
 
     @PostMapping("/add")
     public void addFriend(@RequestBody AddFriendRequest request) {
         friendService.addFriend(request.getMemberId(), request.getFriendMemberId());
     }
-//    @GetMapping("/all")
-//    public ResponseEntity<List<Friend>> getAllFriends(HttpServletRequest request) {
-//        HttpSession session = request.getSession(false);
-//        if (session != null && session.getAttribute("loginId") != null) {
-//            String loginId = (String) session.getAttribute("loginId");
-//            List<Friend> friends = friendService.getAllFriends(loginId);
-//            for (Friend f: friends) {
-//                System.out.println(f.getFriendMember().getName());
-//            }
-//            return ResponseEntity.ok().body(friends);
-//        } else {
-//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-//        }
-//    }
-
     @GetMapping("/all")
     public ResponseEntity<List<FriendInfoDTO>> getAllFriends(HttpServletRequest request) {
         HttpSession session = request.getSession(false);

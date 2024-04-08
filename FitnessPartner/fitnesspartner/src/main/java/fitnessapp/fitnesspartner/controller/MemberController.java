@@ -9,10 +9,17 @@ import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -25,14 +32,33 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    public String signup(@RequestBody Member member) {
-            int validate = memberService.validateDuplicateMember(member);
-            if(validate==0){
-                return "중복";
-            } else {
-                memberService.join(member);
+    public String signup(@RequestParam("profilePic") MultipartFile profilePic, @RequestParam("id") String id, @RequestParam("pw") String pw, @RequestParam("name") String name, @RequestParam("email") String email) {
+        int validate = memberService.validateDuplicateMember(new Member(id, pw, name, email));
+        if (validate == 0) {
+            return "중복";
+        } else {
+            try {
+                // 프로필 이미지를 저장할 경로 설정
+                String uploadDir = "D://Code//FinalProject//FitnessPartner//fitnesspartner//src//main//resources//static//image//memberprofile";
+                String fileName = id + ".jpg";
+
+                // 프로필 이미지를 서버에 저장
+                Path uploadPath = Paths.get(uploadDir);
+                if (!Files.exists(uploadPath)) {
+                    Files.createDirectories(uploadPath);
+                }
+                Path filePath = uploadPath.resolve(fileName);
+                Files.copy(profilePic.getInputStream(), filePath);
+
+                // 회원가입 처리
+                memberService.join(new Member(id, pw, name, email));
+
                 return "회원가입 성공!";
+            } catch (Exception e) {
+                e.printStackTrace();
+                return "회원가입 실패!";
             }
+        }
     }
     @PostMapping("/login")
     public String login(@RequestBody Map<String, String> credentials, HttpServletRequest request) {
@@ -47,7 +73,25 @@ public class MemberController {
         }
         return member;
     }
+    @GetMapping("/profileImage/{id}")
+    public ResponseEntity<Resource> getProfileImage(@PathVariable String id) {
+        // 이미지 파일 경로 설정
+        String imagePath = "D://Code//FinalProject//FitnessPartner//fitnesspartner//src//main//resources//static//image//memberprofile//" + id + ".jpg";
 
+        // 이미지 파일을 Resource로 읽어옴
+        Resource imageResource = new FileSystemResource(imagePath);
+
+        // 이미지 파일이 있는지 확인
+        if (imageResource.exists() && imageResource.isReadable()) {
+            // 이미지 파일을 응답으로 전송
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .body(imageResource);
+        } else {
+            // 이미지 파일이 없으면 에러 응답
+            return ResponseEntity.notFound().build();
+        }
+    }
     @PostMapping("/logout")
     public void logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -103,12 +147,6 @@ public class MemberController {
             this.name = name;
             this.email = email;
         }
-    }
-
-
-    @GetMapping("/") // 기본 경로에 대한 요청 처리
-    public String redirectToLogin() {
-        return "/login.html"; // 정적 자원 경로를 포함한 절대 경로
     }
 
     // 추가적인 RESTful 엔드포인트들을 필요에 따라 정의할 수 있습니다.
