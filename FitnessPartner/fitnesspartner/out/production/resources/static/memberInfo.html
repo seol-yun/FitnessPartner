@@ -9,25 +9,50 @@
     <p><strong>아이디:</strong> <span id="memberId"></span></p>
     <p><strong>이름:</strong> <span id="memberName"></span></p>
     <p><strong>이메일:</strong> <span id="memberEmail"></span></p>
+    <img id="profilePic" src="" alt="프로필 이미지" />
+
+    <button onclick="logout()">로그아웃</button>
 
     <script>
       // 페이지 로드 시 회원 정보를 가져오는 함수 호출
       fetchMemberInfo();
 
       function fetchMemberInfo() {
-        // sessionStorage에서 id 값을 가져옵니다.
-        const memberId = sessionStorage.getItem("id");
-
-        // 회원 정보를 가져오는 API 엔드포인트에 요청을 보냅니다.
-        fetch("/api/members/info?id=" + memberId)
+        // 서버에서 로그인 정보를 받아옵니다.
+        fetch("/api/members/info")
           .then((response) => response.json())
           .then((data) => {
             // 회원 정보를 화면에 출력합니다.
             document.getElementById("memberId").textContent = data.id;
             document.getElementById("memberName").textContent = data.name;
             document.getElementById("memberEmail").textContent = data.email;
+            const profilePic = document.getElementById("profilePic");
+            // 이미지 경로를 서버에서 가져와 설정합니다.
+            profilePic.src = `/api/members/profileImage/${data.id}`;
+            profilePic.onerror = function () {
+              profilePic.src = ""; // 이미지 없음일 때 빈 src 설정
+              profilePic.alt = "이미지 없음"; // 대체 텍스트 설정
+            };
+            sessionStorage.setItem("id", data.id);
           })
           .catch((error) => console.error("Error:", error));
+      }
+
+      function logout() {
+        fetch("/api/members/logout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            alert("로그아웃 성공!");
+            window.location.href = "/login.html"; // 리다이렉트된 URL로 이동
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("로그아웃에 실패했습니다.");
+          });
       }
     </script>
   </body>
