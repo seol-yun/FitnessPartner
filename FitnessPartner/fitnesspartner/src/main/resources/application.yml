@@ -1,3 +1,12 @@
+server:
+  ssl:
+    key-store: classpath:keystore_test.p12
+    key-store-password: qkqh321@
+    key-store-type: PKCS12
+    key-alias: key_test
+  address: 192.168.56.1
+  port: 8443
+
 spring:
   datasource:
     url: jdbc:h2:tcp://127.0.0.1/~/fitnessdb;
@@ -31,3 +40,5 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.orm.jdbc.bind: trace
+#    org.springframework.messaging: trace
+#    org.springframework.web.socket: trace

@@ -76,7 +76,7 @@ public class MemberController {
     @GetMapping("/profileImage/{id}")
     public ResponseEntity<Resource> getProfileImage(@PathVariable String id) {
         // 이미지 파일 경로 설정
-        String imagePath = "D://Code//FinalProject//FitnessPartner//fitnesspartner//src//main//resources//static//image//memberprofile//" + id + ".jpg";
+        String imagePath = "D://Code//FitnessPartner//FitnessPartner//FitnessPartner//fitnesspartner//src//main//resources//static//image//memberprofile//" + id + ".jpg";
 
         // 이미지 파일을 Resource로 읽어옴
         Resource imageResource = new FileSystemResource(imagePath);
@@ -149,5 +149,4 @@ public class MemberController {
         }
     }
 
-    // 추가적인 RESTful 엔드포인트들을 필요에 따라 정의할 수 있습니다.
 }

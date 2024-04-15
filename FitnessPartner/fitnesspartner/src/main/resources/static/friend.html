@@ -20,8 +20,45 @@
             data.forEach((friendship) => {
               const listItem = document.createElement("li");
               listItem.textContent = `${friendship.friendName}`;
+
+              // 채팅하기 버튼 추가
+              const chatButton = document.createElement("button");
+              chatButton.textContent = "채팅하기";
+              chatButton.addEventListener("click", () =>
+                startChat(friendship.friendName)
+              ); // 채팅하기 버튼 클릭 시 startChat 함수 호출
+              listItem.appendChild(chatButton);
+
               friendList.appendChild(listItem);
             });
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+
+      // 채팅하기 함수
+      function startChat(friendName) {
+        // 채팅방 생성 요청
+        fetch(`/chat/room?user2=${friendName}`, {
+          // 요청 URL에 쿼리 파라미터로 user2를 추가
+          method: "POST",
+        })
+          .then((response) => {
+            if (response.ok) {
+              return response.text(); // 텍스트 형식의 응답을 반환
+            } else {
+              throw new Error("Failed to create chat room.");
+            }
+          })
+          .then((roomId) => {
+            // 직접 roomId에 문자열 형식의 응답을 할당
+            console.log(roomId);
+            if (roomId) {
+              // 채팅방 생성 후 roomId를 받았을 경우에만 채팅 페이지로 이동
+              console.log(roomId);
+              window.location.href = `/chat2.html?roomId=${roomId}`;
+            } else {
+              console.error("Failed to create chat room.");
+            }
           })
           .catch((error) => console.error("Error:", error));
       }
