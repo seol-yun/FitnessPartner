@@ -7,4 +7,5 @@ import lombok.Setter;
 @Setter
 public class FriendInfoDTO {
     private String friendName;
+    private String friendId;
 }

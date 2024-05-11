@@ -25,7 +25,7 @@
               const chatButton = document.createElement("button");
               chatButton.textContent = "채팅하기";
               chatButton.addEventListener("click", () =>
-                startChat(friendship.friendName)
+                startChat(friendship.friendId)
               ); // 채팅하기 버튼 클릭 시 startChat 함수 호출
               listItem.appendChild(chatButton);
 
@@ -36,9 +36,9 @@
       }
 
       // 채팅하기 함수
-      function startChat(friendName) {
+      function startChat(friendId) {
         // 채팅방 생성 요청
-        fetch(`/chat/room?user2=${friendName}`, {
+        fetch(`/chat/room?user2=${friendId}`, {
           // 요청 URL에 쿼리 파라미터로 user2를 추가
           method: "POST",
         })

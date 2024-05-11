@@ -53,6 +53,7 @@ public class FriendService {
     private FriendInfoDTO convertToDTO(Friend friend) {
         FriendInfoDTO dto = new FriendInfoDTO();
         dto.setFriendName(friend.getFriendMember().getName());
+        dto.setFriendId(friend.getFriendMember().getId());
         return dto;
     }
 }

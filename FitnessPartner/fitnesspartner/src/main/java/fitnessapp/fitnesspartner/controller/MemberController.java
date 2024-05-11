@@ -39,7 +39,7 @@ public class MemberController {
         } else {
             try {
                 // 프로필 이미지를 저장할 경로 설정
-                String uploadDir = "D://Code//FinalProject//FitnessPartner//fitnesspartner//src//main//resources//static//image//memberprofile";
+                String uploadDir = "D://Code//FitnessPartner//FitnessPartner//FitnessPartner//fitnesspartner//src//main//resources//static//image//memberprofile/";
                 String fileName = id + ".jpg";
 
                 // 프로필 이미지를 서버에 저장
