@@ -15,7 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
 
     <script>
-      const socket = new SockJS("https://192.168.56.1:8443/chat-websocket");
+      const socket = new SockJS("http://localhost:8080/chat-websocket");
       const stompClient = Stomp.over(socket);
 
       stompClient.connect({}, function (frame) {
