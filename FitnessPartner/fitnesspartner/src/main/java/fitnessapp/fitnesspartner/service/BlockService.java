@@ -20,7 +20,7 @@ public class BlockService {
     private final BlockRepository blockRepository;
     private final MemberRepository memberRepository;
 
-    public void addBlcok(String memberId, String blockId) {
+    public void addBlock(String memberId, String blockId) {
         // memberId와 blockId에 해당하는 Member 엔티티 가져오기
         Member member = memberRepository.findOne(memberId);
         Member blockedMember = memberRepository.findOne(blockId);
@@ -34,7 +34,7 @@ public class BlockService {
         blockRepository.save(newBlock);
     }
 
-    public List<BlockInfoDTO> getAllFriends(String memberId) {
+    public List<BlockInfoDTO> getAllBlocks(String memberId) {
         return blockRepository.findAllByMemberId(memberId).stream()
                 .map(this::convertToDTO)
                 .collect(Collectors.toList());

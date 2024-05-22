@@ -32,33 +32,16 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    public String signup(@RequestParam("profilePic") MultipartFile profilePic, @RequestParam("id") String id, @RequestParam("pw") String pw,
+    public String signup(@RequestParam("id") String id, @RequestParam("pw") String pw,
                          @RequestParam("name") String name, @RequestParam("email") String email, @RequestParam("address") String address,
                          @RequestParam("gender") String gender, @RequestParam("exerciseType") String exerciseType, @RequestParam("isTrainer") boolean isTrainer) {
         int validate = memberService.validateDuplicateMember(new Member(id, pw, name, email, address, gender, exerciseType, isTrainer));
         if (validate == 0) {
             return "중복";
         } else {
-            try {
-                // 프로필 이미지를 저장할 경로 설정
-                String uploadDir = "src/main/resources/static/image/memberprofile";
-                String fileName = id + ".jpg";
-
-                // 프로필 이미지를 서버에 저장
-                Path uploadPath = Paths.get(uploadDir);
-                if (!Files.exists(uploadPath)) {
-                    Files.createDirectories(uploadPath);
-                }
-                Path filePath = uploadPath.resolve(fileName);
-                Files.copy(profilePic.getInputStream(), filePath);
-
-                // 회원가입 처리
-                memberService.join(new Member(id, pw, name, email, address, gender, exerciseType, isTrainer));
-                return "회원가입 성공!";
-            } catch (Exception e) {
-                e.printStackTrace();
-                return "회원가입 실패!";
-            }
+            // 회원가입 처리
+            memberService.join(new Member(id, pw, name, email, address, gender, exerciseType, isTrainer));
+            return "회원가입 성공!";
         }
     }
 

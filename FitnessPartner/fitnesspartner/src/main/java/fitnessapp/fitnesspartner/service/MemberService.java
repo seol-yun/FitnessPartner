@@ -75,12 +75,12 @@ public class MemberService {
         List<String> friendIds = friends.stream()
                 .map(friend -> friend.getFriendMember().getId())
                 .collect(Collectors.toList());
-
+        
         // 모든 회원 정보 조회 후 로그인한 사용자와 친구인 회원을 필터링
         List<Member> allMembers = memberRepository.findAll();
         return allMembers.stream()
                 .filter(member -> !member.getId().equals(loginId) && !friendIds.contains(member.getId()))
                 .collect(Collectors.toList());
     }
-
+//음음
 }

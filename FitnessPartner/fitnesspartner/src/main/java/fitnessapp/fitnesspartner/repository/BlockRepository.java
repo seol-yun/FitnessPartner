@@ -11,7 +11,9 @@ import java.util.List;
 @Repository
 @RequiredArgsConstructor
 public class BlockRepository {
+
     private final EntityManager em;
+
     public Block save(Block block) {
         em.persist(block);
         return block;

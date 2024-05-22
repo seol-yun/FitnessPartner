@@ -29,12 +29,12 @@
     <label for="trainer">운동전문가</label><br/>
     <input type="radio" id="generalUser" name="isTrainer" value="False">
     <label for="generalUser">일반사용자</label><br/><br/>
-    <input
-            type="file"
-            id="profilePic"
-            name="profilePic"
-            accept="image/*"
-    /><br/><br/>
+<!--    <input-->
+<!--            type="file"-->
+<!--            id="profilePic"-->
+<!--            name="profilePic"-->
+<!--            accept="image/*"-->
+<!--    /><br/><br/>-->
     <!-- 파일 업로드 버튼 -->
     <button type="submit">회원가입</button>
 </form>
@@ -64,7 +64,7 @@
             var gender = getSelectedRadio('gender');
             var exerciseType = document.getElementById("exerciseType").value;
             var isTrainer = getSelectedRadio('isTrainer');
-            var profilePic = document.getElementById("profilePic").files[0]; // 업로드된 파일 가져오기
+            // var profilePic = document.getElementById("profilePic").files[0]; // 업로드된 파일 가져오기
 
             var formData = new FormData();
             formData.append("id", id);
@@ -75,7 +75,7 @@
             formData.append("gender", gender);
             formData.append("exerciseType", exerciseType);
             formData.append("isTrainer", isTrainer);
-            formData.append("profilePic", profilePic); // FormData에 파일 추가
+            // formData.append("profilePic", profilePic); // FormData에 파일 추가
 
             fetch("/api/members/signup", {
                 method: "POST",
