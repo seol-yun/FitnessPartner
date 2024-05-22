@@ -17,11 +17,12 @@
           .then((response) => response.json())
           .then((data) => {
             const chatRoomList = document.getElementById("chatRoomList");
+            chatRoomList.innerHTML = ""; // Clear previous chat room list
             data.forEach((chatRoom) => {
               const listItem = document.createElement("li");
-              listItem.textContent = `${chatRoom.user2}`;
+              listItem.textContent = `${chatRoom.otherName}`; // Display user2's name
 
-              // 채팅방 입장 버튼 추가
+              // Add a button to enter the chat room
               const enterButton = document.createElement("button");
               enterButton.textContent = "Enter";
               enterButton.addEventListener("click", () =>

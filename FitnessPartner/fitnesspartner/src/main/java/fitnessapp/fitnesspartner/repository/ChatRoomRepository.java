@@ -1,6 +1,8 @@
 package fitnessapp.fitnesspartner.repository;
 
 import fitnessapp.fitnesspartner.domain.ChatRoom;
+import fitnessapp.fitnesspartner.domain.Member;
+import fitnessapp.fitnesspartner.dto.ChatRoomDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -16,12 +18,13 @@ import java.util.List;
 
 public class ChatRoomRepository {
     private final EntityManager em;
+    private final MemberRepository memberRepository;
 
     /**
      * 모든 채팅방 조회
      */
-    public List<ChatRoom> findAllRoom(HttpServletRequest request) {
-        List<ChatRoom> userChatRooms = new ArrayList<>();
+    public List<ChatRoomDTO> findAllRoom(HttpServletRequest request) {
+        List<ChatRoomDTO> userChatRooms = new ArrayList<>();
         HttpSession session = request.getSession(false);
 
         if (session != null && session.getAttribute("loginId") != null) {
@@ -30,13 +33,28 @@ public class ChatRoomRepository {
 
             for (ChatRoom chatRoom : allChatRooms) {
                 if (chatRoom.getUser1().equals(currentUserId) || chatRoom.getUser2().equals(currentUserId)) {
-                    userChatRooms.add(chatRoom);
+                    Member me, other;
+                    if(chatRoom.getUser1().equals(currentUserId)){
+                        me = memberRepository.findOne(chatRoom.getUser1());
+                        other = memberRepository.findOne(chatRoom.getUser2());
+                    }else{
+                        other = memberRepository.findOne(chatRoom.getUser1());
+                        me = memberRepository.findOne(chatRoom.getUser2());
+                    }
+                    ChatRoomDTO chatRoomDTO = new ChatRoomDTO();
+                    chatRoomDTO.setRoomId(chatRoom.getRoomId());
+                    chatRoomDTO.setMyId(me.getId());
+                    chatRoomDTO.setMyName(me.getName());
+                    chatRoomDTO.setOtherId(other.getId());
+                    chatRoomDTO.setOtherName(other.getName());
+                    userChatRooms.add(chatRoomDTO);
                 }
             }
         }
 
         return userChatRooms;
     }
+
 
 
 //    public ChatRoom findRoomById(String id) {

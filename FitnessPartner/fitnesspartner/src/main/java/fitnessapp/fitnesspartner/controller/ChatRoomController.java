@@ -1,6 +1,7 @@
 package fitnessapp.fitnesspartner.controller;
 
 import fitnessapp.fitnesspartner.domain.ChatRoom;
+import fitnessapp.fitnesspartner.dto.ChatRoomDTO;
 import fitnessapp.fitnesspartner.repository.ChatRoomRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -18,7 +19,7 @@ public class ChatRoomController {
     // 모든 채팅방 목록 반환
     @GetMapping("/rooms")
     @ResponseBody
-    public List<ChatRoom> room(HttpServletRequest request) {
+    public List<ChatRoomDTO> room(HttpServletRequest request) {
         return chatRoomRepository.findAllRoom(request);
     }
     // 채팅방 생성
