@@ -98,7 +98,7 @@ class LoginPage extends StatelessWidget {
                         Text('|'),
                         TextButton(
                           onPressed: () {
-                            // 회원가입
+                            Navigator.pushNamed(context, '/signup');
                           },
                           child: Text('회원가입'),
                         ),

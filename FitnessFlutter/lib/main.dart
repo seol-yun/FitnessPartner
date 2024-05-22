@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Login.dart';
+import 'Signup.dart';
 import 'MemberInfoPage.dart';
 
 void main() {
@@ -14,10 +15,11 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      initialRoute: '/', // 초기 경로 설정
+      initialRoute: '/',
       routes: {
-        '/': (context) => LoginPage(), // 로그인 페이지
+        '/': (context) => LoginPage(),
         '/memberInfo': (context) => MemberInfoPage(), // 회원 정보 페이지
+        '/signup': (context) => SignupPage(), // 회원가입 페이지
       },
     );
   }
