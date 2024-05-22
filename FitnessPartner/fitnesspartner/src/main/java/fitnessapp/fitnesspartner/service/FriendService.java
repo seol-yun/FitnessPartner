@@ -1,4 +1,5 @@
 package fitnessapp.fitnesspartner.service;
+
 import fitnessapp.fitnesspartner.domain.Friend;
 import fitnessapp.fitnesspartner.domain.Member;
 import fitnessapp.fitnesspartner.dto.FriendInfoDTO;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @Service
 @Transactional

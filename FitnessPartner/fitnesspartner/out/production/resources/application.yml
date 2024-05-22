@@ -1,11 +1,11 @@
-server:
-  ssl:
-    key-store: classpath:keystore_test.p12
-    key-store-password: qkqh321@
-    key-store-type: PKCS12
-    key-alias: key_test
-#  address: 172.24.208.1
-#  port: 8080
+#server:
+#  ssl:
+#    key-store: classpath:keystore_test.p12
+#    key-store-password: qkqh321@
+#    key-store-type: PKCS12
+#    key-alias: key_test
+#  address: 192.168.56.1
+#  port: 8443
 
 spring:
   datasource:
@@ -16,6 +16,7 @@ spring:
 
   jpa:
     hibernate:
+#      ddl-auto: create #처음실행시. db변경시.
       ddl-auto: none
     properties:
       hibernate:
@@ -40,3 +41,5 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.orm.jdbc.bind: trace
+#    org.springframework.messaging: trace
+#    org.springframework.web.socket: trace

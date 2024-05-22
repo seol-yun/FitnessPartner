@@ -32,14 +32,16 @@ public class MemberController {
     private final MemberService memberService;
 
     @PostMapping("/signup")
-    public String signup(@RequestParam("profilePic") MultipartFile profilePic, @RequestParam("id") String id, @RequestParam("pw") String pw, @RequestParam("name") String name, @RequestParam("email") String email) {
-        int validate = memberService.validateDuplicateMember(new Member(id, pw, name, email));
+    public String signup(@RequestParam("profilePic") MultipartFile profilePic, @RequestParam("id") String id, @RequestParam("pw") String pw,
+                         @RequestParam("name") String name, @RequestParam("email") String email, @RequestParam("address") String address,
+                         @RequestParam("gender") String gender, @RequestParam("exerciseType") String exerciseType, @RequestParam("isTrainer") boolean isTrainer) {
+        int validate = memberService.validateDuplicateMember(new Member(id, pw, name, email, address, gender, exerciseType, isTrainer));
         if (validate == 0) {
             return "중복";
         } else {
             try {
                 // 프로필 이미지를 저장할 경로 설정
-                String uploadDir = "D://Code//FitnessPartner//FitnessPartner//FitnessPartner//fitnesspartner//src//main//resources//static//image//memberprofile/";
+                String uploadDir = "src/main/resources/static/image/memberprofile";
                 String fileName = id + ".jpg";
 
                 // 프로필 이미지를 서버에 저장
@@ -51,8 +53,7 @@ public class MemberController {
                 Files.copy(profilePic.getInputStream(), filePath);
 
                 // 회원가입 처리
-                memberService.join(new Member(id, pw, name, email));
-
+                memberService.join(new Member(id, pw, name, email, address, gender, exerciseType, isTrainer));
                 return "회원가입 성공!";
             } catch (Exception e) {
                 e.printStackTrace();
@@ -60,19 +61,21 @@ public class MemberController {
             }
         }
     }
+
     @PostMapping("/login")
     public String login(@RequestBody Map<String, String> credentials, HttpServletRequest request) {
         String id = credentials.get("id");
         String pw = credentials.get("pw");
 
         String member = memberService.login(id, pw);
-        if(!member.equals('0')){
+        if (!member.equals('0')) {
             HttpSession session = request.getSession();
             session.setAttribute("loginId", member);
             session.setMaxInactiveInterval(60 * 30);
         }
         return member;
     }
+
     @GetMapping("/profileImage/{id}")
     public ResponseEntity<Resource> getProfileImage(@PathVariable String id) {
         // 이미지 파일 경로 설정
@@ -92,6 +95,7 @@ public class MemberController {
             return ResponseEntity.notFound().build();
         }
     }
+
     @PostMapping("/logout")
     public void logout(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -136,11 +140,13 @@ public class MemberController {
     }
 
     // 이름(name)과 이메일(email)만 가지는 MemberInfo 클래스 정의
-    @Setter @Getter
+    @Setter
+    @Getter
     class MemberInfo {
         private String id;
         private String name;
         private String email;
+
         // 생성자, Getter, Setter
         public MemberInfo(String id, String name, String email) {
             this.id = id;

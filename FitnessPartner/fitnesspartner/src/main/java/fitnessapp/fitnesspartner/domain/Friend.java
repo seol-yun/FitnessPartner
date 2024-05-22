@@ -22,5 +22,4 @@ public class Friend {
     @JoinColumn(name = "friend_member_id")
     private Member friendMember;
 
-
 }
