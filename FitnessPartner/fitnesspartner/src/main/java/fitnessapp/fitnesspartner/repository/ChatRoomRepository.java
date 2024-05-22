@@ -1,6 +1,8 @@
 package fitnessapp.fitnesspartner.repository;
 
 import fitnessapp.fitnesspartner.domain.ChatRoom;
+import fitnessapp.fitnesspartner.domain.Member;
+import fitnessapp.fitnesspartner.dto.ChatRoomDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -16,11 +18,13 @@ import java.util.List;
 
 public class ChatRoomRepository {
     private final EntityManager em;
-    private final List<ChatRoom> chatRooms = new ArrayList<>();
+    private final MemberRepository memberRepository;
 
-    // 모든 채팅방 조회
-    public List<ChatRoom> findAllRoom(HttpServletRequest request) {
-        List<ChatRoom> userChatRooms = new ArrayList<>();
+    /**
+     * 모든 채팅방 조회
+     */
+    public List<ChatRoomDTO> findAllRoom(HttpServletRequest request) {
+        List<ChatRoomDTO> userChatRooms = new ArrayList<>();
         HttpSession session = request.getSession(false);
 
         if (session != null && session.getAttribute("loginId") != null) {
@@ -29,13 +33,28 @@ public class ChatRoomRepository {
 
             for (ChatRoom chatRoom : allChatRooms) {
                 if (chatRoom.getUser1().equals(currentUserId) || chatRoom.getUser2().equals(currentUserId)) {
-                    userChatRooms.add(chatRoom);
+                    Member me, other;
+                    if(chatRoom.getUser1().equals(currentUserId)){
+                        me = memberRepository.findOne(chatRoom.getUser1());
+                        other = memberRepository.findOne(chatRoom.getUser2());
+                    }else{
+                        other = memberRepository.findOne(chatRoom.getUser1());
+                        me = memberRepository.findOne(chatRoom.getUser2());
+                    }
+                    ChatRoomDTO chatRoomDTO = new ChatRoomDTO();
+                    chatRoomDTO.setRoomId(chatRoom.getRoomId());
+                    chatRoomDTO.setMyId(me.getId());
+                    chatRoomDTO.setMyName(me.getName());
+                    chatRoomDTO.setOtherId(other.getId());
+                    chatRoomDTO.setOtherName(other.getName());
+                    userChatRooms.add(chatRoomDTO);
                 }
             }
         }
 
         return userChatRooms;
     }
+
 
 
 //    public ChatRoom findRoomById(String id) {
@@ -45,6 +64,12 @@ public class ChatRoomRepository {
 //                .orElse(null);
 //    }
 
+    /**
+     * 이미 방이 존재하는지 확인
+     * @param name1 내이름
+     * @param name2 친구이름
+     * @return
+     */
     public ChatRoom findExistingRoom(String name1, String name2) {
         return em.createQuery("select cr from ChatRoom cr where (cr.user1 = :name1 and cr.user2 = :name2) or (cr.user1 = :name2 and cr.user2 = :name1)", ChatRoom.class)
                 .setParameter("name1", name1)
@@ -56,6 +81,12 @@ public class ChatRoomRepository {
     }
 
 
+    /**
+     * 방이없으면 채팅방 생성
+     * @param name1
+     * @param name2
+     * @return
+     */
     @Transactional
     public ChatRoom createChatRoom(String name1, String name2) {
         ChatRoom existingRoom = findExistingRoom(name1, name2);
