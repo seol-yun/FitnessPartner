@@ -16,13 +16,21 @@ public class Member {
     private String pw;
     private String name;
     private String email;
+    private String address;
+    private String gender;
+    private String exerciseType;
+    private boolean isTrainer;
 
     public Member() {
     }
-    public Member(String id, String pw, String name, String email) {
+    public Member(String id, String pw, String name, String email, String address, String gender, String exerciseType, boolean isTrainer) {
         this.id = id;
         this.pw = pw;
         this.name = name;
         this.email = email;
+        this.address = address;
+        this.gender = gender;
+        this.exerciseType = exerciseType;
+        this.isTrainer = isTrainer;
     }
 }

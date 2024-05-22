@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d1afddfd-d172-4baf-b4ba-2674ac0f14fe" name="Changes" comment="" />
+    <list default="true" id="d1afddfd-d172-4baf-b4ba-2674ac0f14fe" name="Changes" comment="Save changes to IDE configuration files" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -35,6 +35,9 @@
         <option value="Class" />
       </list>
     </option>
+  </component>
+  <component name="Git.Merge.Settings">
+    <option name="BRANCH" value="origin/syh" />
   </component>
   <component name="Git.Settings">
     <excluded-from-favorite>
@@ -173,7 +176,71 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1710137510863</updated>
+      <workItem from="1716202938124" duration="146000" />
+      <workItem from="1716203108706" duration="2504000" />
+      <workItem from="1716264019481" duration="4354000" />
+      <workItem from="1716288047567" duration="1068000" />
+      <workItem from="1716345144860" duration="5578000" />
+      <workItem from="1716353356922" duration="608000" />
     </task>
+    <task id="LOCAL-00001" summary="멤버정보추가">
+      <option name="closed" value="true" />
+      <created>1716353577058</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1716353577058</updated>
+    </task>
+    <task id="LOCAL-00002" summary="멤버정보추가">
+      <option name="closed" value="true" />
+      <created>1716353884997</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1716353884997</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="FILTERS">
+                <map>
+                  <entry key="branch">
+                    <value>
+                      <list>
+                        <option value="syh" />
+                      </list>
+                    </value>
+                  </entry>
+                </map>
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="멤버정보추가" />
+    <MESSAGE value="Save changes to IDE configuration files" />
+    <option name="LAST_COMMIT_MESSAGE" value="Save changes to IDE configuration files" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.IllegalArgumentException" package="java.lang" />
+          <option name="timeStamp" value="1" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
