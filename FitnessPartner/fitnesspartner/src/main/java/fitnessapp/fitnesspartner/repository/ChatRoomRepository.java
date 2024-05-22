@@ -46,6 +46,12 @@ public class ChatRoomRepository {
 //                .orElse(null);
 //    }
 
+    /**
+     * 이미 방이 존재하는지 확인
+     * @param name1 내이름
+     * @param name2 친구이름
+     * @return
+     */
     public ChatRoom findExistingRoom(String name1, String name2) {
         return em.createQuery("select cr from ChatRoom cr where (cr.user1 = :name1 and cr.user2 = :name2) or (cr.user1 = :name2 and cr.user2 = :name1)", ChatRoom.class)
                 .setParameter("name1", name1)
@@ -57,6 +63,12 @@ public class ChatRoomRepository {
     }
 
 
+    /**
+     * 방이없으면 채팅방 생성
+     * @param name1
+     * @param name2
+     * @return
+     */
     @Transactional
     public ChatRoom createChatRoom(String name1, String name2) {
         ChatRoom existingRoom = findExistingRoom(name1, name2);
