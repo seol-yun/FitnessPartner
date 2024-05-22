@@ -16,9 +16,10 @@ import java.util.List;
 
 public class ChatRoomRepository {
     private final EntityManager em;
-    private final List<ChatRoom> chatRooms = new ArrayList<>();
 
-    // 모든 채팅방 조회
+    /**
+     * 모든 채팅방 조회
+     */
     public List<ChatRoom> findAllRoom(HttpServletRequest request) {
         List<ChatRoom> userChatRooms = new ArrayList<>();
         HttpSession session = request.getSession(false);
