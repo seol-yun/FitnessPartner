@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -17,12 +18,14 @@ public class ChatRoom {
     private String user1;
     private String user2;
     private String roomId;
+    private LocalDateTime timestamp;
 
     public static ChatRoom create(String user1, String user2) {
         ChatRoom chatRoom = new ChatRoom();
         chatRoom.user1 = user1;
         chatRoom.user2 = user2;
         chatRoom.roomId = UUID.randomUUID().toString();
+        chatRoom.timestamp = LocalDateTime.now(); // 초기 타임스탬프 설정
         return chatRoom;
     }
 }

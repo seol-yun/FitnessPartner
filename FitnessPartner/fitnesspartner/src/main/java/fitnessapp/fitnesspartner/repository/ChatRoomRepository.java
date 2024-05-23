@@ -10,8 +10,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
@@ -47,9 +46,12 @@ public class ChatRoomRepository {
                     chatRoomDTO.setMyName(me.getName());
                     chatRoomDTO.setOtherId(other.getId());
                     chatRoomDTO.setOtherName(other.getName());
+                    chatRoomDTO.setTimeStamp(chatRoom.getTimestamp());
                     userChatRooms.add(chatRoomDTO);
                 }
             }
+            // 최신 순으로 정렬
+            Collections.sort(userChatRooms, Comparator.comparing(ChatRoomDTO::getTimeStamp).reversed());
         }
 
         return userChatRooms;
@@ -57,12 +59,16 @@ public class ChatRoomRepository {
 
 
 
-//    public ChatRoom findRoomById(String id) {
-//        return chatRooms.stream()
-//                .filter(chatRoom -> chatRoom.getRoomId().equals(id))
-//                .findFirst()
-//                .orElse(null);
-//    }
+    /**
+     * 채팅방 ID로 특정 채팅방 조회
+     */
+    public Optional<ChatRoom> findRoomById(String id) {
+        return em.createQuery("SELECT c FROM ChatRoom c WHERE c.roomId = :id", ChatRoom.class)
+                .setParameter("id", id)
+                .getResultList()
+                .stream()
+                .findFirst();
+    }
 
     /**
      * 이미 방이 존재하는지 확인
@@ -98,4 +104,9 @@ public class ChatRoomRepository {
         return chatRoom;
     }
 
+
+    @Transactional
+    public void save(ChatRoom chatRoom) {
+        em.merge(chatRoom);
+    }
 }
