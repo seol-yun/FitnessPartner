@@ -1,11 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>차단 목록</title>
 </head>
 <body>
+<!--편의성 업데이트! html 만들 때 추가요망-->
+<a href="/login.html" class="button">로그인</a>
+<a href="/signupForm.html" class="button">회원가입</a>
+<a href="/memberInfo.html" class="button">회원정보</a>
+<a href="/partner.html" class="button">파트너정보</a>
+<a href="/friend.html" class="button">친구목록</a>
+<a href="/block.html" class="button">차단목록</a>
+<a href="/chat2.html" class="button">채팅</a>
+<a href="/chatRooms.html" class="button">채팅룸</a>
+
 <h2>차단 목록</h2>
 <ul id="blockList"></ul>
 
@@ -16,52 +26,51 @@
         fetch("/api/blocks/all")
             .then((response) => response.json())
             .then((data) => {
-                //일단 여기까지
+                console.log(data);
                 const blockList = document.getElementById("blockList");
                 data.forEach((block) => {
                     const listItem = document.createElement("li");
                     listItem.textContent = `${block.blockedName}`;
 
                     // 차단해제 버튼 추가
-                    const chatButton = document.createElement("button");
-                    chatButton.textContent = "채팅하기";
-                    chatButton.addEventListener("click", () =>
-                        startChat(friendship.friendId)
-                    ); // 채팅하기 버튼 클릭 시 startChat 함수 호출
-                    listItem.appendChild(chatButton);
+                    const unBlockButton = document.createElement("button");
+                    unBlockButton.textContent = "차단해제";
+                    unBlockButton.addEventListener("click", () =>
+                        unBlock(block.blockId)
+                    );
+                    listItem.appendChild(unBlockButton);
 
-                    friendList.appendChild(listItem);
+                    blockList.appendChild(listItem);
                 });
             })
             .catch((error) => console.error("Error:", error));
     }
 
-    // 채팅하기 함수
-    function startChat(friendId) {
-        // 채팅방 생성 요청
-        fetch(`/chat/room?user2=${friendId}`, {
-            // 요청 URL에 쿼리 파라미터로 user2를 추가
+    // 차단해제 함수
+    function unBlock(blockId) {
+        const requestBody = {
+            memberId: sessionStorage.getItem("id"),
+            blockMemberId: blockId,
+        };
+        fetch("/api/blocks/unBlock", {
             method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody),
         })
             .then((response) => {
                 if (response.ok) {
-                    return response.text(); // 텍스트 형식의 응답을 반환
+                    alert("차단 해제 성공!");
+                    location.reload();
                 } else {
-                    throw new Error("Failed to create chat room.");
+                    alert("차단 해제 실패!");
                 }
             })
-            .then((roomId) => {
-                // 직접 roomId에 문자열 형식의 응답을 할당
-                console.log(roomId);
-                if (roomId) {
-                    // 채팅방 생성 후 roomId를 받았을 경우에만 채팅 페이지로 이동
-                    console.log(roomId);
-                    window.location.href = `/chat.html?roomId=${roomId}`;
-                } else {
-                    console.error("Failed to create chat room.");
-                }
-            })
-            .catch((error) => console.error("Error:", error));
+            .catch((error) => {
+                console.error("Error:", error);
+                alert("차단 해제 중 오류가 발생했습니다.");
+            });
     }
 </script>
 </body>

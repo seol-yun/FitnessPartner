@@ -19,9 +19,24 @@ public class BlockRepository {
         return block;
     }
 
+    public void delete(Block block) {
+        em.remove(block);
+    }
+
     public List<Block> findAllByMemberId(String memberId) {
         return em.createQuery("select b from Block b where b.member.id = :memberId", Block.class)
                 .setParameter("memberId", memberId)
                 .getResultList();
     }
+
+    /*
+        차단 해제 하기 위해서 사용.
+     */
+    public Block findByMemberAndBlockedMember(String memberId, String blockedMemberId) {
+        return em.createQuery("select b from Block b where b.member.id = :memberId and b.blockedMember.id = :blockedMemberId", Block.class)
+                .setParameter("memberId", memberId)
+                .setParameter("blockedMemberId", blockedMemberId)
+                .getSingleResult();
+    }
+
 }
