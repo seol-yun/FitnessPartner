@@ -1,4 +1,5 @@
 package fitnessapp.fitnesspartner.controller;
+
 import fitnessapp.fitnesspartner.domain.Block;
 import fitnessapp.fitnesspartner.domain.Member;
 import fitnessapp.fitnesspartner.dto.BlockInfoDTO;
@@ -22,10 +23,16 @@ import java.util.List;
 public class BlockController {
     private final BlockService blockService;
 
-    @PostMapping("/add")
+    @PostMapping("/addBlock")
     public void addBlock(@RequestBody AddBlockRequest request) {
         blockService.addBlock(request.getMemberId(), request.getBlockMemberId());
     }
+
+    @PostMapping("/unBlock")
+    public void unBlock(@RequestBody AddBlockRequest request) {
+        blockService.unBlock(request.getMemberId(), request.getBlockMemberId());
+    }
+
     @GetMapping("/all")
     public ResponseEntity<List<BlockInfoDTO>> getAllBlocks(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -37,7 +44,9 @@ public class BlockController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
     }
-    @Getter @Setter
+
+    @Getter
+    @Setter
     static class AddBlockRequest {
         private String memberId;
         private String blockMemberId;

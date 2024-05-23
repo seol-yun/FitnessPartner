@@ -1,6 +1,7 @@
 package fitnessapp.fitnesspartner.controller;
 
 import fitnessapp.fitnesspartner.domain.Member;
+import fitnessapp.fitnesspartner.service.BlockService;
 import fitnessapp.fitnesspartner.service.MemberService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,6 +31,7 @@ import java.util.Map;
 public class MemberController {
 
     private final MemberService memberService;
+    private final BlockService blockService;
 
     @PostMapping("/signup")
     public String signup(@RequestParam("id") String id, @RequestParam("pw") String pw,
@@ -103,7 +105,6 @@ public class MemberController {
         }
     }
 
-
     @GetMapping("/all")
     public ResponseEntity<List<MemberInfo>> getAllMembers(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -111,11 +112,15 @@ public class MemberController {
             String loginId = (String) session.getAttribute("loginId");
             List<Member> allMembers = memberService.findAllExcept(loginId);
 
-            // 이름과 이메일만을 가지는 MemberInfo 객체 리스트 생성
+            //차단한 사용자는 제외하고 보여줌.
+            List<String> blockMembersIds = blockService.findAllBlockMembers(loginId);
             List<MemberInfo> memberInfos = new ArrayList<>();
             for (Member member : allMembers) {
-                memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getEmail()));
+                if (!blockMembersIds.contains(member.getId())) {
+                    memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getEmail()));
+                }
             }
+
             return ResponseEntity.ok().body(memberInfos);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();

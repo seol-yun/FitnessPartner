@@ -82,5 +82,5 @@ public class MemberService {
                 .filter(member -> !member.getId().equals(loginId) && !friendIds.contains(member.getId()))
                 .collect(Collectors.toList());
     }
-//음음
+
 }
