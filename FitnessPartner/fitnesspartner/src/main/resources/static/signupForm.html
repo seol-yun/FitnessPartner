@@ -1,115 +1,114 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8"/>
+  <head>
+    <meta charset="UTF-8" />
     <title>회원가입</title>
-</head>
-<body>
-<!--편의성 업데이트! html 만들 때 추가요망-->
-<a href="/login.html" class="button">로그인</a>
-<a href="/signupForm.html" class="button">회원가입</a>
-<a href="/memberInfo.html" class="button">회원정보</a>
-<a href="/partner.html" class="button">파트너정보</a>
-<a href="/friend.html" class="button">친구목록</a>
-<a href="/block.html" class="button">차단목록</a>
-<a href="/chat2.html" class="button">채팅</a>
-<a href="/chatRooms.html" class="button">채팅룸</a>
+  </head>
+  <body>
+    <!--편의성 업데이트! html 만들 때 추가요망-->
+    <a href="/login.html" class="button">로그인</a>
+    <a href="/signupForm.html" class="button">회원가입</a>
+    <a href="/memberInfo.html" class="button">회원정보</a>
+    <a href="/partner.html" class="button">파트너정보</a>
+    <a href="/friend.html" class="button">친구목록</a>
+    <a href="/block.html" class="button">차단목록</a>
+    <a href="/chatRooms.html" class="button">채팅룸</a>
 
-<h2>회원가입</h2>
-<form id="signupForm">
-    <label for="id">아이디:</label><br/>
-    <input type="text" id="id" name="id"/><br/>
-    <label for="password">비밀번호:</label><br/>
-    <input type="password" id="password" name="password"/><br/>
-    <label for="name">이름:</label><br/>
-    <input type="text" id="name" name="name"/><br/>
-    <label for="email">이메일:</label><br/>
-    <input type="text" id="email" name="email"/><br/><br/>
-    <label for="address">주소:</label><br/>
-    <input type="text" id="address" name="address"/><br/><br/>
-    <label>성별:</label><br/>
-    <input type="radio" id="male" name="gender" value="male">
-    <label for="male">남성</label><br/>
-    <input type="radio" id="female" name="gender" value="female">
-    <label for="female">여성</label><br/><br/>
-    <label for="exerciseType">선호운동:</label><br/>
-    <input type="text" id="exerciseType" name="exerciseType"/><br/><br/>
-    <label>트레이너 여부:</label><br/>
-    <input type="radio" id="trainer" name="isTrainer" value="True">
-    <label for="trainer">운동전문가</label><br/>
-    <input type="radio" id="generalUser" name="isTrainer" value="False">
-    <label for="generalUser">일반사용자</label><br/><br/>
-<!--    <input-->
-<!--            type="file"-->
-<!--            id="profilePic"-->
-<!--            name="profilePic"-->
-<!--            accept="image/*"-->
-<!--    /><br/><br/>-->
-    <!-- 파일 업로드 버튼 -->
-    <button type="submit">회원가입</button>
-</form>
+    <h2>회원가입</h2>
+    <form id="signupForm">
+      <label for="id">아이디:</label><br />
+      <input type="text" id="id" name="id" /><br />
+      <label for="password">비밀번호:</label><br />
+      <input type="password" id="password" name="password" /><br />
+      <label for="name">이름:</label><br />
+      <input type="text" id="name" name="name" /><br />
+      <label for="email">이메일:</label><br />
+      <input type="text" id="email" name="email" /><br /><br />
+      <label for="address">주소:</label><br />
+      <input type="text" id="address" name="address" /><br /><br />
+      <label>성별:</label><br />
+      <input type="radio" id="male" name="gender" value="male" />
+      <label for="male">남성</label><br />
+      <input type="radio" id="female" name="gender" value="female" />
+      <label for="female">여성</label><br /><br />
+      <label for="exerciseType">선호운동:</label><br />
+      <input type="text" id="exerciseType" name="exerciseType" /><br /><br />
+      <label>트레이너 여부:</label><br />
+      <input type="radio" id="trainer" name="isTrainer" value="True" />
+      <label for="trainer">운동전문가</label><br />
+      <input type="radio" id="generalUser" name="isTrainer" value="False" />
+      <label for="generalUser">일반사용자</label><br /><br />
+      <!--    <input-->
+      <!--            type="file"-->
+      <!--            id="profilePic"-->
+      <!--            name="profilePic"-->
+      <!--            accept="image/*"-->
+      <!--    /><br/><br/>-->
+      <!-- 파일 업로드 버튼 -->
+      <button type="submit">회원가입</button>
+    </form>
 
-<script>
-    function getSelectedRadio(name) {
+    <script>
+      function getSelectedRadio(name) {
         const values = document.getElementsByName(name);
         for (let i = 0; i < values.length; i++) {
-            if (values[i].checked) {
-                return values[i].value;
-            }
+          if (values[i].checked) {
+            return values[i].value;
+          }
         }
-        alert(name + '을 선택해주세요.');
+        alert(name + "을 선택해주세요.");
         return null;
-    }
+      }
 
-    document
+      document
         .getElementById("signupForm")
         .addEventListener("submit", function (event) {
-            event.preventDefault();
+          event.preventDefault();
 
-            var id = document.getElementById("id").value;
-            var password = document.getElementById("password").value;
-            var name = document.getElementById("name").value;
-            var email = document.getElementById("email").value;
-            var address = document.getElementById("address").value;
-            var gender = getSelectedRadio('gender');
-            var exerciseType = document.getElementById("exerciseType").value;
-            var isTrainer = getSelectedRadio('isTrainer');
-            // var profilePic = document.getElementById("profilePic").files[0]; // 업로드된 파일 가져오기
+          var id = document.getElementById("id").value;
+          var password = document.getElementById("password").value;
+          var name = document.getElementById("name").value;
+          var email = document.getElementById("email").value;
+          var address = document.getElementById("address").value;
+          var gender = getSelectedRadio("gender");
+          var exerciseType = document.getElementById("exerciseType").value;
+          var isTrainer = getSelectedRadio("isTrainer");
+          // var profilePic = document.getElementById("profilePic").files[0]; // 업로드된 파일 가져오기
 
-            var formData = new FormData();
-            formData.append("id", id);
-            formData.append("pw", password);
-            formData.append("name", name);
-            formData.append("email", email);
-            formData.append("address", address);
-            formData.append("gender", gender);
-            formData.append("exerciseType", exerciseType);
-            formData.append("isTrainer", isTrainer);
-            // formData.append("profilePic", profilePic); // FormData에 파일 추가
+          var formData = new FormData();
+          formData.append("id", id);
+          formData.append("pw", password);
+          formData.append("name", name);
+          formData.append("email", email);
+          formData.append("address", address);
+          formData.append("gender", gender);
+          formData.append("exerciseType", exerciseType);
+          formData.append("isTrainer", isTrainer);
+          // formData.append("profilePic", profilePic); // FormData에 파일 추가
 
-            fetch("/api/members/signup", {
-                method: "POST",
-                body: formData, // FormData 전송
+          fetch("/api/members/signup", {
+            method: "POST",
+            body: formData, // FormData 전송
+          })
+            .then((response) => {
+              if (!response.ok) {
+                throw new Error("Signup failed");
+              }
+              return response.text();
             })
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error("Signup failed");
-                    }
-                    return response.text();
-                })
-                .then((data) => {
-                    alert(data); // Signup 성공 메시지 표시
-                    if (data === "중복") {
-                        window.location.href = "/signupForm.html";
-                    } else {
-                        window.location.href = "/login.html"; // 로그인 페이지로 이동
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                    alert("Signup failed");
-                });
+            .then((data) => {
+              alert(data); // Signup 성공 메시지 표시
+              if (data === "중복") {
+                window.location.href = "/signupForm.html";
+              } else {
+                window.location.href = "/login.html"; // 로그인 페이지로 이동
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              alert("Signup failed");
+            });
         });
-</script>
-</body>
+    </script>
+  </body>
 </html>

@@ -1,77 +1,76 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>차단 목록</title>
-</head>
-<body>
-<!--편의성 업데이트! html 만들 때 추가요망-->
-<a href="/login.html" class="button">로그인</a>
-<a href="/signupForm.html" class="button">회원가입</a>
-<a href="/memberInfo.html" class="button">회원정보</a>
-<a href="/partner.html" class="button">파트너정보</a>
-<a href="/friend.html" class="button">친구목록</a>
-<a href="/block.html" class="button">차단목록</a>
-<a href="/chat2.html" class="button">채팅</a>
-<a href="/chatRooms.html" class="button">채팅룸</a>
+  </head>
+  <body>
+    <!--편의성 업데이트! html 만들 때 추가요망-->
+    <a href="/login.html" class="button">로그인</a>
+    <a href="/signupForm.html" class="button">회원가입</a>
+    <a href="/memberInfo.html" class="button">회원정보</a>
+    <a href="/partner.html" class="button">파트너정보</a>
+    <a href="/friend.html" class="button">친구목록</a>
+    <a href="/block.html" class="button">차단목록</a>
+    <a href="/chatRooms.html" class="button">채팅룸</a>
 
-<h2>차단 목록</h2>
-<ul id="blockList"></ul>
+    <h2>차단 목록</h2>
+    <ul id="blockList"></ul>
 
-<script>
-    fetchBlockList();
+    <script>
+      fetchBlockList();
 
-    function fetchBlockList() {
+      function fetchBlockList() {
         fetch("/api/blocks/all")
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-                const blockList = document.getElementById("blockList");
-                data.forEach((block) => {
-                    const listItem = document.createElement("li");
-                    listItem.textContent = `${block.blockedName}`;
+          .then((response) => response.json())
+          .then((data) => {
+            console.log(data);
+            const blockList = document.getElementById("blockList");
+            data.forEach((block) => {
+              const listItem = document.createElement("li");
+              listItem.textContent = `${block.blockedName}`;
 
-                    // 차단해제 버튼 추가
-                    const unBlockButton = document.createElement("button");
-                    unBlockButton.textContent = "차단해제";
-                    unBlockButton.addEventListener("click", () =>
-                        unBlock(block.blockId)
-                    );
-                    listItem.appendChild(unBlockButton);
+              // 차단해제 버튼 추가
+              const unBlockButton = document.createElement("button");
+              unBlockButton.textContent = "차단해제";
+              unBlockButton.addEventListener("click", () =>
+                unBlock(block.blockId)
+              );
+              listItem.appendChild(unBlockButton);
 
-                    blockList.appendChild(listItem);
-                });
-            })
-            .catch((error) => console.error("Error:", error));
-    }
+              blockList.appendChild(listItem);
+            });
+          })
+          .catch((error) => console.error("Error:", error));
+      }
 
-    // 차단해제 함수
-    function unBlock(blockId) {
+      // 차단해제 함수
+      function unBlock(blockId) {
         const requestBody = {
-            memberId: sessionStorage.getItem("id"),
-            blockMemberId: blockId,
+          memberId: sessionStorage.getItem("id"),
+          blockMemberId: blockId,
         };
         fetch("/api/blocks/unBlock", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestBody),
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
         })
-            .then((response) => {
-                if (response.ok) {
-                    alert("차단 해제 성공!");
-                    location.reload();
-                } else {
-                    alert("차단 해제 실패!");
-                }
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                alert("차단 해제 중 오류가 발생했습니다.");
-            });
-    }
-</script>
-</body>
+          .then((response) => {
+            if (response.ok) {
+              alert("차단 해제 성공!");
+              location.reload();
+            } else {
+              alert("차단 해제 실패!");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("차단 해제 중 오류가 발생했습니다.");
+          });
+      }
+    </script>
+  </body>
 </html>
