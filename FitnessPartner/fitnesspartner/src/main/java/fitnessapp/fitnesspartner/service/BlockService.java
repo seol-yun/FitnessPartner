@@ -70,16 +70,7 @@ public class BlockService {
         List<String> blockIds = blocks.stream()
                 .map(block -> block.getBlockedMember().getId())
                 .collect(Collectors.toList());
-
-        // TODO 차단한 사용자는 제외
-
-
-//        // 모든 회원 정보 조회 후 로그인한 사용자와 차단인 회원을 필터링
-//        List<Member> allMembers = memberRepository.findAll();
-//        return allMembers.stream()
-//                .filter(member -> !member.getId().equals(loginId) && !blockIds.contains(member.getId()))
-//                .collect(Collectors.toList());
-        return blockIds;
+       return blockIds;
     }
 
 }

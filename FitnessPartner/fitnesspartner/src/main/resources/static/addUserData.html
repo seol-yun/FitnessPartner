@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--편의성 업데이트! html 만들 때 추가요망-->
+<a href="/login.html" class="button">로그인</a>
+<a href="/signupForm.html" class="button">회원가입</a>
+<a href="/memberInfo.html" class="button">회원정보</a>
+<a href="/partner.html" class="button">파트너정보</a>
+<a href="/friend.html" class="button">친구목록</a>
+<a href="/block.html" class="button">차단목록</a>
+<a href="/chat.html" class="button">채팅</a>
+<a href="/chatRooms.html" class="button">채팅룸</a>
+
+<h2>데이터 추가</h2>
+<label for="date">날짜:</label><br/>
+<input type="date" id="date" name="date"/><br/><br>
+<label for="height">키:</label><br/>
+<input type="text" id="height" name="height"/><br/>
+<label for="weight">몸무게:</label><br/>
+<input type="text" id="weight" name="weight"/>
+<input type="button" id="addPhysicalInfo" value="신체정보 추가"><br><br>
+
+<label for="exercise_type">운동종류:</label><br/>
+<input type="text" id="exercise_type" name="weight"/><br/>
+<label for="duration_minutes">수행시간(분단위):</label><br/>
+<input type="text" id="duration_minutes" name="weight"/>
+<input type="button" id="addExerciseInfo" value="운동정보 추가"><br><br>
+
+<script>
+    // 신체정보 추가 시.
+    document.getElementById("addPhysicalInfo").addEventListener("click", function (event) {
+        event.preventDefault();
+
+        var date = document.getElementById("date").value;
+        var height = document.getElementById("height").value;
+        var weight = document.getElementById("weight").value;
+
+        var formData = new FormData();
+        formData.append("date", date);
+        formData.append("height", height);
+        formData.append("weight", weight);
+
+        fetch("/api/members/addPhysicalInfo", {
+            method: "POST",
+            body: formData, // FormData 전송
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("error");
+                }
+                return response.text();
+            })
+            .then((data) => {
+                alert(data); // 성공 메시지 표시
+                window.location.reload();
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                alert("error");
+            });
+    });
+
+    // 운동정보 추가 시.
+    document.getElementById("addExerciseInfo").addEventListener("click", function (event) {
+        event.preventDefault();
+
+        var date = document.getElementById("date").value;
+        var exerciseType = document.getElementById("exercise_type").value;
+        var durationMinutes = document.getElementById("duration_minutes").value;
+
+        var formData = new FormData();
+        formData.append("date", date);
+        formData.append("exerciseType", exerciseType);
+        formData.append("durationMinutes", durationMinutes);
+
+        fetch("/api/members/addExerciseInfo", {
+            method: "POST",
+            body: formData, // FormData 전송
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("error");
+                }
+                return response.text();
+            })
+            .then((data) => {
+                alert(data); // 성공 메시지 표시
+                window.location.reload();
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                alert("error");
+            });
+    });
+</script>
+
+</body>
+</html>

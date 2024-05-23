@@ -1,10 +1,7 @@
 package fitnessapp.fitnesspartner.controller;
 
-import fitnessapp.fitnesspartner.domain.Block;
-import fitnessapp.fitnesspartner.domain.Member;
 import fitnessapp.fitnesspartner.dto.BlockInfoDTO;
 import fitnessapp.fitnesspartner.service.BlockService;
-import fitnessapp.fitnesspartner.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
@@ -14,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController

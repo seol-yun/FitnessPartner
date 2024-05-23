@@ -1,6 +1,7 @@
 package fitnessapp.fitnesspartner.controller;
 
 import fitnessapp.fitnesspartner.domain.Member;
+import fitnessapp.fitnesspartner.domain.UserData;
 import fitnessapp.fitnesspartner.service.BlockService;
 import fitnessapp.fitnesspartner.service.MemberService;
 import jakarta.servlet.http.Cookie;
@@ -21,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -34,9 +36,9 @@ public class MemberController {
     private final BlockService blockService;
 
     @PostMapping("/signup")
-    public String signup(@RequestParam("id") String id, @RequestParam("pw") String pw,
-                         @RequestParam("name") String name, @RequestParam("email") String email, @RequestParam("address") String address,
-                         @RequestParam("gender") String gender, @RequestParam("exerciseType") String exerciseType, @RequestParam("isTrainer") boolean isTrainer) {
+    public String signup(@RequestParam("id") String id, @RequestParam("pw") String pw, @RequestParam("name") String name,
+                         @RequestParam("email") String email, @RequestParam("address") String address, @RequestParam("gender") String gender,
+                         @RequestParam("exerciseType") String exerciseType, @RequestParam("isTrainer") boolean isTrainer) {
         int validate = memberService.validateDuplicateMember(new Member(id, pw, name, email, address, gender, exerciseType, isTrainer));
         if (validate == 0) {
             return "중복";
@@ -125,6 +127,32 @@ public class MemberController {
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
+    }
+
+    @PostMapping("/addPhysicalInfo")
+    public String addPhysicalInfo(@RequestParam("date") String date, @RequestParam("height") String height,
+                                  @RequestParam("weight") String weight, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null && session.getAttribute("loginId") == null) {
+            return "오류";
+        }
+        String loginId = (String) session.getAttribute("loginId");
+
+        memberService.addPhysicalData(loginId, date, height, weight);
+        return "신체정보추가 성공!";
+    }
+
+    @PostMapping("/addExerciseInfo")
+    public String addExerciseInfo(@RequestParam("date") String date, @RequestParam("exerciseType") String exerciseType,
+                                  @RequestParam("durationMinutes") String durationMinutes, HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null && session.getAttribute("loginId") == null) {
+            return "오류";
+        }
+        String loginId = (String) session.getAttribute("loginId");
+
+        memberService.addExerciseData(loginId, date, exerciseType, durationMinutes);
+        return "운동정보추가 성공!";
     }
 
     // 이름(name)과 이메일(email)만 가지는 MemberInfo 클래스 정의

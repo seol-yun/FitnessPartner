@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Getter
@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 public class UserData {
 
     @Id
+    @GeneratedValue
     @Column(name = "userData_id")
     private Long id;
 
@@ -25,7 +26,18 @@ public class UserData {
     private String exerciseType;
     @Column(name = "duration_minutes") //운동 수행 시간을 분 단위로 표기
     private int durationMinutes;
-    @Column(name = "date")  //운동 수행 날짜
-    private LocalDateTime date;
+    @Column(name = "date")  //기록한 날짜
+    private LocalDate date;
 
+    protected UserData() {}
+
+    // 필수 필드를 포함한 생성자
+    public UserData(Member member, LocalDate date, int height, int weight, String exerciseType, int durationMinutes) {
+        this.member = member;
+        this.height = height;
+        this.weight = weight;
+        this.exerciseType = exerciseType;
+        this.durationMinutes = durationMinutes;
+        this.date = date;
+    }
 }
