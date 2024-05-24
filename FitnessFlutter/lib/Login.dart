@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'HomePage.dart';  // 홈 페이지를 임포트
 
 class LoginPage extends StatelessWidget {
   final TextEditingController idController = TextEditingController();
@@ -29,8 +30,10 @@ class LoginPage extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('로그인 성공!')),
           );
-          // 회원 정보 페이지로 이동
-          Navigator.pushReplacementNamed(context, '/memberInfo');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomePage()),
+          );
         }
       } else {
         throw Exception('응답실패.');
@@ -109,7 +112,7 @@ class LoginPage extends StatelessWidget {
                       onPressed: () => _login(context),
                       child: Text('로그인하기'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
+                        backgroundColor: Colors.lightBlue,
                         foregroundColor: Colors.white,
                         minimumSize: Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(

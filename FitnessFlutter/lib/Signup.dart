@@ -1,7 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 
 class SignupPage extends StatefulWidget {
   @override
@@ -11,25 +10,12 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final TextEditingController idController = TextEditingController();
   final TextEditingController pwController = TextEditingController();
-  final TextEditingController pwConfirmController = TextEditingController();
   final TextEditingController nameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController exerciseTypeController = TextEditingController();
   String gender = "";
   String isTrainer = "";
-  File? profilePic;
-
-  final ImagePicker _picker = ImagePicker();
-
-  Future<void> _pickImage() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        profilePic = File(pickedFile.path);
-      });
-    }
-  }
 
   void _signup(BuildContext context) async {
     final String id = idController.text;
@@ -46,31 +32,26 @@ class _SignupPageState extends State<SignupPage> {
       return;
     }
 
-    var request = http.MultipartRequest(
-      'POST',
-      Uri.parse("http://localhost:8080/api/members/signup"),
-    );
-
-    request.fields['id'] = id;
-    request.fields['pw'] = pw;
-    request.fields['name'] = name;
-    request.fields['email'] = email;
-    request.fields['address'] = address;
-    request.fields['gender'] = gender;
-    request.fields['exerciseType'] = exerciseType;
-    request.fields['isTrainer'] = isTrainer;
-
-    if (profilePic != null) {
-      request.files.add(
-        await http.MultipartFile.fromPath('profilePic', profilePic!.path),
-      );
-    }
+    final formData = {
+      'id': id,
+      'pw': pw,
+      'name': name,
+      'email': email,
+      'address': address,
+      'gender': gender,
+      'exerciseType': exerciseType,
+      'isTrainer': isTrainer,
+    };
 
     try {
-      final response = await request.send();
+      final response = await http.post(
+        Uri.parse("http://localhost:8080/api/members/signup"),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode(formData),
+      );
 
       if (response.statusCode == 200) {
-        final responseData = await response.stream.bytesToString();
+        // final data = json.decode(response.body);
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('회원가입 성공!')),
         );
@@ -115,15 +96,6 @@ class _SignupPageState extends State<SignupPage> {
             ),
             SizedBox(height: 16.0),
             TextField(
-              controller: pwConfirmController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: '비밀번호 확인',
-                hintText: '비밀번호 확인',
-              ),
-            ),
-            SizedBox(height: 16.0),
-            TextField(
               controller: nameController,
               decoration: InputDecoration(
                 labelText: '이름',
@@ -132,18 +104,18 @@ class _SignupPageState extends State<SignupPage> {
             ),
             SizedBox(height: 16.0),
             TextField(
-              controller: addressController,
-              decoration: InputDecoration(
-                labelText: '주소',
-                hintText: '주소를 입력하세요',
-              ),
-            ),
-            SizedBox(height: 16.0),
-            TextField(
               controller: emailController,
               decoration: InputDecoration(
                 labelText: '이메일',
                 hintText: '이메일 주소를 입력하세요',
+              ),
+            ),
+            SizedBox(height: 16.0),
+            TextField(
+              controller: addressController,
+              decoration: InputDecoration(
+                labelText: '주소',
+                hintText: '주소를 입력하세요',
               ),
             ),
             SizedBox(height: 16.0),
@@ -206,19 +178,12 @@ class _SignupPageState extends State<SignupPage> {
                 },
               ),
             ),
-            SizedBox(height: 16.0),
-            Text('프로필 사진'),
-            ElevatedButton(
-              onPressed: _pickImage,
-              child: Text('사진 선택'),
-            ),
-            if (profilePic != null) Image.file(profilePic!),
             SizedBox(height: 32.0),
             ElevatedButton(
               onPressed: () => _signup(context),
               child: Text('회원가입하기'),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.purple,
+                backgroundColor: Colors.lightBlue,
                 foregroundColor: Colors.white,
                 minimumSize: Size(double.infinity, 50),
                 shape: RoundedRectangleBorder(
