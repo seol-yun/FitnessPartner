@@ -6,20 +6,29 @@
     <title>Simple Chat</title>
   </head>
   <body>
-  <!--편의성 업데이트! html 만들 때 추가요망-->
-  <a href="/login.html" class="button">로그인</a>
-  <a href="/signupForm.html" class="button">회원가입</a>
-  <a href="/memberInfo.html" class="button">회원정보</a>
-  <a href="/partner.html" class="button">파트너정보</a>
-  <a href="/friend.html" class="button">친구목록</a>
-  <a href="/block.html" class="button">차단목록</a>
-  <a href="/chat.html" class="button">채팅</a>
-  <a href="/chatRooms.html" class="button">채팅룸</a>
+    <!--편의성 업데이트! html 만들 때 추가요망-->
+    <a href="/login.html" class="button">로그인</a>
+    <a href="/signupForm.html" class="button">회원가입</a>
+    <a href="/memberInfo.html" class="button">회원정보</a>
+    <a href="/partner.html" class="button">파트너정보</a>
+    <a href="/friend.html" class="button">친구목록</a>
+    <a href="/block.html" class="button">차단목록</a>
+    <a href="/chat.html" class="button">채팅</a>
+    <a href="/chatRooms.html" class="button">채팅룸</a>
 
-  <h1>Simple Chat</h1>
-    <div id="chat-box"></div>
+    <h1>Simple Chat</h1>
+    <div
+      id="chat-box"
+      style="
+        border: 1px solid #ccc;
+        height: 300px;
+        overflow-y: scroll;
+        padding: 10px;
+      "
+    ></div>
     <input type="text" id="message" placeholder="Type your message" />
     <button onclick="getMyName()">Send</button>
+    <button onclick="confirmLeaveRoom()">나가기</button>
 
     <!-- SockJS 및 Stomp.js 라이브러리 로드 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>
@@ -84,6 +93,40 @@
           })
           .catch((error) => console.error("Error loading messages:", error));
       };
+
+      function confirmLeaveRoom() {
+        const confirmLeave = confirm("정말로 채팅방에서 나가시겠습니까?");
+        if (confirmLeave) {
+          leaveRoom();
+        }
+      }
+
+      function leaveRoom() {
+        fetch("/chat/room/leave", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `roomId=${roomId}`,
+        })
+          .then((response) => {
+            if (response.ok) {
+              alert("채팅방에서 나갔습니다.");
+              window.location.href = "/chatRooms.html";
+            } else {
+              alert("채팅방에서 나가는 데 실패했습니다.");
+            }
+          })
+          .catch((error) => console.error("Error leaving chat room:", error));
+
+        stompClient.send(
+          `/app/send-message/${roomId}`,
+          {},
+          JSON.stringify({
+            content: "나가기@@!235234@@!#121@!#%@^!^$!#%!^$^21",
+          })
+        );
+      }
     </script>
   </body>
 </html>

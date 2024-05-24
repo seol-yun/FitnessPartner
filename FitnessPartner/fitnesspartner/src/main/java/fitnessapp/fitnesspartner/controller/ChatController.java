@@ -42,34 +42,6 @@ public class ChatController {
             }
         }
     }
-//    @MessageMapping("chat/message")
-//    public void message(@Payload ChatMessage message) {
-//        messagingTemplate.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
-//    }
-//
-//    @MessageMapping("/send-message/{roomId}")
-//    public void sendMessage(@DestinationVariable("roomId") String roomId, @Payload Map<String, String> message) {
-//        String content = message.get("content");
-//        if (myName == null) {
-//            throw new IllegalStateException("User name not set");
-//        }
-//
-//        ChatRoom chatRoom = chatRoomRepository.findRoomById(roomId)
-//                .orElseThrow(() -> new IllegalArgumentException("Invalid room ID"));
-//
-//        ChatMessage chatMessage = new ChatMessage();
-//        chatMessage.setRoomId(roomId);
-//        chatMessage.setSender(myName);
-//        chatMessage.setMessage(content);
-//        chatMessage.setTimestamp(LocalDateTime.now());
-//        chatMessageRepository.save(chatMessage);
-//
-//        // Update chatRoom timestamp
-//        chatRoom.setTimestamp(LocalDateTime.now());
-//        chatRoomRepository.save(chatRoom);
-//
-//        messagingTemplate.convertAndSend("/topic/messages/" + roomId, myName + " : " + content);
-//    }
 
     @MessageMapping("chat/message")
     public void message(@Payload ChatMessage message) {
@@ -86,6 +58,19 @@ public class ChatController {
         ChatRoom chatRoom = chatRoomRepository.findRoomById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid room ID"));
 
+        if (content.equals("나가기@@!235234@@!#121@!#%@^!^$!#%!^$^21")) {
+            // Handle exit message
+            content = "("+myName + "님이 채팅에서 나갔습니다.)";
+            ChatMessage chatMessage = new ChatMessage();
+            chatMessage.setRoomId(roomId);
+            chatMessage.setSender(myName);
+            chatMessage.setMessage(content);
+            chatMessage.setTimestamp(LocalDateTime.now());
+            chatMessageRepository.save(chatMessage);
+            messagingTemplate.convertAndSend("/topic/messages/" + roomId,  content);
+            return;
+        }
+
         ChatMessage chatMessage = new ChatMessage();
         chatMessage.setRoomId(roomId);
         chatMessage.setSender(myName);
@@ -99,6 +84,7 @@ public class ChatController {
 
         messagingTemplate.convertAndSend("/topic/messages/" + roomId, myName + " : " + content);
     }
+
 
     @GetMapping("/chat/messages/{roomId}")
     public List<ChatMessage> getMessages(@PathVariable("roomId") String roomId) {

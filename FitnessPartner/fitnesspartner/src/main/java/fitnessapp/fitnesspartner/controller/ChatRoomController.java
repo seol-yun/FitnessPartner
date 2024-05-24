@@ -16,13 +16,23 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomRepository chatRoomRepository;
-    // 모든 채팅방 목록 반환
+    /**
+     * 모든 채팅방 목록 반환
+     * @param request
+     * @return
+     */
     @GetMapping("/rooms")
     @ResponseBody
     public List<ChatRoomDTO> room(HttpServletRequest request) {
         return chatRoomRepository.findAllRoom(request);
     }
-    // 채팅방 생성
+
+    /**
+     * 채팅방 생성
+     * @param request
+     * @param user2
+     * @return
+     */
     @ResponseBody
     @PostMapping("/room")
     public String createRoom(HttpServletRequest request, @RequestParam("user2") String user2) {
@@ -43,4 +53,22 @@ public class ChatRoomController {
 //    public ChatRoom roomInfo(@PathVariable String roomId) {
 //        return chatRoomRepository.findRoomById(roomId);
 //    }
+
+    /**
+     * 채팅방 나가기
+     * @param request
+     * @param roomId
+     * @return
+     */
+    @PostMapping("/room/leave")
+    public String leaveRoom(HttpServletRequest request, @RequestParam("roomId") String roomId) {
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("loginId") != null) {
+            String userId = (String) session.getAttribute("loginId");
+            boolean result = chatRoomRepository.leaveChatRoom(roomId, userId);
+            return result ? "success" : "failure";
+        } else {
+            return "unauthorized";
+        }
+    }
 }

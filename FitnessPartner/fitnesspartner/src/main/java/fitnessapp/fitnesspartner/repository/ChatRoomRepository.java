@@ -21,6 +21,8 @@ public class ChatRoomRepository {
 
     /**
      * 모든 채팅방 조회
+     * @param request
+     * @return
      */
     public List<ChatRoomDTO> findAllRoom(HttpServletRequest request) {
         List<ChatRoomDTO> userChatRooms = new ArrayList<>();
@@ -31,25 +33,35 @@ public class ChatRoomRepository {
             List<ChatRoom> allChatRooms = em.createQuery("SELECT c FROM ChatRoom c", ChatRoom.class).getResultList();
 
             for (ChatRoom chatRoom : allChatRooms) {
-                if (chatRoom.getUser1().equals(currentUserId) || chatRoom.getUser2().equals(currentUserId)) {
-                    Member me, other;
-                    if(chatRoom.getUser1().equals(currentUserId)){
-                        me = memberRepository.findOne(chatRoom.getUser1());
-                        other = memberRepository.findOne(chatRoom.getUser2());
-                    }else{
-                        other = memberRepository.findOne(chatRoom.getUser1());
-                        me = memberRepository.findOne(chatRoom.getUser2());
+                String user1 = chatRoom.getUser1();
+                String user2 = chatRoom.getUser2();
+                Member me = null, other = null;
+
+                if (user1 != null && user1.equals(currentUserId)) {
+                    me = memberRepository.findOne(user1);
+                    if (user2 != null) {
+                        other = memberRepository.findOne(user2);
                     }
-                    ChatRoomDTO chatRoomDTO = new ChatRoomDTO();
-                    chatRoomDTO.setRoomId(chatRoom.getRoomId());
-                    chatRoomDTO.setMyId(me.getId());
-                    chatRoomDTO.setMyName(me.getName());
-                    chatRoomDTO.setOtherId(other.getId());
-                    chatRoomDTO.setOtherName(other.getName());
-                    chatRoomDTO.setTimeStamp(chatRoom.getTimestamp());
-                    userChatRooms.add(chatRoomDTO);
+                } else if (user2 != null && user2.equals(currentUserId)) {
+                    me = memberRepository.findOne(user2);
+                    if (user1 != null) {
+                        other = memberRepository.findOne(user1);
+                    }
+                } else{
+                    continue;
                 }
+
+                // Create ChatRoomDTO
+                ChatRoomDTO chatRoomDTO = new ChatRoomDTO();
+                chatRoomDTO.setRoomId(chatRoom.getRoomId());
+                chatRoomDTO.setMyId(me.getId());
+                chatRoomDTO.setMyName(me.getName());
+                chatRoomDTO.setOtherId(other != null ? other.getId() : null);
+                chatRoomDTO.setOtherName(other != null ? other.getName() : null);
+                chatRoomDTO.setTimeStamp(chatRoom.getTimestamp());
+                userChatRooms.add(chatRoomDTO);
             }
+
             // 최신 순으로 정렬
             Collections.sort(userChatRooms, Comparator.comparing(ChatRoomDTO::getTimeStamp).reversed());
         }
@@ -59,8 +71,11 @@ public class ChatRoomRepository {
 
 
 
+
     /**
      * 채팅방 ID로 특정 채팅방 조회
+     * @param id
+     * @return
      */
     public Optional<ChatRoom> findRoomById(String id) {
         return em.createQuery("SELECT c FROM ChatRoom c WHERE c.roomId = :id", ChatRoom.class)
@@ -104,9 +119,36 @@ public class ChatRoomRepository {
         return chatRoom;
     }
 
-
+    /**
+     * 채팅방 수정 저장
+     * @param chatRoom
+     */
     @Transactional
     public void save(ChatRoom chatRoom) {
         em.merge(chatRoom);
+    }
+
+    /**
+     * 채팅방 나가기(userId가 나감)
+     * @param roomId
+     * @param userId
+     * @return
+     */
+    @Transactional
+    public boolean leaveChatRoom(String roomId, String userId) {
+        ChatRoom chatRoom = findRoomById(roomId).orElse(null);
+        if (chatRoom == null) {
+            return false;
+        }
+        if (chatRoom.getUser1().equals(userId)) {
+            chatRoom.setUser1(null);
+        } else if (chatRoom.getUser2().equals(userId)) {
+            chatRoom.setUser2(null);
+        } else {
+            return false;
+        }
+
+        save(chatRoom);
+        return true;
     }
 }
