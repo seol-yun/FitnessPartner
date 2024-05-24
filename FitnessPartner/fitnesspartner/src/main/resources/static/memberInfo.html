@@ -38,13 +38,13 @@
             document.getElementById("memberId").textContent = data.id;
             document.getElementById("memberName").textContent = data.name;
             document.getElementById("memberEmail").textContent = data.email;
-            <!-- const profilePic = document.getElementById("profilePic");
+            const profilePic = document.getElementById("profilePic");
             // 이미지 경로를 서버에서 가져와 설정합니다.
             profilePic.src = `/api/members/profileImage/${data.id}`;
             profilePic.onerror = function () {
               profilePic.src = ""; // 이미지 없음일 때 빈 src 설정
               profilePic.alt = "이미지 없음"; // 대체 텍스트 설정
-            }; -->
+            };
             sessionStorage.setItem("id", data.id);
           })
           .catch((error) => console.error("Error:", error));

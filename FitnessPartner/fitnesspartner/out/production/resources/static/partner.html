@@ -5,6 +5,15 @@
     <title>파트너 정보</title>
   </head>
   <body>
+    <!--편의성 업데이트! html 만들 때 추가요망-->
+    <a href="/login.html" class="button">로그인</a>
+    <a href="/signupForm.html" class="button">회원가입</a>
+    <a href="/memberInfo.html" class="button">회원정보</a>
+    <a href="/partner.html" class="button">파트너정보</a>
+    <a href="/friend.html" class="button">친구목록</a>
+    <a href="/block.html" class="button">차단목록</a>
+    <a href="/chatRooms.html" class="button">채팅룸</a>
+
     <h2>파트너 정보</h2>
     <ul id="partnerList"></ul>
 
@@ -28,8 +37,15 @@
               const addButton = document.createElement("button");
               addButton.textContent = "친구 추가";
               addButton.addEventListener("click", () => addFriend(member.id));
-
               listItem.appendChild(addButton);
+
+              const blockButton = document.createElement("button");
+              blockButton.textContent = "차단";
+              blockButton.addEventListener("click", () =>
+                blockMember(member.id)
+              );
+              listItem.appendChild(blockButton);
+
               partnerList.appendChild(listItem);
             });
           })
@@ -52,8 +68,36 @@
           .then((response) => {
             if (response.ok) {
               alert("친구 추가 성공!");
+              location.reload();
             } else {
               alert("친구 추가 실패!");
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("친구 추가 중 오류가 발생했습니다.");
+          });
+      }
+
+      function blockMember(blockMemberId) {
+        // 사용자 차단 API 호출
+        const requestBody = {
+          memberId: sessionStorage.getItem("id"),
+          blockMemberId: blockMemberId,
+        };
+        fetch("/api/blocks/addBlock", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        })
+          .then((response) => {
+            if (response.ok) {
+              alert("사용자 차단 성공!");
+              location.reload();
+            } else {
+              alert("사용자 차단 실패!");
             }
           })
           .catch((error) => {

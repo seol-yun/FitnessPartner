@@ -26,6 +26,17 @@ public class FriendController {
     public void addFriend(@RequestBody AddFriendRequest request) {
         friendService.addFriend(request.getMemberId(), request.getFriendMemberId());
     }
+    @DeleteMapping("/delete")
+    public ResponseEntity<Void> deleteFriend(@RequestBody DeleteFriendRequest request, HttpServletRequest servletRequest) {
+        HttpSession session = servletRequest.getSession(false);
+        if (session != null && session.getAttribute("loginId") != null) {
+            String loginId = (String) session.getAttribute("loginId");
+            friendService.deleteFriend(loginId, request.getFriendMemberId());
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
     @GetMapping("/all")
     public ResponseEntity<List<FriendInfoDTO>> getAllFriends(HttpServletRequest request) {
         HttpSession session = request.getSession(false);
@@ -40,6 +51,10 @@ public class FriendController {
     @Getter @Setter
     static class AddFriendRequest {
         private String memberId;
+        private String friendMemberId;
+    }
+    @Getter @Setter
+    static class DeleteFriendRequest {
         private String friendMemberId;
     }
 }

@@ -34,15 +34,11 @@ public class FriendService {
         friendRepository.save(newFriendship);
     }
 
-//    public List<Friend> getAllFriends(String loginId) {
-//        List<Friend> friends = friendRepository.findAllByMemberId(loginId);
-//        for (Friend friend : friends) {
-//            // Member 엔티티 초기화
-//            Hibernate.initialize(friend.getMember());
-//            Hibernate.initialize(friend.getFriendMember());
-//        }
-//        return friends;
-//    }
+    public void deleteFriend(String memberId, String friendId) {
+        Friend friend = friendRepository.findByMemberIdAndFriendId(memberId, friendId)
+                .orElseThrow(() -> new IllegalArgumentException("Friend relationship not found"));
+        friendRepository.delete(friend);
+    }
 
     public List<FriendInfoDTO> getAllFriends(String memberId) {
         return friendRepository.findAllByMemberId(memberId).stream()
