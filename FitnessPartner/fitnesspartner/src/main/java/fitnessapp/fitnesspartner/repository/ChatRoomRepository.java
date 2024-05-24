@@ -70,8 +70,6 @@ public class ChatRoomRepository {
     }
 
 
-
-
     /**
      * 채팅방 ID로 특정 채팅방 조회
      * @param id
@@ -137,12 +135,14 @@ public class ChatRoomRepository {
     @Transactional
     public boolean leaveChatRoom(String roomId, String userId) {
         ChatRoom chatRoom = findRoomById(roomId).orElse(null);
+        String user1 = chatRoom.getUser1();
+        String user2 = chatRoom.getUser2();
         if (chatRoom == null) {
             return false;
         }
-        if (chatRoom.getUser1().equals(userId)) {
+        if (user1!=null && user1.equals(userId)) {
             chatRoom.setUser1(null);
-        } else if (chatRoom.getUser2().equals(userId)) {
+        } else if (user2!=null && user2.equals(userId)) {
             chatRoom.setUser2(null);
         } else {
             return false;
