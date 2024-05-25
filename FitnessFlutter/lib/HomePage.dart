@@ -102,14 +102,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Center(
-          child: Image.asset(
-            'assets/Logo.png',
-            height: kToolbarHeight - 8, // AppBar의 높이에 맞게 조정
-          ),
-        ),
-      ),
       body: SingleChildScrollView(
         child: Column(
           children: [
@@ -219,38 +211,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '홈',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: '운동 파트너 매칭',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: '전문가 매칭',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: '채팅',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '내 정보',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        selectedIconTheme: IconThemeData(color: Colors.black, opacity: 1.0),
-        unselectedIconTheme: IconThemeData(color: Colors.grey, opacity: 0.5),
-        onTap: _onItemTapped,
       ),
     );
   }

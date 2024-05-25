@@ -51,50 +51,25 @@ class _ExpertMatchingPageState extends State<ExpertMatchingPage> {
     });
   }
 
-  void _onItemTapped(int index) {
-    if (index == 0) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    } else if (index == 1) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => PartnerMatchingPage()),
-      );
-    } else if (index == 2) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => ExpertMatchingPage()),
-      );
-    }
-    // 다른 인덱스에 대해서도 페이지 이동을 설정할 수 있습니다.
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        flexibleSpace: Center(
-          child: Image.asset(
-            'assets/Logo.png',
-            height: kToolbarHeight - 8, // AppBar의 높이에 맞게 조정
-          ),
-        ),
-        actions: [
-          PopupMenuButton<String>(
-            onSelected: _filterExperts,
-            itemBuilder: (BuildContext context) {
-              return {'exerciseType', 'distance'}.map((String choice) {
-                return PopupMenuItem<String>(
-                  value: choice,
-                  child: Text(choice == 'exerciseType' ? '선호 운동 순' : '거리 순'),
-                );
-              }).toList();
-            },
-          ),
-        ],
-      ),
+      // appBar: AppBar(
+      //   title: Text('전문가 매칭'),
+      //   actions: [
+      //     PopupMenuButton<String>(
+      //       onSelected: _filterExperts,
+      //       itemBuilder: (BuildContext context) {
+      //         return {'exerciseType', 'distance'}.map((String choice) {
+      //           return PopupMenuItem<String>(
+      //             value: choice,
+      //             child: Text(choice == 'exerciseType' ? '선호 운동 순' : '거리 순'),
+      //           );
+      //         }).toList();
+      //       },
+      //     ),
+      //   ],
+      // ),
       body: ListView.builder(
         itemCount: experts.length,
         itemBuilder: (context, index) {
@@ -105,7 +80,14 @@ class _ExpertMatchingPageState extends State<ExpertMatchingPage> {
                 backgroundImage: NetworkImage('http://localhost:8080/api/members/profileImage/${expert['id']}'),
               ),
               title: Text(expert['name']),
-              subtitle: Text('운동: ${expert['exerciseType']}\n성별: ${expert['gender']}\n주소: ${expert['address']}'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('운동: ${expert['exerciseType']}'),
+                  Text('성별: ${expert['gender']}'),
+                  Text('주소: ${expert['address']}'),
+                ],
+              ),
               trailing: Icon(Icons.arrow_forward),
               onTap: () {
                 Navigator.push(
@@ -118,38 +100,6 @@ class _ExpertMatchingPageState extends State<ExpertMatchingPage> {
             ),
           );
         },
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '홈',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.group),
-            label: '운동 파트너 매칭',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.school),
-            label: '전문가 매칭',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: '채팅',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '내 정보',
-          ),
-        ],
-        currentIndex: 2,
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        showSelectedLabels: true,
-        showUnselectedLabels: true,
-        selectedIconTheme: IconThemeData(color: Colors.black, opacity: 1.0),
-        unselectedIconTheme: IconThemeData(color: Colors.grey, opacity: 0.5),
-        onTap: _onItemTapped,
       ),
     );
   }
