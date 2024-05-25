@@ -18,6 +18,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => LoginPage(),
         '/signup': (context) => SignupPage(),  // 회원가입 페이지 라우트 추가
+        '/login': (context) => LoginPage(),
       },
     );
   }

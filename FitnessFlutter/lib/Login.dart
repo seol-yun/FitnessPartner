@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'HomePage.dart';  // 홈 페이지를 임포트
-import 'MainPage.dart';  // 홈 페이지를 임포트
+import 'MainPage.dart';  // 메인 페이지를 임포트
 
 class LoginPage extends StatelessWidget {
   final TextEditingController idController = TextEditingController();
