@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--편의성 업데이트! html 만들 때 추가요망-->
+<a href="/login.html" class="button">로그인</a>
+<a href="/signupForm.html" class="button">회원가입</a>
+<a href="/memberInfo.html" class="button">회원정보</a>
+<a href="/partner.html" class="button">파트너정보</a>
+<a href="/friend.html" class="button">친구목록</a>
+<a href="/block.html" class="button">차단목록</a>
+<a href="/chat.html" class="button">채팅</a>
+<a href="/chatRooms.html" class="button">채팅룸</a>
+
+<h2>정보 수정</h2>
+<form id="updateMemberInfo">
+    <label for="id">아이디:</label><br/>
+    <input disabled type="text" id="id" name="id"/><br/>
+    <label for="password">비밀번호:</label><br/>
+    <input type="text" id="password" name="password"/><br/>
+    <label for="name">이름:</label><br/>
+    <input type="text" id="name" name="name"/><br/>
+    <label for="email">이메일:</label><br/>
+    <input type="text" id="email" name="email"/><br/><br/>
+    <label for="address">주소:</label><br/>
+    <input type="text" id="address" name="address"/><br/><br/>
+    <label>성별:</label><br/>
+    <input type="radio" id="male" name="gender" value="male"/>
+    <label for="male">남성</label><br/>
+    <input type="radio" id="female" name="gender" value="female"/>
+    <label for="female">여성</label><br/><br/>
+    <label for="exerciseType">선호운동:</label><br/>
+    <input type="text" id="exerciseType" name="exerciseType"/><br/><br/>
+    <label>트레이너 여부:</label><br/>
+    <input type="radio" id="trainer" name="isTrainer" value="True"/>
+    <label for="trainer">운동전문가</label><br/>
+    <input type="radio" id="generalUser" name="isTrainer" value="False"/>
+    <label for="generalUser">일반사용자</label><br/><br/>
+    <button type="submit">수정</button>
+</form>
+<script>
+    fetchMemberInfo();
+
+    function fetchMemberInfo() {
+        // 서버에서 로그인 정보를 받아옵니다.
+        fetch("/api/members/info")
+            .then((response) => response.json())
+            .then((memberInfo) => {
+                // alert(memberInfo);
+                console.log(memberInfo);
+                console.log(memberInfo.trainer);
+
+                document.getElementById("id").value = memberInfo.id;
+                document.getElementById("password").value = memberInfo.pw;
+                document.getElementById("name").value = memberInfo.name;
+                document.getElementById("email").value = memberInfo.email;
+                document.getElementById("address").value = memberInfo.address;
+
+                if (memberInfo.gender === "male") {
+                    document.getElementById("male").checked = true;
+                } else if (memberInfo.gender === "female") {
+                    document.getElementById("female").checked = true;
+                }
+
+                document.getElementById("exerciseType").value = memberInfo.exerciseType;
+
+                if (memberInfo.trainer === true) {
+                    document.getElementById("trainer").checked = true;
+                } else if (memberInfo.trainer === false) {
+                    document.getElementById("generalUser").checked = true;
+                }
+
+                sessionStorage.setItem("id", memberInfo.id);
+            })
+            .catch((error) => console.error("Error:", error));
+    }
+
+    function getSelectedRadio(name) {
+        const values = document.getElementsByName(name);
+        for (let i = 0; i < values.length; i++) {
+            if (values[i].checked) {
+                return values[i].value;
+            }
+        }
+        alert(name + "을 선택해주세요.");
+        return null;
+    }
+
+    document
+        .getElementById("updateMemberInfo")
+        .addEventListener("submit", function (event) {
+            event.preventDefault();
+
+            var id = document.getElementById("id").value;
+            var password = document.getElementById("password").value;
+            var name = document.getElementById("name").value;
+            var email = document.getElementById("email").value;
+            var address = document.getElementById("address").value;
+            var gender = getSelectedRadio("gender");
+            var exerciseType = document.getElementById("exerciseType").value;
+            var isTrainer = getSelectedRadio("isTrainer");
+
+            var formData = new FormData();
+            formData.append("id", id);
+            formData.append("pw", password);
+            formData.append("name", name);
+            formData.append("email", email);
+            formData.append("address", address);
+            formData.append("gender", gender);
+            formData.append("exerciseType", exerciseType);
+            formData.append("isTrainer", isTrainer);
+
+            fetch("/api/members/update", {
+                method: "POST",
+                body: formData, // FormData 전송
+            })
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error("update failed");
+                    }
+                    return response.text();
+                })
+                .then((data) => {
+                    alert(data); // Signup 성공 메시지 표시
+                    window.location.href = "/memberInfo.html"; // 회원정보 페이지로 이동
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    alert("update failed");
+                });
+        });
+</script>
+</body>
+</html>

@@ -31,4 +31,5 @@ public class Member {
         this.exerciseType = exerciseType;
         this.isTrainer = isTrainer;
     }
+    
 }

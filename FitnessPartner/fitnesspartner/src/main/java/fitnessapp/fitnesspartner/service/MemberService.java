@@ -117,4 +117,28 @@ public class MemberService {
         return userData.getId();
     }
 
+    /**
+     * 사용자 정보 수정
+     */
+    public Member update(Member member) {
+        Member existingMember = memberRepository.findOne(member.getId());
+        if (existingMember != null) {
+            // 필요한 필드 업데이트
+            existingMember.setPw(member.getPw());
+            existingMember.setName(member.getName());
+            existingMember.setEmail(member.getEmail());
+            existingMember.setAddress(member.getAddress());
+            existingMember.setGender(member.getGender());
+            existingMember.setExerciseType(member.getExerciseType());
+            existingMember.setTrainer(member.isTrainer());
+
+            memberRepository.save(existingMember);
+            // 저장 후 반환
+            return existingMember;
+        } else {
+            // 회원이 존재하지 않는 경우 예외 처리
+            throw new IllegalArgumentException("회원 정보를 찾을 수 없습니다.");
+        }
+    }
+
 }

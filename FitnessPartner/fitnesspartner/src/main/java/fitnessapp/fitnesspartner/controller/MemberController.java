@@ -155,6 +155,15 @@ public class MemberController {
         return "운동정보추가 성공!";
     }
 
+    @PostMapping("/update")
+    public String update(@RequestParam("id") String id, @RequestParam("pw") String pw, @RequestParam("name") String name,
+                         @RequestParam("email") String email, @RequestParam("address") String address, @RequestParam("gender") String gender,
+                         @RequestParam("exerciseType") String exerciseType, @RequestParam("isTrainer") boolean isTrainer) {
+
+        memberService.update(new Member(id, pw, name, email, address, gender, exerciseType, isTrainer));
+        return "수정 성공!";
+    }
+
     // 이름(name)과 이메일(email)만 가지는 MemberInfo 클래스 정의
     @Setter
     @Getter
