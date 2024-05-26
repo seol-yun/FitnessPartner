@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
+import 'package:universal_io/io.dart';
+import 'dart:convert';
 
 class SignupPage extends StatefulWidget {
   @override
@@ -104,6 +107,97 @@ class _SignupPageState extends State<SignupPage> {
     }
   }
 
+  Future<void> setAddressFromLocation() async {
+    if (Platform.isAndroid || Platform.isIOS) {
+      await _getAddressFromGeolocator();
+    } else {
+      await _getAddressFromIP();
+    }
+  }
+
+  Future<void> _getAddressFromGeolocator() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      return Future.error('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        return Future.error('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      return Future.error('Location permissions are permanently denied, we cannot request permissions.');
+    }
+
+    try {
+      Position position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.high);
+      List<Placemark> placemarks = await placemarkFromCoordinates(position.latitude, position.longitude);
+      Placemark place = placemarks[0];
+      String address = '${place.locality}, ${place.postalCode}, ${place.country}';
+      addressController.text = address;
+    } catch (e) {
+      print(e);
+      // 위치를 가져오지 못했을 때의 처리
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('에러'),
+            content: Text('현재 위치를 가져오지 못했습니다.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
+  Future<void> _getAddressFromIP() async {
+    try {
+      var response = await http.get(Uri.parse('http://ip-api.com/json'));
+      if (response.statusCode == 200) {
+        var data = jsonDecode(response.body);
+        String address = '${data['city']}, ${data['zip']}, ${data['country']}';
+        addressController.text = address;
+      } else {
+        throw Exception('Failed to get location from IP');
+      }
+    } catch (e) {
+      print(e);
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('에러'),
+            content: Text('현재 위치를 가져오지 못했습니다.'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text('확인'),
+              ),
+            ],
+          );
+        },
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -133,9 +227,21 @@ class _SignupPageState extends State<SignupPage> {
                 controller: emailController,
                 decoration: InputDecoration(labelText: '이메일'),
               ),
-              TextField(
-                controller: addressController,
-                decoration: InputDecoration(labelText: '주소'),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: addressController,
+                      decoration: InputDecoration(labelText: '주소'),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.location_on),
+                    onPressed: () {
+                      setAddressFromLocation();
+                    },
+                  ),
+                ],
               ),
               TextField(
                 controller: exerciseTypeController,

@@ -1,3 +1,4 @@
+import 'package:contact/MemberInfoPage.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:convert';
@@ -94,6 +95,16 @@ class _HomePageState extends State<HomePage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => ExpertMatchingPage()),
+      );
+    }  else if (index == 3) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => ExpertMatchingPage()),
+      );
+    } else if (index == 4) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => MemberInfoPage()),
       );
     }
     // 다른 인덱스에 대해서도 페이지 이동을 설정할 수 있습니다.
