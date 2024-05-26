@@ -23,9 +23,9 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
 
   Future<void> fetchMemberInfo() async {
     try {
-      final response = await http.get(Uri.parse("/api/members/info"));
+      final response = await http.get(Uri.parse("http://localhost:8080/api/members/info"));
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = json.decode(utf8.decode(response.bodyBytes));
         setState(() {
           memberId = data['id'];
           memberName = data['name'];
@@ -66,7 +66,7 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    backgroundImage: AssetImage('assets/profile.png'), // Add your profile image asset here
+                    // backgroundImage: AssetImage('assets/profile.png'), // Add your profile image asset here
                   ),
                   SizedBox(height: 8.0),
                   Text(
@@ -154,31 +154,6 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '홈',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center),
-            label: '운동 파트너 매칭',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.location_on),
-            label: '전문가 매칭',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: '채팅',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '내 정보',
-          ),
-        ],
-        selectedItemColor: Colors.amber[800],
       ),
     );
   }

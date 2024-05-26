@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'ChatRoomListPage.dart';
 import 'HomePage.dart';
 import 'ExpertMatchingPage.dart';
+import 'MemberInfoPage.dart';
 import 'PartnerMatchingPage.dart';
 
 class MainPage extends StatefulWidget {
@@ -15,6 +17,8 @@ class _MainPageState extends State<MainPage> {
     HomePage(),
     PartnerMatchingPage(),
     ExpertMatchingPage(),
+    ChatRoomListPage(),
+    MemberInfoPage(),
   ];
 
   void _onItemTapped(int index) {
