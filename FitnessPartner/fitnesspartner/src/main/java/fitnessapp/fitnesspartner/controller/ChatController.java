@@ -1,14 +1,14 @@
 package fitnessapp.fitnesspartner.controller;
 
+import fitnessapp.fitnesspartner.config.JwtUtil;
 import fitnessapp.fitnesspartner.domain.ChatRoom;
-import fitnessapp.fitnesspartner.domain.Member;
 import fitnessapp.fitnesspartner.domain.ChatMessage;
+import fitnessapp.fitnesspartner.domain.Member;
 import fitnessapp.fitnesspartner.dto.ChatRoomDTO;
 import fitnessapp.fitnesspartner.repository.ChatMessageRepository;
 import fitnessapp.fitnesspartner.repository.ChatRoomRepository;
 import fitnessapp.fitnesspartner.repository.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -31,12 +31,13 @@ public class ChatController {
     private final ChatRoomRepository chatRoomRepository;
     private final MemberRepository memberRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final JwtUtil jwtUtil;
 
     @GetMapping("/chat/room/{roomId}/details")
     public ChatRoomDTO getChatRoomDetails(HttpServletRequest request, @PathVariable("roomId") String roomId) {
-        HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute("loginId") != null) {
-            String loginId = (String) session.getAttribute("loginId");
+        String token = extractToken(request);
+        if (token != null && jwtUtil.validateToken(token, jwtUtil.extractUsername(token))) {
+            String loginId = jwtUtil.extractUsername(token);
 
             Optional<ChatRoom> optionalChatRoom = chatRoomRepository.findRoomById(roomId);
             if (optionalChatRoom.isPresent()) {
@@ -99,14 +100,18 @@ public class ChatController {
         messagingTemplate.convertAndSend("/topic/messages/" + roomId, responseMessage);
     }
 
-
-
-
-
     @GetMapping("/chat/messages/{roomId}")
     public List<ChatMessage> getMessages(@PathVariable("roomId") String roomId) {
         chatRoomRepository.findRoomById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid room ID"));
         return chatMessageRepository.findByRoomIdOrderByTimestampAsc(roomId);
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 }

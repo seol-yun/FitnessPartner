@@ -1,11 +1,13 @@
 package fitnessapp.fitnesspartner.controller;
 
+import fitnessapp.fitnesspartner.config.JwtUtil;
 import fitnessapp.fitnesspartner.domain.ChatRoom;
 import fitnessapp.fitnesspartner.dto.ChatRoomDTO;
 import fitnessapp.fitnesspartner.repository.ChatRoomRepository;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +18,8 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomRepository chatRoomRepository;
+    private final JwtUtil jwtUtil;
+
     /**
      * 모든 채팅방 목록 반환
      * @param request
@@ -23,8 +27,14 @@ public class ChatRoomController {
      */
     @GetMapping("/rooms")
     @ResponseBody
-    public List<ChatRoomDTO> room(HttpServletRequest request) {
-        return chatRoomRepository.findAllRoom(request);
+    public ResponseEntity<List<ChatRoomDTO>> room(HttpServletRequest request) {
+        String token = extractToken(request);
+        if (token != null && jwtUtil.validateToken(token, jwtUtil.extractUsername(token))) {
+            List<ChatRoomDTO> rooms = chatRoomRepository.findAllRoom(jwtUtil.extractUsername(token));
+            return ResponseEntity.ok().body(rooms);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     /**
@@ -35,24 +45,16 @@ public class ChatRoomController {
      */
     @ResponseBody
     @PostMapping("/room")
-    public String createRoom(HttpServletRequest request, @RequestParam("user2") String user2) {
-        HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute("loginId") != null) {
-            String user1 = (String) session.getAttribute("loginId");
+    public ResponseEntity<String> createRoom(HttpServletRequest request, @RequestParam("user2") String user2) {
+        String token = extractToken(request);
+        if (token != null && jwtUtil.validateToken(token, jwtUtil.extractUsername(token))) {
+            String user1 = jwtUtil.extractUsername(token);
             ChatRoom newRoom = chatRoomRepository.createChatRoom(user1, user2);
-            System.out.println(newRoom.getRoomId());
-            return newRoom.getRoomId(); // 생성된 채팅방의 ID 반환
+            return ResponseEntity.ok(newRoom.getRoomId()); // 생성된 채팅방의 ID 반환
         } else {
-            return null;
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("unauthorized");
         }
     }
-
-//    // 특정 채팅방 조회
-//    @GetMapping("/room/{roomId}")
-//    @ResponseBody
-//    public ChatRoom roomInfo(@PathVariable String roomId) {
-//        return chatRoomRepository.findRoomById(roomId);
-//    }
 
     /**
      * 채팅방 나가기
@@ -61,14 +63,22 @@ public class ChatRoomController {
      * @return
      */
     @PostMapping("/room/leave")
-    public String leaveRoom(HttpServletRequest request, @RequestParam("roomId") String roomId) {
-        HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute("loginId") != null) {
-            String userId = (String) session.getAttribute("loginId");
+    public ResponseEntity<String> leaveRoom(HttpServletRequest request, @RequestParam("roomId") String roomId) {
+        String token = extractToken(request);
+        if (token != null && jwtUtil.validateToken(token, jwtUtil.extractUsername(token))) {
+            String userId = jwtUtil.extractUsername(token);
             boolean result = chatRoomRepository.leaveChatRoom(roomId, userId);
-            return result ? "success" : "failure";
+            return result ? ResponseEntity.ok("success") : ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("failure");
         } else {
-            return "unauthorized";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("unauthorized");
         }
+    }
+
+    private String extractToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
     }
 }
