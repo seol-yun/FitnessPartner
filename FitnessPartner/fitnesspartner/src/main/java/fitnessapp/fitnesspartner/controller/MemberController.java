@@ -1,12 +1,9 @@
 package fitnessapp.fitnesspartner.controller;
 
 import fitnessapp.fitnesspartner.domain.Member;
-import fitnessapp.fitnesspartner.domain.UserData;
 import fitnessapp.fitnesspartner.service.BlockService;
 import fitnessapp.fitnesspartner.service.MemberService;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +20,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -120,7 +116,51 @@ public class MemberController {
             List<MemberInfo> memberInfos = new ArrayList<>();
             for (Member member : allMembers) {
                 if (!blockMembersIds.contains(member.getId())) {
-                    memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getEmail()));
+                    memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getEmail(), member.getGender()));
+                }
+            }
+
+            return ResponseEntity.ok().body(memberInfos);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @GetMapping("/generalUsers")
+    public ResponseEntity<List<MemberInfo>> getGeneralMembers(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("loginId") != null) {
+            String loginId = (String) session.getAttribute("loginId");
+            List<Member> allMembers = memberService.findGeneralMembers(loginId);
+
+            //차단한 사용자는 제외하고 보여줌.
+            List<String> blockMembersIds = blockService.findAllBlockMembers(loginId);
+            List<MemberInfo> memberInfos = new ArrayList<>();
+            for (Member member : allMembers) {
+                if (!blockMembersIds.contains(member.getId())) {
+                    memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getEmail(), member.getGender()));
+                }
+            }
+
+            return ResponseEntity.ok().body(memberInfos);
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+    }
+
+    @GetMapping("/trainerUsers")
+    public ResponseEntity<List<MemberInfo>> getTrainerMembers(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session != null && session.getAttribute("loginId") != null) {
+            String loginId = (String) session.getAttribute("loginId");
+            List<Member> allMembers = memberService.findTrainerMembers(loginId);
+
+            //차단한 사용자는 제외하고 보여줌.
+            List<String> blockMembersIds = blockService.findAllBlockMembers(loginId);
+            List<MemberInfo> memberInfos = new ArrayList<>();
+            for (Member member : allMembers) {
+                if (!blockMembersIds.contains(member.getId())) {
+                    memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getExerciseType(), member.getGender()));
                 }
             }
 
@@ -192,13 +232,15 @@ public class MemberController {
     class MemberInfo {
         private String id;
         private String name;
-        private String email;
+        private String exerciseType;
+        private String gender;
 
         // 생성자, Getter, Setter
-        public MemberInfo(String id, String name, String email) {
+        public MemberInfo(String id, String name, String exerciseType, String gender) {
             this.id = id;
             this.name = name;
-            this.email = email;
+            this.exerciseType = exerciseType;
+            this.gender = gender;
         }
     }
 
