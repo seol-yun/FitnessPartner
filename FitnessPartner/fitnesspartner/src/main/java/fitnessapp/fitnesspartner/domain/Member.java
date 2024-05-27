@@ -4,12 +4,15 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
-@Getter @Setter
+@Getter
+@Setter
 public class Member {
 
     @Id
-    @Column(name="member_id")
+    @Column(name = "member_id")
     private String id;
     private String pw;
     private String name;
@@ -19,8 +22,15 @@ public class Member {
     private String exerciseType;
     private boolean isTrainer;
 
+//    @OneToMany(mappedBy = "member")
+//    private List<Review> reviews;
+//
+//    @OneToMany(mappedBy = "member")
+//    private List<UserData> userDatas;
+
     public Member() {
     }
+
     public Member(String id, String pw, String name, String email, String address, String gender, String exerciseType, boolean isTrainer) {
         this.id = id;
         this.pw = pw;
@@ -31,5 +41,5 @@ public class Member {
         this.exerciseType = exerciseType;
         this.isTrainer = isTrainer;
     }
-    
+
 }

@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -19,15 +20,14 @@ public class UserData {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
-    private int height;
-    private int weight;
 
-    @Column(name = "exercise_type") //진행한 운동 종류
-    private String exerciseType;
-    @Column(name = "duration_minutes") //운동 수행 시간을 분 단위로 표기
-    private int durationMinutes;
-    @Column(name = "date")  //기록한 날짜
-    private LocalDate date;
+    private int height; //키
+    private int weight; //몸무게
+
+    private String exerciseType; //진행한 운동 종류
+    private int durationMinutes; //운동 수행 시간을 분 단위로 표기
+    private LocalDate createdDate; //신체 정보면 등록한 날짜
+                                   //운동 정보면 운동을 진행한 날짜
 
     protected UserData() {}
 
@@ -38,6 +38,6 @@ public class UserData {
         this.weight = weight;
         this.exerciseType = exerciseType;
         this.durationMinutes = durationMinutes;
-        this.date = date;
+        this.createdDate = date;
     }
 }
