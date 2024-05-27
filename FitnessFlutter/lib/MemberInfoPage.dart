@@ -2,7 +2,13 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'Login.dart';
+
 class MemberInfoPage extends StatefulWidget {
+  final String token;
+
+  MemberInfoPage({required this.token});
+
   @override
   _MemberInfoPageState createState() => _MemberInfoPageState();
 }
@@ -23,7 +29,13 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
 
   Future<void> fetchMemberInfo() async {
     try {
-      final response = await http.get(Uri.parse("http://localhost:8080/api/members/info"));
+      final response = await http.get(
+        Uri.parse("http://localhost:8080/api/members/info"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.token}',
+        },
+      );
       if (response.statusCode == 200) {
         final data = json.decode(utf8.decode(response.bodyBytes));
         setState(() {
@@ -42,20 +54,34 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
     }
   }
 
+  Future<void> logout() async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:8080/api/members/logout'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.token}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('로그아웃 성공!')));
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()), // 로그아웃 후 로그인 페이지로 이동
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('로그아웃 실패!')));
+      }
+    } catch (error) {
+      print('Error: $error');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('로그아웃 중 오류가 발생했습니다.')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('회원 정보'),
-      //   actions: [
-      //     IconButton(
-      //       icon: Icon(Icons.settings),
-      //       onPressed: () {
-      //         // Navigate to profile settings
-      //       },
-      //     ),
-      //   ],
-      // ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -141,9 +167,7 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
             SizedBox(height: 32.0),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  // Implement logout functionality
-                },
+                onPressed: logout,
                 child: Text('로그 아웃'),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,

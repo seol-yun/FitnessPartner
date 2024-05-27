@@ -1,105 +1,125 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'HomePage.dart';
-import 'ExpertMatchingPage.dart';
-import 'ProfilePage.dart'; // 프로필 페이지 임포트
 
 class PartnerMatchingPage extends StatefulWidget {
+  final String token;
+
+  PartnerMatchingPage({required this.token});
+
   @override
   _PartnerMatchingPageState createState() => _PartnerMatchingPageState();
 }
 
 class _PartnerMatchingPageState extends State<PartnerMatchingPage> {
   List<dynamic> partners = [];
-  String filter = 'exerciseType';
 
   @override
   void initState() {
     super.initState();
-    fetchPartners();
+    fetchAllMembers();
   }
 
-  Future<void> fetchPartners() async {
+  Future<void> fetchAllMembers() async {
     try {
-      final response = await http.get(Uri.parse("http://localhost:8080/api/members/info"));
-
+      final response = await http.get(
+        Uri.parse('http://localhost:8080/api/members/all'),
+        headers: {'Authorization': 'Bearer ${widget.token}'},
+      );
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
         setState(() {
-          partners = data.where((partner) => !partner['trainer']).toList();
+          partners = json.decode(utf8.decode(response.bodyBytes));
         });
       } else {
-        throw Exception('Failed to load partners');
+        print('Failed to load members');
       }
-    } catch (error) {
-      print('Error: $error');
+    } catch (e) {
+      print('Error: $e');
     }
   }
 
-  void _filterPartners(String filter) {
-    setState(() {
-      this.filter = filter;
-      partners.sort((a, b) {
-        if (filter == 'exerciseType') {
-          return a['exerciseType'].compareTo(b['exerciseType']);
-        } else {
-          // 거리 순으로 정렬하는 로직 추가 필요
-          return 0;
-        }
-      });
+  Future<void> addFriend(String friendId) async {
+    final requestBody = json.encode({
+      'friendMemberId': friendId,
     });
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:8080/api/friends/add'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.token}',
+        },
+        body: requestBody,
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('친구 추가 성공!')));
+        fetchAllMembers();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('친구 추가 실패!')));
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('친구 추가 중 오류가 발생했습니다.')));
+    }
+  }
+
+  Future<void> blockMember(String blockMemberId) async {
+    final requestBody = json.encode({
+      'blockMemberId': blockMemberId,
+    });
+
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:8080/api/blocks/addBlock'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.token}',
+        },
+        body: requestBody,
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('사용자 차단 성공!')));
+        fetchAllMembers();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('사용자 차단 실패!')));
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('사용자 차단 중 오류가 발생했습니다.')));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   flexibleSpace: Center(
-      //     child: Image.asset(
-      //       'assets/Logo.png',
-      //       height: kToolbarHeight - 8, // AppBar의 높이에 맞게 조정
-      //     ),
-      //   ),
-      //   actions: [
-      //     PopupMenuButton<String>(
-      //       onSelected: _filterPartners,
-      //       itemBuilder: (BuildContext context) {
-      //         return {'exerciseType', 'distance'}.map((String choice) {
-      //           return PopupMenuItem<String>(
-      //             value: choice,
-      //             child: Text(choice == 'exerciseType' ? '선호 운동 순' : '거리 순'),
-      //           );
-      //         }).toList();
-      //       },
-      //     ),
-      //   ],
-      // ),
+      appBar: AppBar(
+        title: Text('파트너 정보'),
+      ),
       body: ListView.builder(
         itemCount: partners.length,
         itemBuilder: (context, index) {
-          final partner = partners[index];
-          return Card(
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundImage: NetworkImage('http://localhost:8080/api/members/profileImage/${partner['id']}'),
-              ),
-              title: Text(partner['name']),
-              subtitle: Text('운동: ${partner['exerciseType']}\n성별: ${partner['gender']}\n주소: ${partner['address']}'),
-              trailing: Icon(Icons.arrow_forward),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProfilePage(partner: partner),
-                  ),
-                );
-              },
+          final member = partners[index];
+          return ListTile(
+            title: Text('${member['name']} (${member['email']})'),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.person_add),
+                  onPressed: () => addFriend(member['id']),
+                ),
+                IconButton(
+                  icon: Icon(Icons.block),
+                  onPressed: () => blockMember(member['id']),
+                ),
+              ],
             ),
           );
         },
       ),
-
     );
   }
 }

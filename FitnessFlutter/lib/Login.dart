@@ -21,18 +21,19 @@ class LoginPage extends StatelessWidget {
       );
 
       if (response.statusCode == 200) {
-        final data = response.body;
-        if (data == '0') {
+        final Map<String, dynamic> data = json.decode(response.body);
+        if (data['token'] == null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('로그인 실패')),
           );
         } else {
+          String token = data['token'];
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('로그인 성공!')),
           );
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => MainPage()),
+            MaterialPageRoute(builder: (context) => MainPage(token: token)),
           );
         }
       } else {
@@ -85,25 +86,31 @@ class LoginPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        TextButton(
-                          onPressed: () {
-                            // 아이디 찾기
-                          },
-                          child: Text('아이디 찾기'),
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () {
+                              // 아이디 찾기
+                            },
+                            child: Text('아이디 찾기'),
+                          ),
                         ),
                         Text('|'),
-                        TextButton(
-                          onPressed: () {
-                            // 비밀번호 찾기
-                          },
-                          child: Text('비밀번호 찾기'),
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () {
+                              // 비밀번호 찾기
+                            },
+                            child: Text('비밀번호 찾기'),
+                          ),
                         ),
                         Text('|'),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/signup');
-                          },
-                          child: Text('회원가입'),
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/signup');
+                            },
+                            child: Text('회원가입'),
+                          ),
                         ),
                       ],
                     ),

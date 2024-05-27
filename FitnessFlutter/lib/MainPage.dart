@@ -6,6 +6,10 @@ import 'MemberInfoPage.dart';
 import 'PartnerMatchingPage.dart';
 
 class MainPage extends StatefulWidget {
+  final String token;
+
+  MainPage({required this.token});
+
   @override
   _MainPageState createState() => _MainPageState();
 }
@@ -13,13 +17,19 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    HomePage(),
-    PartnerMatchingPage(),
-    ExpertMatchingPage(),
-    ChatRoomListPage(),
-    MemberInfoPage(),
-  ];
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      HomePage(token: widget.token),
+      PartnerMatchingPage(token: widget.token),
+      PartnerMatchingPage(token: widget.token),
+      ChatRoomListPage(token: widget.token),
+      MemberInfoPage(token: widget.token),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {

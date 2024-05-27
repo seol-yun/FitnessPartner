@@ -2,14 +2,26 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'ChatPage.dart';
+
 class ChatRoomListPage extends StatefulWidget {
+  final String token;
+
+  ChatRoomListPage({required this.token});
+
   @override
   _ChatRoomListPageState createState() => _ChatRoomListPageState();
 }
 
 class _ChatRoomListPageState extends State<ChatRoomListPage> {
   Future<List<ChatRoom>> fetchChatRooms() async {
-    final response = await http.get(Uri.parse('http://localhost:8080/chat/rooms'));
+    final response = await http.get(
+      Uri.parse('http://localhost:8080/chat/rooms'),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ${widget.token}',
+      },
+    );
 
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes)); // utf8.decode 추가
@@ -18,7 +30,6 @@ class _ChatRoomListPageState extends State<ChatRoomListPage> {
       throw Exception('Failed to load chat rooms');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +58,10 @@ class _ChatRoomListPageState extends State<ChatRoomListPage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ChatPage(roomId: chatRoom.roomId),
+                          builder: (context) => ChatPage(
+                            roomId: chatRoom.roomId,
+                            token: widget.token, // Pass the token to the ChatPage
+                          ),
                         ),
                       );
                     },
@@ -73,24 +87,6 @@ class ChatRoom {
     return ChatRoom(
       roomId: json['roomId'],
       otherName: json['otherName'] ?? '(알 수 없음)', // Default to "(알 수 없음)" if otherName is null
-    );
-  }
-}
-
-class ChatPage extends StatelessWidget {
-  final String roomId;
-
-  ChatPage({required this.roomId});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Chat Room $roomId'),
-      ),
-      body: Center(
-        child: Text('Welcome to chat room $roomId'),
-      ),
     );
   }
 }
