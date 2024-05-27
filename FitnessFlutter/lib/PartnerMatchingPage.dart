@@ -141,27 +141,38 @@ class _PartnerMatchingPageState extends State<PartnerMatchingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('파트너 정보'),
-      ),
       body: ListView.builder(
         itemCount: partners.length,
         itemBuilder: (context, index) {
           final member = partners[index];
-          return ListTile(
-            title: Text('${member['name']} (${member['email']})'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.person_add),
-                  onPressed: () => confirmAddFriend(member['id']),
-                ),
-                IconButton(
-                  icon: Icon(Icons.block),
-                  onPressed: () => confirmBlockMember(member['id']),
-                ),
-              ],
+          return Card(
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundImage: AssetImage('assets/placeholder.png'), // Ensure you have a placeholder image in your assets folder
+              ),
+              title: Text('${member['name']}'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('선호종목: ${member['preferredSports']}'),
+                  Text('선호시간: ${member['preferredTime']}'),
+                  Text('성별: ${member['gender']}'),
+                ],
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.person_add),
+                    onPressed: () => confirmAddFriend(member['id']),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.block),
+                    onPressed: () => confirmBlockMember(member['id']),
+                  ),
+                ],
+              ),
             ),
           );
         },

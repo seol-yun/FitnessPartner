@@ -93,34 +93,35 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    // backgroundImage: AssetImage('assets/profile.png'), // Add your profile image asset here
-                  ),
-                  SizedBox(height: 8.0),
-                  Text(
-                    '이름: $memberName',
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                  Text(
-                    '성별: $memberGender',
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                  Text(
-                    '거주지: $memberAddress',
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                  Text(
-                    '선호운동: $memberExerciseType',
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                ],
-              ),
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage('assets/profile.png'), // 이미지 경로를 올바르게 설정
+                ),
+                SizedBox(width: 16.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$memberName · $memberGender',
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                    Text(
+                      '$memberAddress',
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                    Text(
+                      '$memberExerciseType',
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            SizedBox(height: 32.0),
+            SizedBox(height: 16.0),
+            Divider(color: Colors.grey.withOpacity(0.5)), // 반투명한 선 추가
+            SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
                 // 친구 목록 페이지로 이동
