@@ -25,7 +25,7 @@ class _MainPageState extends State<MainPage> {
     _pages = [
       HomePage(token: widget.token),
       PartnerMatchingPage(token: widget.token),
-      PartnerMatchingPage(token: widget.token),
+      ExpertMatchingPage(token: widget.token),
       ChatRoomListPage(token: widget.token),
       MemberInfoPage(token: widget.token),
     ];

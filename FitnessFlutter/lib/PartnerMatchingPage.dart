@@ -23,7 +23,7 @@ class _PartnerMatchingPageState extends State<PartnerMatchingPage> {
   Future<void> fetchAllMembers() async {
     try {
       final response = await http.get(
-        Uri.parse('http://localhost:8080/api/members/all'),
+        Uri.parse('http://localhost:8080/api/members/generalUsers'),
         headers: {'Authorization': 'Bearer ${widget.token}'},
       );
       if (response.statusCode == 200) {
