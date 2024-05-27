@@ -1,4 +1,3 @@
-import 'package:contact/MemberInfoPage.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:convert';
@@ -7,6 +6,10 @@ import 'PartnerMatchingPage.dart'; // 운동 파트너 매칭 페이지 임포�
 import 'ExpertMatchingPage.dart'; // 전문가 매칭 페이지 임포트
 
 class HomePage extends StatefulWidget {
+  final String token;
+
+  HomePage({required this.token});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -28,12 +31,15 @@ class _HomePageState extends State<HomePage> {
     try {
       final response = await http.post(
         Uri.parse("http://localhost:8080/api/members/addPhysicalInfo"),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.token}',
+        },
         body: json.encode({'date': '2023-05-25', 'height': '180', 'weight': '77'}),
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = json.decode(utf8.decode(response.bodyBytes));
         setState(() {
           height = double.parse(data['height']);
           weight = double.parse(data['weight']);
@@ -50,7 +56,10 @@ class _HomePageState extends State<HomePage> {
     try {
       final response = await http.post(
         Uri.parse("http://localhost:8080/api/members/addExerciseInfo"),
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.token}',
+        },
         body: json.encode({'date': '2023-05-25', 'exerciseType': 'running', 'durationMinutes': '60'}),
       );
 
@@ -74,40 +83,6 @@ class _HomePageState extends State<HomePage> {
     } catch (error) {
       print('Error: $error');
     }
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    if (index == 0) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => HomePage()),
-      );
-    } else if (index == 1) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => PartnerMatchingPage()),
-      );
-    } else if (index == 2) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => ExpertMatchingPage()),
-      );
-    }  else if (index == 3) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => ExpertMatchingPage()),
-      );
-    } else if (index == 4) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => MemberInfoPage()),
-      );
-    }
-    // 다른 인덱스에 대해서도 페이지 이동을 설정할 수 있습니다.
   }
 
   @override

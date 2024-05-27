@@ -43,3 +43,7 @@ logging:
     org.hibernate.orm.jdbc.bind: trace
 #    org.springframework.messaging: trace
 #    org.springframework.web.socket: trace
+
+
+jwt:
+  secret: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa

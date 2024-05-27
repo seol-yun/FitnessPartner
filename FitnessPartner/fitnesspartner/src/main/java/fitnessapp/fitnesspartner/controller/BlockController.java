@@ -2,8 +2,8 @@ package fitnessapp.fitnesspartner.controller;
 
 import fitnessapp.fitnesspartner.dto.BlockInfoDTO;
 import fitnessapp.fitnesspartner.service.BlockService;
+import fitnessapp.fitnesspartner.config.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -18,22 +18,37 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BlockController {
     private final BlockService blockService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/addBlock")
-    public void addBlock(@RequestBody AddBlockRequest request) {
-        blockService.addBlock(request.getMemberId(), request.getBlockMemberId());
+    public ResponseEntity<Void> addBlock(@RequestBody AddBlockRequest request, HttpServletRequest httpRequest) {
+        String token = extractToken(httpRequest);
+        if (token != null && jwtUtil.validateToken(token, jwtUtil.extractUsername(token))) {
+            String memberId = jwtUtil.extractUsername(token);
+            blockService.addBlock(memberId, request.getBlockMemberId());
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     @PostMapping("/unBlock")
-    public void unBlock(@RequestBody AddBlockRequest request) {
-        blockService.unBlock(request.getMemberId(), request.getBlockMemberId());
+    public ResponseEntity<Void> unBlock(@RequestBody AddBlockRequest request, HttpServletRequest httpRequest) {
+        String token = extractToken(httpRequest);
+        if (token != null && jwtUtil.validateToken(token, jwtUtil.extractUsername(token))) {
+            String memberId = jwtUtil.extractUsername(token);
+            blockService.unBlock(memberId, request.getBlockMemberId());
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
     }
 
     @GetMapping("/all")
     public ResponseEntity<List<BlockInfoDTO>> getAllBlocks(HttpServletRequest request) {
-        HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute("loginId") != null) {
-            String loginId = (String) session.getAttribute("loginId");
+        String token = extractToken(request);
+        if (token != null && jwtUtil.validateToken(token, jwtUtil.extractUsername(token))) {
+            String loginId = jwtUtil.extractUsername(token);
             List<BlockInfoDTO> blocks = blockService.getAllBlocks(loginId);
             return ResponseEntity.ok().body(blocks);
         } else {
@@ -41,11 +56,17 @@ public class BlockController {
         }
     }
 
+    private String extractToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
     @Getter
     @Setter
     static class AddBlockRequest {
-        private String memberId;
         private String blockMemberId;
     }
 }
-

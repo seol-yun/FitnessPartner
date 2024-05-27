@@ -4,6 +4,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:universal_io/io.dart';
 import 'dart:convert';
+import 'Login.dart';
 
 class SignupPage extends StatefulWidget {
   @override
@@ -16,9 +17,9 @@ class _SignupPageState extends State<SignupPage> {
   TextEditingController nameController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController addressController = TextEditingController();
-  TextEditingController genderController = TextEditingController();
   TextEditingController exerciseTypeController = TextEditingController();
   bool isTrainer = false;
+  String selectedGender = '남성'; // 초기값 설정
 
   Future<void> signUp() async {
     String id = idController.text;
@@ -26,7 +27,7 @@ class _SignupPageState extends State<SignupPage> {
     String name = nameController.text;
     String email = emailController.text;
     String address = addressController.text;
-    String gender = genderController.text;
+    String gender = selectedGender; // 선택된 성별 사용
     String exerciseType = exerciseTypeController.text;
 
     try {
@@ -73,7 +74,10 @@ class _SignupPageState extends State<SignupPage> {
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pop(); // 다이얼로그를 닫습니다.
-                      Navigator.pushReplacementNamed(context, '/login'); // 로그인 페이지로 이동합니다.
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                      ); // 로그인 페이지로 이동합니다.
                     },
                     child: Text('확인'),
                   ),
@@ -81,10 +85,10 @@ class _SignupPageState extends State<SignupPage> {
               );
             },
           );
-
         }
+      } else {
+        throw Exception('Failed to sign up.');
       }
-
     } catch (error) {
       print(error); // 에러 출력
       showDialog(
@@ -243,6 +247,22 @@ class _SignupPageState extends State<SignupPage> {
                   ),
                 ],
               ),
+              DropdownButtonFormField<String>(
+                decoration: InputDecoration(labelText: '성별'),
+                value: selectedGender,
+                onChanged: (String? newValue) {
+                  setState(() {
+                    selectedGender = newValue!;
+                  });
+                },
+                items: <String>['남성', '여성']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
               TextField(
                 controller: exerciseTypeController,
                 decoration: InputDecoration(labelText: '선호운동'),
@@ -263,6 +283,14 @@ class _SignupPageState extends State<SignupPage> {
                     signUp();
                   },
                   child: Text('회원가입'),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.lightBlue,
+                    foregroundColor: Colors.white,
+                    minimumSize: Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
                 ),
               ),
             ],

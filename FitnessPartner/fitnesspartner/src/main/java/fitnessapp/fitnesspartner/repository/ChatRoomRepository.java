@@ -1,11 +1,11 @@
 package fitnessapp.fitnesspartner.repository;
 
+import fitnessapp.fitnesspartner.config.JwtUtil;
 import fitnessapp.fitnesspartner.domain.ChatRoom;
 import fitnessapp.fitnesspartner.domain.Member;
 import fitnessapp.fitnesspartner.dto.ChatRoomDTO;
 import jakarta.persistence.EntityManager;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -18,56 +18,63 @@ import java.util.*;
 public class ChatRoomRepository {
     private final EntityManager em;
     private final MemberRepository memberRepository;
+    private final JwtUtil jwtUtil;
 
     /**
      * 모든 채팅방 조회
-     * @param request
+     * @param currentUserId
      * @return
      */
-    public List<ChatRoomDTO> findAllRoom(HttpServletRequest request) {
+    public List<ChatRoomDTO> findAllRoom(String currentUserId) {
         List<ChatRoomDTO> userChatRooms = new ArrayList<>();
-        HttpSession session = request.getSession(false);
 
-        if (session != null && session.getAttribute("loginId") != null) {
-            String currentUserId = (String) session.getAttribute("loginId"); // 세션에서 현재 사용자의 ID 가져오기
-            List<ChatRoom> allChatRooms = em.createQuery("SELECT c FROM ChatRoom c", ChatRoom.class).getResultList();
+        List<ChatRoom> allChatRooms = em.createQuery("SELECT c FROM ChatRoom c", ChatRoom.class).getResultList();
 
-            for (ChatRoom chatRoom : allChatRooms) {
-                String user1 = chatRoom.getUser1();
-                String user2 = chatRoom.getUser2();
-                Member me = null, other = null;
+        for (ChatRoom chatRoom : allChatRooms) {
+            String user1 = chatRoom.getUser1();
+            String user2 = chatRoom.getUser2();
+            Member me = null, other = null;
 
-                if (user1 != null && user1.equals(currentUserId)) {
-                    me = memberRepository.findOne(user1);
-                    if (user2 != null) {
-                        other = memberRepository.findOne(user2);
-                    }
-                } else if (user2 != null && user2.equals(currentUserId)) {
-                    me = memberRepository.findOne(user2);
-                    if (user1 != null) {
-                        other = memberRepository.findOne(user1);
-                    }
-                } else{
-                    continue;
+            if (user1 != null && user1.equals(currentUserId)) {
+                me = memberRepository.findOne(user1);
+                if (user2 != null) {
+                    other = memberRepository.findOne(user2);
                 }
-
-                // Create ChatRoomDTO
-                ChatRoomDTO chatRoomDTO = new ChatRoomDTO();
-                chatRoomDTO.setRoomId(chatRoom.getRoomId());
-                chatRoomDTO.setMyId(me.getId());
-                chatRoomDTO.setMyName(me.getName());
-                chatRoomDTO.setOtherId(other != null ? other.getId() : null);
-                chatRoomDTO.setOtherName(other != null ? other.getName() : null);
-                chatRoomDTO.setTimeStamp(chatRoom.getTimestamp());
-                userChatRooms.add(chatRoomDTO);
+            } else if (user2 != null && user2.equals(currentUserId)) {
+                me = memberRepository.findOne(user2);
+                if (user1 != null) {
+                    other = memberRepository.findOne(user1);
+                }
+            } else {
+                continue;
             }
 
-            // 최신 순으로 정렬
-            Collections.sort(userChatRooms, Comparator.comparing(ChatRoomDTO::getTimeStamp).reversed());
+            // Create ChatRoomDTO
+            ChatRoomDTO chatRoomDTO = new ChatRoomDTO();
+            chatRoomDTO.setRoomId(chatRoom.getRoomId());
+            chatRoomDTO.setMyId(me.getId());
+            chatRoomDTO.setMyName(me.getName());
+            chatRoomDTO.setOtherId(other != null ? other.getId() : null);
+            chatRoomDTO.setOtherName(other != null ? other.getName() : null);
+            chatRoomDTO.setTimeStamp(chatRoom.getTimestamp());
+            userChatRooms.add(chatRoomDTO);
         }
+
+        // 최신 순으로 정렬
+        userChatRooms.sort(Comparator.comparing(ChatRoomDTO::getTimeStamp).reversed());
 
         return userChatRooms;
     }
+
+
+    private String extractToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
 
 
     /**

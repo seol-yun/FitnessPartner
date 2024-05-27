@@ -33,6 +33,11 @@ public class MemberService {
         return member.getId();
     }
 
+    /**
+     * id가 중복인지 검사
+     * @param member
+     * @return
+     */
     public int validateDuplicateMember(Member member) {
         Member existingMember = memberRepository.findOne(member.getId());
         if (existingMember != null) {

@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
+import 'ChatRoomListPage.dart';
 import 'HomePage.dart';
 import 'ExpertMatchingPage.dart';
+import 'MemberInfoPage.dart';
 import 'PartnerMatchingPage.dart';
 
 class MainPage extends StatefulWidget {
+  final String token;
+
+  MainPage({required this.token});
+
   @override
   _MainPageState createState() => _MainPageState();
 }
@@ -11,11 +17,19 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    HomePage(),
-    PartnerMatchingPage(),
-    ExpertMatchingPage(),
-  ];
+  late final List<Widget> _pages;
+
+  @override
+  void initState() {
+    super.initState();
+    _pages = [
+      HomePage(token: widget.token),
+      PartnerMatchingPage(token: widget.token),
+      PartnerMatchingPage(token: widget.token),
+      ChatRoomListPage(token: widget.token),
+      MemberInfoPage(token: widget.token),
+    ];
+  }
 
   void _onItemTapped(int index) {
     setState(() {
@@ -34,13 +48,7 @@ class _MainPageState extends State<MainPage> {
           ),
         ),
       ),
-      body: Navigator(
-        onGenerateRoute: (settings) {
-          return MaterialPageRoute(
-            builder: (context) => _pages[_selectedIndex],
-          );
-        },
-      ),
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(

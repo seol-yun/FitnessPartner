@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'MainPage.dart';  // 메인 페이지를 임포트
+import 'Signup.dart';  // 회원가입 페이지를 임포트
 
 class LoginPage extends StatelessWidget {
   final TextEditingController idController = TextEditingController();
@@ -21,18 +23,23 @@ class LoginPage extends StatelessWidget {
       );
 
       if (response.statusCode == 200) {
-        final data = response.body;
-        if (data == '0') {
+        final Map<String, dynamic> data = json.decode(response.body);
+        if (data['token'] == null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('로그인 실패')),
           );
         } else {
+          String token = data['token'];
+          // 토큰을 로컬 스토리지에 저장
+          SharedPreferences prefs = await SharedPreferences.getInstance();
+          await prefs.setString('token', token);
+
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('로그인 성공!')),
           );
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => MainPage()),
+            MaterialPageRoute(builder: (context) => MainPage(token: token)),
           );
         }
       } else {
@@ -85,32 +92,41 @@ class LoginPage extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        TextButton(
-                          onPressed: () {
-                            // 아이디 찾기
-                          },
-                          child: Text('아이디 찾기'),
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () {
+                              // 아이디 찾기
+                            },
+                            child: Text('아이디 찾기'),
+                          ),
                         ),
                         Text('|'),
-                        TextButton(
-                          onPressed: () {
-                            // 비밀번호 찾기
-                          },
-                          child: Text('비밀번호 찾기'),
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () {
+                              // 비밀번호 찾기
+                            },
+                            child: Text('비밀번호 찾기'),
+                          ),
                         ),
                         Text('|'),
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/signup');
-                          },
-                          child: Text('회원가입'),
+                        Expanded(
+                          child: TextButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => SignupPage()),
+                              );
+                            },
+                            child: Text('회원가입'),
+                          ),
                         ),
                       ],
                     ),
                     SizedBox(height: 32.0),
                     ElevatedButton(
                       onPressed: () => _login(context),
-                      child: Text('로그인하기'),
+                      child: Text('로그인'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.lightBlue,
                         foregroundColor: Colors.white,

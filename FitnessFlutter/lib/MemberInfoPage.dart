@@ -1,8 +1,16 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'Login.dart';
+import 'FriendsPage.dart';  // 친구 목록 페이지 임포트
+import 'BlockedUsersPage.dart';  // 차단된 사용자 목록 페이지 임포트
 
 class MemberInfoPage extends StatefulWidget {
+  final String token;
+
+  MemberInfoPage({required this.token});
+
   @override
   _MemberInfoPageState createState() => _MemberInfoPageState();
 }
@@ -23,9 +31,15 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
 
   Future<void> fetchMemberInfo() async {
     try {
-      final response = await http.get(Uri.parse("/api/members/info"));
+      final response = await http.get(
+        Uri.parse("http://localhost:8080/api/members/info"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.token}',
+        },
+      );
       if (response.statusCode == 200) {
-        final data = json.decode(response.body);
+        final data = json.decode(utf8.decode(response.bodyBytes));
         setState(() {
           memberId = data['id'];
           memberName = data['name'];
@@ -42,20 +56,38 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
     }
   }
 
+  Future<void> logout() async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:8080/api/members/logout'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.token}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // 로컬 스토리지에서 토큰 삭제
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.remove('token');
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('로그아웃 성공!')));
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => LoginPage()),
+              (Route<dynamic> route) => false,
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('로그아웃 실패!')));
+      }
+    } catch (error) {
+      print('Error: $error');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('로그아웃 중 오류가 발생했습니다.')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text('회원 정보'),
-      //   actions: [
-      //     IconButton(
-      //       icon: Icon(Icons.settings),
-      //       onPressed: () {
-      //         // Navigate to profile settings
-      //       },
-      //     ),
-      //   ],
-      // ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -66,7 +98,7 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    backgroundImage: AssetImage('assets/profile.png'), // Add your profile image asset here
+                    // backgroundImage: AssetImage('assets/profile.png'), // Add your profile image asset here
                   ),
                   SizedBox(height: 8.0),
                   Text(
@@ -91,49 +123,26 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
             SizedBox(height: 32.0),
             ElevatedButton(
               onPressed: () {
-                // Navigate to preferred time
+                // 친구 목록 페이지로 이동
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FriendsPage(token: widget.token)),
+                );
               },
-              child: Text('선호 시간'),
+              child: Text('친구 목록'),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
               ),
             ),
-            SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                // Navigate to current partnership exercise info
+                // 차단된 사용자 목록 페이지로 이동
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => BlockedUsersPage(token: widget.token)),
+                );
               },
-              child: Text('현재 파트너십 운동 정보'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to approximate data of preferred exercise
-              },
-              child: Text('선호 운동의 대략적인 데이터'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to preferred exercise history
-              },
-              child: Text('선호 운동 경력'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                // Navigate to awards and competition history
-              },
-              child: Text('수상·입상 경력'),
+              child: Text('차단된 사용자 목록'),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
               ),
@@ -141,44 +150,20 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
             SizedBox(height: 32.0),
             Center(
               child: ElevatedButton(
-                onPressed: () {
-                  // Implement logout functionality
-                },
-                child: Text('로그 아웃'),
+                onPressed: logout,
+                child: Text('로그아웃'),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  foregroundColor: Colors.white,
-                  minimumSize: Size(200, 50),
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    minimumSize: Size(double.infinity, 50),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    )
                 ),
               ),
             ),
           ],
         ),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '홈',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.fitness_center),
-            label: '운동 파트너 매칭',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.location_on),
-            label: '전문가 매칭',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: '채팅',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: '내 정보',
-          ),
-        ],
-        selectedItemColor: Colors.amber[800],
       ),
     );
   }
