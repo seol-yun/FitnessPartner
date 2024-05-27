@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Login.dart';
 import 'FriendsPage.dart';  // 친구 목록 페이지 임포트
 import 'BlockedUsersPage.dart';  // 차단된 사용자 목록 페이지 임포트
+import 'PhysicalInfoPage.dart'; // 신체 정보 페이지 임포트
 
 class MemberInfoPage extends StatefulWidget {
   final String token;
@@ -121,6 +122,19 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
               ),
             ),
             SizedBox(height: 32.0),
+            ElevatedButton(
+              onPressed: () {
+                // 신체 정보 추가 페이지로 이동
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PhysicalInfoPage(token: widget.token)),
+                );
+              },
+              child: Text('신체정보 추가'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+            ),
             ElevatedButton(
               onPressed: () {
                 // 친구 목록 페이지로 이동
