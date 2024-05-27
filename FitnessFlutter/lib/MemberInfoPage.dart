@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Login.dart';
-import 'FriendsPage.dart';  // 친구 목록 페이지 임포트
-import 'BlockedUsersPage.dart';  // 차단된 사용자 목록 페이지 임포트
-import 'PhysicalInfoPage.dart'; // 신체 정보 페이지 임포트
+import 'FriendsPage.dart';
+import 'BlockedUsersPage.dart';
+import 'PhysicalInfoPage.dart';
+import 'UpdateMemberInfoPage.dart';
 
 class MemberInfoPage extends StatefulWidget {
   final String token;
@@ -68,7 +69,6 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
       );
 
       if (response.statusCode == 200) {
-        // 로컬 스토리지에서 토큰 삭제
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.remove('token');
 
@@ -99,7 +99,6 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
                 children: [
                   CircleAvatar(
                     radius: 50,
-                    // backgroundImage: AssetImage('assets/profile.png'), // Add your profile image asset here
                   ),
                   SizedBox(height: 8.0),
                   Text(
@@ -124,7 +123,6 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
             SizedBox(height: 32.0),
             ElevatedButton(
               onPressed: () {
-                // 신체 정보 추가 페이지로 이동
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => PhysicalInfoPage(token: widget.token)),
@@ -137,7 +135,6 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                // 친구 목록 페이지로 이동
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => FriendsPage(token: widget.token)),
@@ -150,13 +147,24 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
             ),
             ElevatedButton(
               onPressed: () {
-                // 차단된 사용자 목록 페이지로 이동
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => BlockedUsersPage(token: widget.token)),
                 );
               },
               child: Text('차단된 사용자 목록'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UpdateMemberInfoPage(token: widget.token)),
+                );
+              },
+              child: Text('회원정보 수정'),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
               ),
