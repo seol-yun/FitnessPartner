@@ -1,61 +1,203 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:web_socket_channel/io.dart';
+import 'package:sockjs_client_wrapper/sockjs_client_wrapper.dart';
+import 'package:stomp_dart_client/stomp.dart';
+import 'package:stomp_dart_client/stomp_config.dart';
+import 'package:stomp_dart_client/stomp_frame.dart';
 
 class ChatPage extends StatefulWidget {
   final String roomId;
   final String token;
 
-  ChatPage({Key? key, required this.roomId, required this.token}) : super(key: key);
+  ChatPage({required this.roomId, required this.token});
 
   @override
   _ChatPageState createState() => _ChatPageState();
 }
 
 class _ChatPageState extends State<ChatPage> {
-  TextEditingController _messageController = TextEditingController();
-  List<String> _messages = [];
-  late String _myId;
-  late String _myName;
-  late String _otherId;
-  late String _otherName;
-  late String _timeStamp;
-  late IOWebSocketChannel _channel;
+  StompClient? stompClient;
+  TextEditingController messageController = TextEditingController();
+  List<Map<String, String>> messages = [];
+  String myId = '';
+  String myName = '';
+  String otherId = '';
+  String otherName = '';
+  String timeStamp = '';
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    connectToWebSocket();
     fetchChatRoomDetails();
     fetchMessages();
-    _channel = IOWebSocketChannel.connect('ws://localhost:8080/chat-websocket?roomId=${widget.roomId}&token=${widget.token}');
-    _channel.stream.listen((message) {
-      setState(() {
-        _messages.add(message);
-      });
-    });
   }
 
-  @override
-  void dispose() {
-    _channel.sink.close();
-    super.dispose();
+  void connectToWebSocket() {
+    stompClient = StompClient(
+      config: StompConfig.SockJS(
+        url: 'http://localhost:8080/chat-websocket',
+        onConnect: onWebSocketConnect,
+        onStompError: onWebSocketError,
+        beforeConnect: () async {
+          print('Connecting to websocket...');
+        },
+        onWebSocketError: (dynamic error) => print('WebSocket Error: $error'),
+        onDisconnect: (frame) => print('WebSocket Disconnected'),
+        onWebSocketDone: () => print('WebSocket Closed'),
+        stompConnectHeaders: {'Authorization': 'Bearer ${widget.token}'},
+        webSocketConnectHeaders: {'Authorization': 'Bearer ${widget.token}'},
+        reconnectDelay: Duration(seconds: 5),
+      ),
+    );
+
+    stompClient?.activate();
+  }
+
+  void onWebSocketConnect(StompFrame frame) {
+    print('Connected to WebSocket');
+    stompClient?.subscribe(
+      destination: '/topic/messages/${widget.roomId}',
+      callback: (frame) {
+        Map<String, dynamic> message = json.decode(frame.body!);
+        setState(() {
+          messages.add({
+            'sender': message['sender'],
+            'content': message['content'],
+          });
+        });
+      },
+    );
+  }
+
+  void onWebSocketError(StompFrame frame) {
+    print('WebSocket error: ${frame.body}');
+  }
+
+  Future<void> fetchChatRoomDetails() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://localhost:8080/chat/room/${widget.roomId}/details'),
+        headers: {
+          'Authorization': 'Bearer ${widget.token}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final chatRoom = json.decode(utf8.decode(response.bodyBytes));
+        setState(() {
+          myId = chatRoom['myId'];
+          myName = chatRoom['myName'];
+          otherId = chatRoom['otherId'];
+          otherName = chatRoom['otherName'];
+          timeStamp = chatRoom['timeStamp'];
+        });
+      } else {
+        print('Failed to load chat room details');
+      }
+    } catch (e) {
+      print('Error fetching chat room details: $e');
+    }
+  }
+
+  Future<void> fetchMessages() async {
+    try {
+      final response = await http.get(
+        Uri.parse('http://localhost:8080/chat/messages/${widget.roomId}'),
+        headers: {
+          'Authorization': 'Bearer ${widget.token}',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final List<dynamic> chatMessages = json.decode(utf8.decode(response.bodyBytes));
+        setState(() {
+          messages = chatMessages
+              .map<Map<String, String>>((msg) => {
+            'sender': msg['sender'],
+            'content': msg['message']
+          })
+              .toList();
+          isLoading = false;
+        });
+      } else {
+        print('Failed to load messages');
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      print('Error fetching messages: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  void sendMessage() {
+    if (messageController.text.isNotEmpty) {
+      stompClient?.send(
+        destination: '/app/send-message/${widget.roomId}',
+        body: json.encode({
+          'content': messageController.text.trim(),
+          'sender': myName,
+        }),
+      );
+      messageController.clear();
+    }
+  }
+
+  Future<void> leaveRoom() async {
+    try {
+      final response = await http.post(
+        Uri.parse('http://localhost:8080/chat/room/leave'),
+        headers: {
+          'Authorization': 'Bearer ${widget.token}',
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'roomId=${widget.roomId}',
+      );
+
+      if (response.statusCode == 200) {
+        stompClient?.send(
+          destination: '/app/send-message/${widget.roomId}',
+          body: json.encode({'content': '($myName님이 채팅에서 나갔습니다.)', 'sender': ''}),
+        );
+
+        Navigator.pop(context);
+      } else {
+        print('Failed to leave chat room');
+      }
+    } catch (e) {
+      print('Error leaving chat room: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Simple Chat'),
+        title: Text('Chat Room'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.exit_to_app),
+            onPressed: leaveRoom,
+          ),
+        ],
       ),
-      body: Column(
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : Column(
         children: [
           Expanded(
             child: ListView.builder(
-              itemCount: _messages.length,
+              itemCount: messages.length,
               itemBuilder: (context, index) {
+                final message = messages[index];
                 return ListTile(
-                  title: Text(_messages[index]),
+                  title: Text('${message['sender']}: ${message['content']}'),
                 );
               },
             ),
@@ -66,25 +208,15 @@ class _ChatPageState extends State<ChatPage> {
               children: [
                 Expanded(
                   child: TextField(
-                    controller: _messageController,
+                    controller: messageController,
                     decoration: InputDecoration(
                       hintText: 'Type your message',
                     ),
                   ),
                 ),
-                SizedBox(width: 8.0),
-                ElevatedButton(
-                  onPressed: () {
-                    sendMessage();
-                  },
-                  child: Text('Send'),
-                ),
-                SizedBox(width: 8.0),
-                ElevatedButton(
-                  onPressed: () {
-                    confirmLeaveRoom(context);
-                  },
-                  child: Text('Leave Room'),
+                IconButton(
+                  icon: Icon(Icons.send),
+                  onPressed: sendMessage,
                 ),
               ],
             ),
@@ -94,129 +226,10 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  void fetchMessages() async {
-    try {
-      final response = await http.get(
-        Uri.parse('http://localhost:8080/chat/messages/${widget.roomId}'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${widget.token}',
-        },
-      );
-      if (response.statusCode == 200) {
-        List<dynamic> messages = jsonDecode(utf8.decode(response.bodyBytes));
-        setState(() {
-          _messages = messages.map((msg) => '${msg['sender']}: ${msg['content']}').toList();
-        });
-      } else {
-        throw Exception('Failed to load messages');
-      }
-    } catch (error) {
-      print('Error loading messages: $error');
-    }
-  }
-
-  void fetchChatRoomDetails() async {
-    try {
-      final response = await http.get(
-        Uri.parse('http://localhost:8080/chat/room/${widget.roomId}/details'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${widget.token}',
-        },
-      );
-      if (response.statusCode == 200) {
-        final data = jsonDecode(utf8.decode(response.bodyBytes));
-        setState(() {
-          _myId = data['myId'];
-          _myName = data['myName'];
-          _otherId = data['otherId'];
-          _otherName = data['otherName'];
-          _timeStamp = data['timeStamp'];
-        });
-      } else {
-        throw Exception('Failed to load chat room details');
-      }
-    } catch (error) {
-      print('Error loading chat room details: $error');
-    }
-  }
-
-  void sendMessage() async {
-    String content = _messageController.text.trim();
-    if (content.isNotEmpty) {
-      try {
-        final response = await http.post(
-          Uri.parse('http://localhost:8080/app/send-message/${widget.roomId}'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ${widget.token}',
-          },
-          body: jsonEncode({'content': content, 'sender': _myName}),
-        );
-        if (response.statusCode == 200) {
-          // 메시지 전송 성공
-          _messageController.clear();
-          sendMessageToServer(content, _myName);
-        } else {
-          throw Exception('Failed to send message');
-        }
-      } catch (error) {
-        print('Error sending message: $error');
-      }
-    }
-  }
-
-  void confirmLeaveRoom(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Leave Room'),
-          content: Text('Do you really want to leave the chat room?'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                leaveRoom(context);
-              },
-              child: Text('Leave'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void leaveRoom(BuildContext context) async {
-    try {
-      final response = await http.post(
-        Uri.parse('http://localhost:8080/chat/room/leave'),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'Authorization': 'Bearer ${widget.token}',
-        },
-        body: {'roomId': widget.roomId},
-      );
-      if (response.statusCode == 200) {
-        final exitMessage = '($_myName left the chat)';
-        sendMessageToServer(exitMessage, '');
-        Navigator.of(context).pop();
-        Navigator.of(context).pop();
-      } else {
-        throw Exception('Failed to leave chat room');
-      }
-    } catch (error) {
-      print('Error leaving chat room: $error');
-    }
-  }
-
-  void sendMessageToServer(String content, String sender) {
-    _channel.sink.add(jsonEncode({'content': content, 'sender': sender}));
+  @override
+  void dispose() {
+    messageController.dispose();
+    stompClient?.deactivate();
+    super.dispose();
   }
 }

@@ -74,6 +74,11 @@ public class ChatController {
         messagingTemplate.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
     }
 
+    /**
+     * 채팅 보내고 db에 내용 저장
+     * @param roomId
+     * @param message
+     */
     @MessageMapping("/send-message/{roomId}")
     public void sendMessage(@DestinationVariable("roomId") String roomId, @Payload Map<String, String> message) {
         String content = message.get("content");
@@ -100,6 +105,11 @@ public class ChatController {
         messagingTemplate.convertAndSend("/topic/messages/" + roomId, responseMessage);
     }
 
+    /**
+     * 내역 불러오기
+     * @param roomId
+     * @return
+     */
     @GetMapping("/chat/messages/{roomId}")
     public List<ChatMessage> getMessages(@PathVariable("roomId") String roomId) {
         chatRoomRepository.findRoomById(roomId)
