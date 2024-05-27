@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>리뷰 관리</title>
+    <style>
+        .container {
+            width: 50%;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+
+        .form-group button {
+            padding: 10px 20px;
+        }
+
+        .reviews {
+            margin-top: 30px;
+        }
+
+        .review-item {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+<!--편의성 업데이트! html 만들 때 추가요망-->
+<a href="/login.html" class="button">로그인</a>
+<a href="/signupForm.html" class="button">회원가입</a>
+<a href="/memberInfo.html" class="button">회원정보</a>
+<a href="/partner.html" class="button">파트너정보</a>
+<a href="/friend.html" class="button">친구목록</a>
+<a href="/block.html" class="button">차단목록</a>
+<a href="/chat.html" class="button">채팅</a>
+<a href="/chatRooms.html" class="button">채팅룸</a>
+<a href="/review.html" class="button">리뷰</a>
+
+<div class="container">
+    <h2>리뷰 생성</h2>
+    <form id="reviewForm">
+<!--        <div class="form-group">-->
+<!--            <label for="author">작성자:</label>-->
+<!--            <input type="text" id="author" name="author" required>-->
+<!--        </div>-->
+        <div class="form-group">
+            <label for="rating">평점:</label>
+            <input type="number" id="rating" name="rating" min="1" max="5" required>
+        </div>
+        <div class="form-group">
+            <label for="content">내용:</label>
+            <textarea id="content" name="content" required></textarea>
+        </div>
+        <div class="form-group">
+            <label for="memberId">회원 ID:</label>
+            <input type="number" id="memberId" name="memberId" required>
+        </div>
+        <div class="form-group">
+            <button type="submit">리뷰 생성</button>
+        </div>
+    </form>
+
+    <div class="reviews">
+        <h2>리뷰 리스트</h2>
+        <div id="reviewList"></div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('reviewForm').addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const reviewData = {
+            author: document.getElementById('author').value,
+            rating: document.getElementById('rating').value,
+            content: document.getElementById('content').value,
+            member: {id: document.getElementById('memberId').value}
+        };
+
+        fetch('/reviews', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(reviewData)
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Review created:', data);
+                fetchReviews();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    });
+
+    function fetchReviews() {
+        fetch('/reviews')
+            .then(response => response.json())
+            .then(data => {
+                const reviewList = document.getElementById('reviewList');
+                reviewList.innerHTML = '';
+
+                data.forEach(review => {
+                    const reviewItem = document.createElement('div');
+                    reviewItem.className = 'review-item';
+                    reviewItem.innerHTML = `
+                            <p><strong>작성자:</strong> ${review.author}</p>
+                            <p><strong>평점:</strong> ${review.rating}</p>
+                            <p><strong>내용:</strong> ${review.content}</p>
+                        `;
+                    reviewList.appendChild(reviewItem);
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+    }
+
+    // 페이지 로드 시 리뷰 리스트를 가져옵니다.
+    fetchReviews();
+</script>
+</body>
+</html>

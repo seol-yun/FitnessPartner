@@ -96,6 +96,40 @@ public class MemberService {
     }
 
     /**
+     * 본인, 친구 제외한 일반유저 출력
+     */
+    public List<Member> findGeneralMembers(String loginId) {
+        // 로그인한 사용자의 친구 목록 조회
+        List<Friend> friends = friendRepository.findAllByMemberId(loginId);
+        List<String> friendIds = friends.stream()
+                .map(friend -> friend.getFriendMember().getId())
+                .collect(Collectors.toList());
+
+        // 모든 일반멤버 정보 조회 후 로그인한 사용자와 친구인 회원을 필터링
+        List<Member> allMembers = memberRepository.findGeneralUser();
+        return allMembers.stream()
+                .filter(member -> !member.getId().equals(loginId) && !friendIds.contains(member.getId()))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 본인, 친구 제외한 운동전문가 출력
+     */
+    public List<Member> findTrainerMembers(String loginId) {
+        // 로그인한 사용자의 친구 목록 조회
+        List<Friend> friends = friendRepository.findAllByMemberId(loginId);
+        List<String> friendIds = friends.stream()
+                .map(friend -> friend.getFriendMember().getId())
+                .collect(Collectors.toList());
+
+        // 모든 운동전문가 정보 조회 후 로그인한 사용자와 친구인 회원을 필터링
+        List<Member> allMembers = memberRepository.findTrainer();
+        return allMembers.stream()
+                .filter(member -> !member.getId().equals(loginId) && !friendIds.contains(member.getId()))
+                .collect(Collectors.toList());
+    }
+
+    /**
      * 신체정보 추가
      */
     public Long addPhysicalData(String loginId, String date, String height, String weight) {
