@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d1afddfd-d172-4baf-b4ba-2674ac0f14fe" name="Changes" comment="Save changes to IDE configuration files" />
+    <list default="true" id="4a4b16de-81fa-4ea2-9d3b-d7f47d2ec566" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -15,191 +15,131 @@
       <ProjectState />
     </projectState>
   </component>
-  <component name="ExternalProjectsManager">
-    <system id="GRADLE">
-      <state>
-        <projects_view>
-          <tree_state>
-            <expand />
-            <select />
-          </tree_state>
-        </projects_view>
-      </state>
-    </system>
-  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="JUnit5 Test Class" />
-        <option value="HTML File" />
         <option value="Class" />
+        <option value="HTML File" />
       </list>
     </option>
   </component>
   <component name="Git.Merge.Settings">
-    <option name="BRANCH" value="origin/syh" />
+    <option name="BRANCH" value="origin/master" />
   </component>
   <component name="Git.Settings">
-    <excluded-from-favorite>
-      <branch-storage>
-        <map>
-          <entry type="LOCAL">
-            <value>
-              <list>
-                <branch-info repo="$PROJECT_DIR$/../.." source="master" />
-              </list>
-            </value>
-          </entry>
-          <entry type="REMOTE">
-            <value>
-              <list>
-                <branch-info repo="$PROJECT_DIR$/../.." source="origin/master" />
-              </list>
-            </value>
-          </entry>
-        </map>
-      </branch-storage>
-    </excluded-from-favorite>
-    <favorite-branches>
-      <branch-storage>
-        <map>
-          <entry type="LOCAL">
-            <value>
-              <list>
-                <branch-info repo="$PROJECT_DIR$" source="syh" />
-              </list>
-            </value>
-          </entry>
-          <entry type="REMOTE">
-            <value>
-              <list>
-                <branch-info repo="$PROJECT_DIR$/../.." source="origin/syh" />
-              </list>
-            </value>
-          </entry>
-        </map>
-      </branch-storage>
-    </favorite-branches>
-    <option name="RECENT_BRANCH_BY_REPOSITORY">
-      <map>
-        <entry key="$PROJECT_DIR$/../.." value="syh" />
-        <entry key="$PROJECT_DIR$" value="master" />
-      </map>
-    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;dmdkr55&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">
+    <option name="selectedUrlAndAccountId">
+      <UrlAndAccount>
+        <option name="accountId" value="36027073-b898-4c36-8a0c-a4cdd4098cd7" />
+        <option name="url" value="https://github.com/seol-yun/FitnessPartner.git" />
+      </UrlAndAccount>
+    </option>
+  </component>
   <component name="HighlightingSettingsPerFile">
-    <setting file="file://$PROJECT_DIR$/src/main/java/fitnessapp/fitnesspartner/FitnesspartnerApplication.java" root0="FORCE_HIGHLIGHTING" />
+    <setting file="file://$PROJECT_DIR$/src/main/resources/static/memberInfo.html" root0="FORCE_HIGHLIGHTING" />
   </component>
   <component name="MarkdownSettingsMigration">
     <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 5
 }</component>
-  <component name="ProjectId" id="2dWxCpEVhkd7jWqaYT4pMVMBNxj" />
+  <component name="ProjectId" id="2grQ4GPRRh2fcyQXkrPEgnWYhpn" />
   <component name="ProjectViewState">
-    <option name="showExcludedFiles" value="false" />
+    <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary": "JUnit5",
-    "com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrarySuperClass.JUnit5": "",
-    "git-widget-placeholder": "syh",
-    "last_opened_file_path": "D:/Code/Test",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "project.structure.last.edited": "Project",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "reference.settingsdialog.project.gradle"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   },
-  "keyToStringList": {
-    "GitStage.ChangesTree.GroupingKeys": [
-      "directory",
-      "module",
-      "repository"
+  &quot;keyToStringList&quot;: {
+    &quot;GitStage.ChangesTree.GroupingKeys&quot;: [
+      &quot;directory&quot;,
+      &quot;module&quot;,
+      &quot;repository&quot;
     ]
   }
-}]]></component>
-  <component name="RecentsManager">
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="D:\Code\FinalProject\FitnessPartner\fitnesspartner\src\main\resources" />
-      <recent name="D:\Code\FitnessPartner\fitnesspartner\src\main\java\fitnessapp\fitnesspartner\service" />
-      <recent name="D:\Code\FitnessPartner\fitnesspartner\src\main\resources\templates" />
-      <recent name="D:\Code\FitnessPartner\fitnesspartner\src\main\java\fitnessapp\fitnesspartner\domain" />
-    </key>
-    <key name="CreateTestDialog.Recents.Supers">
-      <recent name="" />
-    </key>
-    <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Code\FinalProject\FitnessPartner\fitnesspartner\src\main\resources\static" />
-    </key>
-    <key name="CreateTestDialog.RecentsKey">
-      <recent name="fitnessapp.fitnesspartner.controller" />
-    </key>
-    <key name="CopyClassDialog.RECENTS_KEY">
-      <recent name="fitnessapp.fitnesspartner.controller" />
-      <recent name="fitnessapp.fitnesspartner.service" />
-      <recent name="fitnessapp.fitnesspartner.repository" />
-      <recent name="fitnessapp.fitnesspartner.domain" />
-    </key>
-  </component>
+}</component>
   <component name="RunManager">
-    <configuration name="FitnesspartnerApplication" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="fitnessapp.fitnesspartner.FitnesspartnerApplication" />
+    <configuration name="FitnesspartnerApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
       <module name="fitnesspartner.main" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="fitnessapp.fitnesspartner.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
+      <option name="SPRING_BOOT_MAIN_CLASS" value="fitnessapp.fitnesspartner.FitnesspartnerApplication" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Application.FitnesspartnerApplication" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="d1afddfd-d172-4baf-b4ba-2674ac0f14fe" name="Changes" comment="" />
-      <created>1710137510863</created>
+      <changelist id="4a4b16de-81fa-4ea2-9d3b-d7f47d2ec566" name="Changes" comment="" />
+      <created>1716453027936</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1710137510863</updated>
-      <workItem from="1716202938124" duration="146000" />
-      <workItem from="1716203108706" duration="2504000" />
-      <workItem from="1716264019481" duration="4354000" />
-      <workItem from="1716288047567" duration="1068000" />
-      <workItem from="1716345144860" duration="5578000" />
-      <workItem from="1716353356922" duration="608000" />
+      <updated>1716453027936</updated>
+      <workItem from="1716453029493" duration="810000" />
+      <workItem from="1716622616528" duration="4391000" />
+      <workItem from="1716708398873" duration="6920000" />
+      <workItem from="1716715357601" duration="1472000" />
+      <workItem from="1716804170113" duration="5310000" />
     </task>
-    <task id="LOCAL-00001" summary="멤버정보추가">
+    <task id="LOCAL-00001" summary="유저 데이터베이스 추가.&#10;유저데이터 추가.">
       <option name="closed" value="true" />
-      <created>1716353577058</created>
+      <created>1716453518901</created>
       <option name="number" value="00001" />
       <option name="presentableId" value="LOCAL-00001" />
       <option name="project" value="LOCAL" />
-      <updated>1716353577058</updated>
+      <updated>1716453518901</updated>
     </task>
-    <task id="LOCAL-00002" summary="멤버정보추가">
+    <task id="LOCAL-00002" summary="유저정보 수정 추가.">
       <option name="closed" value="true" />
-      <created>1716353884997</created>
+      <created>1716626256024</created>
       <option name="number" value="00002" />
       <option name="presentableId" value="LOCAL-00002" />
       <option name="project" value="LOCAL" />
-      <updated>1716353884997</updated>
+      <updated>1716626256024</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="유저정보 수정에서 프로필사진 업데이트 가능">
+      <option name="closed" value="true" />
+      <created>1716711130787</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1716711130787</updated>
+    </task>
+    <task id="LOCAL-00004" summary="전문가 일반유저 따로 추천.">
+      <option name="closed" value="true" />
+      <created>1716808669180</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1716808669180</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -210,37 +150,17 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State>
-              <option name="FILTERS">
-                <map>
-                  <entry key="branch">
-                    <value>
-                      <list>
-                        <option value="syh" />
-                      </list>
-                    </value>
-                  </entry>
-                </map>
-              </option>
-            </State>
+            <State />
           </value>
         </entry>
       </map>
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="멤버정보추가" />
-    <MESSAGE value="Save changes to IDE configuration files" />
-    <option name="LAST_COMMIT_MESSAGE" value="Save changes to IDE configuration files" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <breakpoint enabled="true" type="java-exception">
-          <properties class="java.lang.IllegalArgumentException" package="java.lang" />
-          <option name="timeStamp" value="1" />
-        </breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
+    <MESSAGE value="유저 데이터베이스 추가.&#10;유저데이터 추가." />
+    <MESSAGE value="유저정보 수정 추가." />
+    <MESSAGE value="유저정보 수정에서 프로필사진 업데이트 가능" />
+    <MESSAGE value="전문가 일반유저 따로 추천." />
+    <option name="LAST_COMMIT_MESSAGE" value="전문가 일반유저 따로 추천." />
   </component>
 </project>

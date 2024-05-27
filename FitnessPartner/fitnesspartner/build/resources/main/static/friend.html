@@ -6,6 +6,16 @@
     <title>친구 목록</title>
   </head>
   <body>
+    <!-- 편의성 업데이트! html 만들 때 추가요망 -->
+    <a href="/login.html" class="button">로그인</a>
+    <a href="/signupForm.html" class="button">회원가입</a>
+    <a href="/memberInfo.html" class="button">회원정보</a>
+    <a href="/partner.html" class="button">파트너정보</a>
+    <a href="/friend.html" class="button">친구목록</a>
+    <a href="/block.html" class="button">차단목록</a>
+    <a href="/chatRooms.html" class="button">채팅룸</a>
+    <a href="/review.html" class="button">리뷰</a>
+
     <h2>친구 목록</h2>
     <ul id="friendList"></ul>
 
@@ -17,6 +27,7 @@
           .then((response) => response.json())
           .then((data) => {
             const friendList = document.getElementById("friendList");
+            friendList.innerHTML = ""; // Clear the list before adding new items
             data.forEach((friendship) => {
               const listItem = document.createElement("li");
               listItem.textContent = `${friendship.friendName}`;
@@ -26,8 +37,16 @@
               chatButton.textContent = "채팅하기";
               chatButton.addEventListener("click", () =>
                 startChat(friendship.friendId)
-              ); // 채팅하기 버튼 클릭 시 startChat 함수 호출
+              );
               listItem.appendChild(chatButton);
+
+              // 친구 삭제 버튼 추가
+              const deleteButton = document.createElement("button");
+              deleteButton.textContent = "삭제하기";
+              deleteButton.addEventListener("click", () =>
+                confirmDeleteFriend(friendship.friendId, friendship.friendName)
+              );
+              listItem.appendChild(deleteButton);
 
               friendList.appendChild(listItem);
             });
@@ -50,14 +69,43 @@
             }
           })
           .then((roomId) => {
-            // 직접 roomId에 문자열 형식의 응답을 할당
-            console.log(roomId);
             if (roomId) {
               // 채팅방 생성 후 roomId를 받았을 경우에만 채팅 페이지로 이동
-              console.log(roomId);
-              window.location.href = `/chat2.html?roomId=${roomId}`;
+              window.location.href = `/chat.html?roomId=${roomId}`;
             } else {
               console.error("Failed to create chat room.");
+            }
+          })
+          .catch((error) => console.error("Error:", error));
+      }
+
+      // 친구 삭제 확인 함수
+      function confirmDeleteFriend(friendId, friendName) {
+        const confirmDelete = confirm(
+          `정말로 ${friendName}님을 삭제하시겠습니까?`
+        );
+        if (confirmDelete) {
+          deleteFriend(friendId);
+        }
+      }
+
+      // 친구 삭제 함수
+      function deleteFriend(friendId) {
+        // 친구 삭제 요청
+        fetch("/api/friends/delete", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ friendMemberId: friendId }),
+        })
+          .then((response) => {
+            if (response.ok) {
+              // 친구 삭제 성공 시 메시지 박스로 표시 및 친구 목록 다시 불러오기
+              alert("친구가 삭제되었습니다.");
+              fetchFriendList();
+            } else {
+              throw new Error("Failed to delete friend.");
             }
           })
           .catch((error) => console.error("Error:", error));

@@ -32,6 +32,7 @@
           .then((response) => response.json())
           .then((data) => {
             // 회원 정보를 화면에 출력합니다.
+            console.log(data);
             document.getElementById("memberId").textContent = data.id;
             document.getElementById("memberName").textContent = data.name;
             document.getElementById("memberEmail").textContent = data.email;

@@ -6,6 +6,16 @@
     <title>My Chat Rooms</title>
   </head>
   <body>
+    <!--편의성 업데이트! html 만들 때 추가요망-->
+    <a href="/login.html" class="button">로그인</a>
+    <a href="/signupForm.html" class="button">회원가입</a>
+    <a href="/memberInfo.html" class="button">회원정보</a>
+    <a href="/partner.html" class="button">파트너정보</a>
+    <a href="/friend.html" class="button">친구목록</a>
+    <a href="/block.html" class="button">차단목록</a>
+    <a href="/chatRooms.html" class="button">채팅룸</a>
+    <a href="/review.html" class="button">리뷰</a>
+
     <h2>My Chat Rooms</h2>
     <ul id="chatRoomList"></ul>
 
@@ -17,11 +27,12 @@
           .then((response) => response.json())
           .then((data) => {
             const chatRoomList = document.getElementById("chatRoomList");
+            chatRoomList.innerHTML = ""; // Clear previous chat room list
             data.forEach((chatRoom) => {
               const listItem = document.createElement("li");
-              listItem.textContent = `${chatRoom.user2}`;
+              listItem.textContent = `${chatRoom.otherName}`; // Display user2's name
 
-              // 채팅방 입장 버튼 추가
+              // Add a button to enter the chat room
               const enterButton = document.createElement("button");
               enterButton.textContent = "Enter";
               enterButton.addEventListener("click", () =>
@@ -36,7 +47,7 @@
       }
 
       function enterChatRoom(roomId) {
-        window.location.href = `/chat2.html?roomId=${roomId}`;
+        window.location.href = `/chat.html?roomId=${roomId}`;
       }
     </script>
   </body>
