@@ -48,13 +48,7 @@ class _MainPageState extends State<MainPage> {
           ),
         ),
       ),
-      body: Navigator(
-        onGenerateRoute: (settings) {
-          return MaterialPageRoute(
-            builder: (context) => _pages[_selectedIndex],
-          );
-        },
-      ),
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(

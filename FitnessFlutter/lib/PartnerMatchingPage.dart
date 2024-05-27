@@ -38,6 +38,29 @@ class _PartnerMatchingPageState extends State<PartnerMatchingPage> {
     }
   }
 
+  Future<void> confirmAddFriend(String friendId) async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('친구 추가'),
+        content: Text('이 사용자를 친구로 추가하시겠습니까?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('취소'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              addFriend(friendId);
+            },
+            child: Text('확인'),
+          ),
+        ],
+      ),
+    );
+  }
+
   Future<void> addFriend(String friendId) async {
     final requestBody = json.encode({
       'friendMemberId': friendId,
@@ -63,6 +86,29 @@ class _PartnerMatchingPageState extends State<PartnerMatchingPage> {
       print('Error: $e');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('친구 추가 중 오류가 발생했습니다.')));
     }
+  }
+
+  Future<void> confirmBlockMember(String blockMemberId) async {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('사용자 차단'),
+        content: Text('이 사용자를 차단하시겠습니까?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text('취소'),
+          ),
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              blockMember(blockMemberId);
+            },
+            child: Text('확인'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> blockMember(String blockMemberId) async {
@@ -109,11 +155,11 @@ class _PartnerMatchingPageState extends State<PartnerMatchingPage> {
               children: [
                 IconButton(
                   icon: Icon(Icons.person_add),
-                  onPressed: () => addFriend(member['id']),
+                  onPressed: () => confirmAddFriend(member['id']),
                 ),
                 IconButton(
                   icon: Icon(Icons.block),
-                  onPressed: () => blockMember(member['id']),
+                  onPressed: () => confirmBlockMember(member['id']),
                 ),
               ],
             ),

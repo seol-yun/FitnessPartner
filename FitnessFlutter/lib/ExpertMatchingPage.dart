@@ -22,7 +22,7 @@ class _ExpertMatchingPageState extends State<ExpertMatchingPage> {
 
   Future<void> fetchExperts() async {
     try {
-      final response = await http.get(Uri.parse("http://localhost:8080/api/members/info"));
+      final response = await http.get(Uri.parse("http://localhost:8080/api/members/all"));
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
