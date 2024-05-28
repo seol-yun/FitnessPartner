@@ -16,6 +16,13 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -25,6 +32,7 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 @RestController
+@Tag(name = "Chat Controller", description = "채팅 관리 API")
 public class ChatController {
 
     private final SimpMessageSendingOperations messagingTemplate;
@@ -34,7 +42,15 @@ public class ChatController {
     private final JwtUtil jwtUtil;
 
     @GetMapping("/chat/room/{roomId}/details")
-    public ChatRoomDTO getChatRoomDetails(HttpServletRequest request, @PathVariable("roomId") String roomId) {
+    @Operation(summary = "채팅방 세부 정보 조회", description = "특정 채팅방의 세부 정보를 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "채팅방 세부 정보 반환", content = @Content(schema = @Schema(implementation = ChatRoomDTO.class))),
+            @ApiResponse(responseCode = "401", description = "인증 실패"),
+            @ApiResponse(responseCode = "404", description = "채팅방 ID 없음")
+    })
+    public ChatRoomDTO getChatRoomDetails(
+            @Parameter(description = "채팅방 ID", required = true) @PathVariable("roomId") String roomId,
+            HttpServletRequest request) {
         String token = extractToken(request);
         if (token != null && jwtUtil.validateToken(token, jwtUtil.extractUsername(token))) {
             String loginId = jwtUtil.extractUsername(token);
@@ -70,17 +86,17 @@ public class ChatController {
     }
 
     @MessageMapping("chat/message")
-    public void message(@Payload ChatMessage message) {
+    @Operation(summary = "채팅 메시지 전송", description = "채팅방에 메시지를 전송합니다.")
+    public void message(
+            @Parameter(description = "채팅 메시지 내용", required = true) @Payload ChatMessage message) {
         messagingTemplate.convertAndSend("/sub/chat/room/" + message.getRoomId(), message);
     }
 
-    /**
-     * 채팅 보내고 db에 내용 저장
-     * @param roomId
-     * @param message
-     */
     @MessageMapping("/send-message/{roomId}")
-    public void sendMessage(@DestinationVariable("roomId") String roomId, @Payload Map<String, String> message) {
+    @Operation(summary = "채팅 메시지 보내기 및 저장", description = "채팅 메시지를 보내고 DB에 저장합니다.")
+    public void sendMessage(
+            @Parameter(description = "채팅방 ID", required = true) @DestinationVariable("roomId") String roomId,
+            @Parameter(description = "메시지 내용", required = true) @Payload Map<String, String> message) {
         String content = message.get("content");
         String sender = message.get("sender");
 
@@ -94,7 +110,6 @@ public class ChatController {
         chatMessage.setTimestamp(LocalDateTime.now());
         chatMessageRepository.save(chatMessage);
 
-        // Update chatRoom timestamp
         chatRoom.setTimestamp(LocalDateTime.now());
         chatRoomRepository.save(chatRoom);
 
@@ -105,13 +120,14 @@ public class ChatController {
         messagingTemplate.convertAndSend("/topic/messages/" + roomId, responseMessage);
     }
 
-    /**
-     * 내역 불러오기
-     * @param roomId
-     * @return
-     */
     @GetMapping("/chat/messages/{roomId}")
-    public List<ChatMessage> getMessages(@PathVariable("roomId") String roomId) {
+    @Operation(summary = "채팅 메시지 내역 조회", description = "특정 채팅방의 메시지 내역을 조회합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "채팅 메시지 내역 반환", content = @Content(schema = @Schema(implementation = ChatMessage.class))),
+            @ApiResponse(responseCode = "404", description = "채팅방 ID 없음")
+    })
+    public List<ChatMessage> getMessages(
+            @Parameter(description = "채팅방 ID", required = true) @PathVariable("roomId") String roomId) {
         chatRoomRepository.findRoomById(roomId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid room ID"));
         return chatMessageRepository.findByRoomIdOrderByTimestampAsc(roomId);

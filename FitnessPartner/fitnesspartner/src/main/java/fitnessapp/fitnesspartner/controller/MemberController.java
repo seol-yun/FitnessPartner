@@ -4,7 +4,6 @@ import fitnessapp.fitnesspartner.config.JwtUtil;
 import fitnessapp.fitnesspartner.domain.Member;
 import fitnessapp.fitnesspartner.service.BlockService;
 import fitnessapp.fitnesspartner.service.MemberService;
-
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +15,13 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -28,6 +34,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/members")
 @RequiredArgsConstructor
+@Tag(name = "Member Controller", description = "회원 관리 API")
 public class MemberController {
 
     private final MemberService memberService;
@@ -35,21 +42,37 @@ public class MemberController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/signup")
-    public String signup(@RequestParam("id") String id, @RequestParam("pw") String pw, @RequestParam("name") String name,
-                         @RequestParam("email") String email, @RequestParam("address") String address, @RequestParam("gender") String gender,
-                         @RequestParam("exerciseType") String exerciseType, @RequestParam("isTrainer") boolean isTrainer) {
+    @Operation(summary = "회원가입", description = "회원 정보를 입력받아 회원가입을 처리합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "회원가입 성공"),
+            @ApiResponse(responseCode = "400", description = "중복된 회원", content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    public String signup(
+            @Parameter(description = "회원 ID", required = true) @RequestParam("id") String id,
+            @Parameter(description = "비밀번호", required = true) @RequestParam("pw") String pw,
+            @Parameter(description = "이름", required = true) @RequestParam("name") String name,
+            @Parameter(description = "이메일", required = true) @RequestParam("email") String email,
+            @Parameter(description = "주소", required = true) @RequestParam("address") String address,
+            @Parameter(description = "성별", required = true) @RequestParam("gender") String gender,
+            @Parameter(description = "운동 유형", required = true) @RequestParam("exerciseType") String exerciseType,
+            @Parameter(description = "트레이너 여부", required = true) @RequestParam("isTrainer") boolean isTrainer) {
         int validate = memberService.validateDuplicateMember(new Member(id, pw, name, email, address, gender, exerciseType, isTrainer));
         if (validate == 0) {
             return "중복";
         } else {
-            // 회원가입 처리
             memberService.join(new Member(id, pw, name, email, address, gender, exerciseType, isTrainer));
             return "회원가입 성공!";
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> credentials) {
+    @Operation(summary = "로그인", description = "회원 ID와 비밀번호를 입력받아 로그인을 처리합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = Map.class))),
+            @ApiResponse(responseCode = "401", description = "로그인 실패", content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    public ResponseEntity<?> login(
+            @Parameter(description = "로그인 정보(ID와 비밀번호)", required = true) @RequestBody Map<String, String> credentials) {
         String id = credentials.get("id");
         String pw = credentials.get("pw");
 
@@ -63,31 +86,41 @@ public class MemberController {
     }
 
     @GetMapping("/profileImage/{id}")
-    public ResponseEntity<Resource> getProfileImage(@PathVariable String id) {
-        // 이미지 파일 경로 설정
-        String imagePath = "src/main/resources/static//image/memberprofile/" + id + ".jpg";
-
-        // 이미지 파일을 Resource로 읽어옴
+    @Operation(summary = "프로필 이미지 가져오기", description = "회원 ID를 입력받아 해당 회원의 프로필 이미지를 반환합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "이미지 반환", content = @Content(mediaType = "image/jpeg")),
+            @ApiResponse(responseCode = "404", description = "이미지 없음")
+    })
+    public ResponseEntity<Resource> getProfileImage(
+            @Parameter(description = "회원 ID", required = true) @PathVariable String id) {
+        String imagePath = "src/main/resources/static/image/memberprofile/" + id + ".jpg";
         Resource imageResource = new FileSystemResource(imagePath);
 
-        // 이미지 파일이 있는지 확인
         if (imageResource.exists() && imageResource.isReadable()) {
-            // 이미지 파일을 응답으로 전송
             return ResponseEntity.ok()
                     .contentType(MediaType.IMAGE_JPEG)
                     .body(imageResource);
         } else {
-            // 이미지 파일이 없으면 에러 응답
             return ResponseEntity.notFound().build();
         }
     }
 
     @PostMapping("/logout")
-    public void logout(HttpServletRequest request) {
+    @Operation(summary = "로그아웃", description = "현재 세션을 무효화하여 로그아웃을 처리합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "로그아웃 성공")
+    })
+    public void logout() {
         // No need to handle logout on the server side with JWT
     }
 
     @GetMapping("/info")
+    @Operation(summary = "회원 정보 조회", description = "현재 로그인된 회원의 정보를 반환합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "회원 정보 반환", content = @Content(schema = @Schema(implementation = Member.class))),
+            @ApiResponse(responseCode = "401", description = "로그인되지 않음"),
+            @ApiResponse(responseCode = "404", description = "회원 정보 없음")
+    })
     public ResponseEntity<Member> getMemberInfo(HttpServletRequest request) {
         String token = request.getHeader("Authorization").substring(7);
         String loginId = jwtUtil.extractUsername(token);
@@ -101,13 +134,17 @@ public class MemberController {
     }
 
     @GetMapping("/all")
+    @Operation(summary = "모든 회원 정보 조회", description = "로그인된 회원을 제외한 모든 회원 정보를 반환합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "회원 목록 반환", content = @Content(schema = @Schema(implementation = MemberInfo.class))),
+            @ApiResponse(responseCode = "401", description = "로그인되지 않음")
+    })
     public ResponseEntity<List<MemberInfo>> getAllMembers(HttpServletRequest request) {
         String token = request.getHeader("Authorization").substring(7);
         String loginId = jwtUtil.extractUsername(token);
 
         List<Member> allMembers = memberService.findAllExcept(loginId);
 
-        // 차단한 사용자는 제외하고 보여줌.
         List<String> blockMembersIds = blockService.findAllBlockMembers(loginId);
         List<MemberInfo> memberInfos = new ArrayList<>();
         for (Member member : allMembers) {
@@ -120,13 +157,17 @@ public class MemberController {
     }
 
     @GetMapping("/generalUsers")
+    @Operation(summary = "일반 회원 정보 조회", description = "로그인된 회원을 제외한 모든 일반 회원 정보를 반환합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "일반 회원 목록 반환", content = @Content(schema = @Schema(implementation = MemberInfo.class))),
+            @ApiResponse(responseCode = "401", description = "로그인되지 않음")
+    })
     public ResponseEntity<List<MemberInfo>> getGeneralMembers(HttpServletRequest request) {
         String token = request.getHeader("Authorization").substring(7);
         String loginId = jwtUtil.extractUsername(token);
 
         List<Member> allMembers = memberService.findGeneralMembers(loginId);
 
-        //차단한 사용자는 제외하고 보여줌.
         List<String> blockMembersIds = blockService.findAllBlockMembers(loginId);
         List<MemberInfo> memberInfos = new ArrayList<>();
         for (Member member : allMembers) {
@@ -139,13 +180,17 @@ public class MemberController {
     }
 
     @GetMapping("/trainerUsers")
+    @Operation(summary = "트레이너 회원 정보 조회", description = "로그인된 회원을 제외한 모든 트레이너 회원 정보를 반환합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "트레이너 회원 목록 반환", content = @Content(schema = @Schema(implementation = MemberInfo.class))),
+            @ApiResponse(responseCode = "401", description = "로그인되지 않음")
+    })
     public ResponseEntity<List<MemberInfo>> getTrainerMembers(HttpServletRequest request) {
         String token = request.getHeader("Authorization").substring(7);
         String loginId = jwtUtil.extractUsername(token);
 
         List<Member> allMembers = memberService.findTrainerMembers(loginId);
 
-        //차단한 사용자는 제외하고 보여줌.
         List<String> blockMembersIds = blockService.findAllBlockMembers(loginId);
         List<MemberInfo> memberInfos = new ArrayList<>();
         for (Member member : allMembers) {
@@ -158,8 +203,16 @@ public class MemberController {
     }
 
     @PostMapping("/addPhysicalInfo")
-    public String addPhysicalInfo(@RequestParam("date") String date, @RequestParam("height") String height,
-                                  @RequestParam("weight") String weight, HttpServletRequest request) {
+    @Operation(summary = "신체 정보 추가", description = "로그인된 회원의 신체 정보를 추가합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "신체 정보 추가 성공"),
+            @ApiResponse(responseCode = "401", description = "로그인되지 않음")
+    })
+    public String addPhysicalInfo(
+            @Parameter(description = "날짜", required = true) @RequestParam("date") String date,
+            @Parameter(description = "키", required = true) @RequestParam("height") String height,
+            @Parameter(description = "몸무게", required = true) @RequestParam("weight") String weight,
+            HttpServletRequest request) {
         String token = request.getHeader("Authorization").substring(7);
         String loginId = jwtUtil.extractUsername(token);
 
@@ -168,8 +221,16 @@ public class MemberController {
     }
 
     @PostMapping("/addExerciseInfo")
-    public String addExerciseInfo(@RequestParam("date") String date, @RequestParam("exerciseType") String exerciseType,
-                                  @RequestParam("durationMinutes") String durationMinutes, HttpServletRequest request) {
+    @Operation(summary = "운동 정보 추가", description = "로그인된 회원의 운동 정보를 추가합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "운동 정보 추가 성공"),
+            @ApiResponse(responseCode = "401", description = "로그인되지 않음")
+    })
+    public String addExerciseInfo(
+            @Parameter(description = "날짜", required = true) @RequestParam("date") String date,
+            @Parameter(description = "운동 유형", required = true) @RequestParam("exerciseType") String exerciseType,
+            @Parameter(description = "운동 시간(분)", required = true) @RequestParam("durationMinutes") String durationMinutes,
+            HttpServletRequest request) {
         String token = request.getHeader("Authorization").substring(7);
         String loginId = jwtUtil.extractUsername(token);
 
@@ -178,15 +239,24 @@ public class MemberController {
     }
 
     @PostMapping("/update")
-    public String update(@RequestParam("id") String id, @RequestParam("pw") String pw, @RequestParam("name") String name,
-                         @RequestParam("email") String email, @RequestParam("address") String address, @RequestParam("gender") String gender,
-                         @RequestParam("exerciseType") String exerciseType, @RequestParam("isTrainer") boolean isTrainer) {
-        // 사용자 정보 업데이트
+    @Operation(summary = "회원 정보 수정", description = "회원 정보를 수정하고 프로필 이미지를 업데이트합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "수정 성공"),
+            @ApiResponse(responseCode = "400", description = "수정 실패", content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    public String update(
+            @Parameter(description = "회원 ID", required = true) @RequestParam("id") String id,
+            @Parameter(description = "비밀번호", required = true) @RequestParam("pw") String pw,
+            @Parameter(description = "이름", required = true) @RequestParam("name") String name,
+            @Parameter(description = "이메일", required = true) @RequestParam("email") String email,
+            @Parameter(description = "주소", required = true) @RequestParam("address") String address,
+            @Parameter(description = "성별", required = true) @RequestParam("gender") String gender,
+            @Parameter(description = "운동 유형", required = true) @RequestParam("exerciseType") String exerciseType,
+            @Parameter(description = "트레이너 여부", required = true) @RequestParam("isTrainer") boolean isTrainer) {
         memberService.update(new Member(id, pw, name, email, address, gender, exerciseType, isTrainer));
         return "수정 성공!";
     }
 
-    // 이름(name)과 이메일(email)만 가지는 MemberInfo 클래스 정의
     @Setter
     @Getter
     class MemberInfo {
@@ -195,7 +265,6 @@ public class MemberController {
         private String exerciseType;
         private String gender;
 
-        // 생성자, Getter, Setter
         public MemberInfo(String id, String name, String exerciseType, String gender) {
             this.id = id;
             this.name = name;
