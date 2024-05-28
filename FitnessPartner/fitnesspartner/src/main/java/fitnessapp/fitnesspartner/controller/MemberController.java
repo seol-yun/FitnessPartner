@@ -112,7 +112,45 @@ public class MemberController {
         List<MemberInfo> memberInfos = new ArrayList<>();
         for (Member member : allMembers) {
             if (!blockMembersIds.contains(member.getId())) {
-                memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getEmail()));
+                memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getExerciseType(), member.getGender()));
+            }
+        }
+
+        return ResponseEntity.ok().body(memberInfos);
+    }
+
+    @GetMapping("/generalUsers")
+    public ResponseEntity<List<MemberInfo>> getGeneralMembers(HttpServletRequest request) {
+        String token = request.getHeader("Authorization").substring(7);
+        String loginId = jwtUtil.extractUsername(token);
+
+        List<Member> allMembers = memberService.findGeneralMembers(loginId);
+
+        //차단한 사용자는 제외하고 보여줌.
+        List<String> blockMembersIds = blockService.findAllBlockMembers(loginId);
+        List<MemberInfo> memberInfos = new ArrayList<>();
+        for (Member member : allMembers) {
+            if (!blockMembersIds.contains(member.getId())) {
+                memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getExerciseType(), member.getGender()));
+            }
+        }
+
+        return ResponseEntity.ok().body(memberInfos);
+    }
+
+    @GetMapping("/trainerUsers")
+    public ResponseEntity<List<MemberInfo>> getTrainerMembers(HttpServletRequest request) {
+        String token = request.getHeader("Authorization").substring(7);
+        String loginId = jwtUtil.extractUsername(token);
+
+        List<Member> allMembers = memberService.findTrainerMembers(loginId);
+
+        //차단한 사용자는 제외하고 보여줌.
+        List<String> blockMembersIds = blockService.findAllBlockMembers(loginId);
+        List<MemberInfo> memberInfos = new ArrayList<>();
+        for (Member member : allMembers) {
+            if (!blockMembersIds.contains(member.getId())) {
+                memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getExerciseType(), member.getGender()));
             }
         }
 
@@ -142,31 +180,10 @@ public class MemberController {
     @PostMapping("/update")
     public String update(@RequestParam("id") String id, @RequestParam("pw") String pw, @RequestParam("name") String name,
                          @RequestParam("email") String email, @RequestParam("address") String address, @RequestParam("gender") String gender,
-                         @RequestParam("exerciseType") String exerciseType, @RequestParam("isTrainer") boolean isTrainer,
-                         @RequestParam("profilePic") MultipartFile profilePic) {
-
-        try {
-            // 프로필 이미지를 저장할 경로 설정
-            String uploadDir = "src/main/resources/static/image/memberprofile";
-            String fileName = id + ".jpg";
-
-            // 프로필 이미지를 서버에 저장
-            Path uploadPath = Paths.get(uploadDir);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
-            Path filePath = uploadPath.resolve(fileName);
-
-            // 파일 복사 시 기존 파일 덮어쓰기
-            Files.copy(profilePic.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-            // 사용자 정보 업데이트
-            memberService.update(new Member(id, pw, name, email, address, gender, exerciseType, isTrainer));
-            return "수정 성공!";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "수정 실패!";
-        }
+                         @RequestParam("exerciseType") String exerciseType, @RequestParam("isTrainer") boolean isTrainer) {
+        // 사용자 정보 업데이트
+        memberService.update(new Member(id, pw, name, email, address, gender, exerciseType, isTrainer));
+        return "수정 성공!";
     }
 
     // 이름(name)과 이메일(email)만 가지는 MemberInfo 클래스 정의
@@ -175,13 +192,15 @@ public class MemberController {
     class MemberInfo {
         private String id;
         private String name;
-        private String email;
+        private String exerciseType;
+        private String gender;
 
         // 생성자, Getter, Setter
-        public MemberInfo(String id, String name, String email) {
+        public MemberInfo(String id, String name, String exerciseType, String gender) {
             this.id = id;
             this.name = name;
-            this.email = email;
+            this.exerciseType = exerciseType;
+            this.gender = gender;
         }
     }
 }
