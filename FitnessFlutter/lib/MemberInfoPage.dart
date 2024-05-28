@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'Login.dart';
-import 'FriendsPage.dart';
-import 'BlockedUsersPage.dart';
-import 'PhysicalInfoPage.dart';
-import 'UpdateMemberInfoPage.dart';
+import 'FriendsPage.dart';  // 친구 목록 페이지 임포트
+import 'BlockedUsersPage.dart';  // 차단된 사용자 목록 페이지 임포트
 
 class MemberInfoPage extends StatefulWidget {
   final String token;
@@ -69,6 +67,7 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
       );
 
       if (response.statusCode == 200) {
+        // 로컬 스토리지에서 토큰 삭제
         SharedPreferences prefs = await SharedPreferences.getInstance();
         await prefs.remove('token');
 
@@ -94,47 +93,38 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Center(
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                  ),
-                  SizedBox(height: 8.0),
-                  Text(
-                    '이름: $memberName',
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                  Text(
-                    '성별: $memberGender',
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                  Text(
-                    '거주지: $memberAddress',
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                  Text(
-                    '선호운동: $memberExerciseType',
-                    style: TextStyle(fontSize: 16.0),
-                  ),
-                ],
-              ),
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage('assets/profile.png'), // 이미지 경로를 올바르게 설정
+                ),
+                SizedBox(width: 16.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$memberName · $memberGender',
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                    Text(
+                      '$memberAddress',
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                    Text(
+                      '$memberExerciseType',
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            SizedBox(height: 32.0),
+            SizedBox(height: 16.0),
+            Divider(color: Colors.grey.withOpacity(0.5)), // 반투명한 선 추가
+            SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => PhysicalInfoPage(token: widget.token)),
-                );
-              },
-              child: Text('신체정보 추가'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
+                // 친구 목록 페이지로 이동
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => FriendsPage(token: widget.token)),
@@ -147,24 +137,13 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
             ),
             ElevatedButton(
               onPressed: () {
+                // 차단된 사용자 목록 페이지로 이동
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => BlockedUsersPage(token: widget.token)),
                 );
               },
               child: Text('차단된 사용자 목록'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => UpdateMemberInfoPage(token: widget.token)),
-                );
-              },
-              child: Text('회원정보 수정'),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
               ),

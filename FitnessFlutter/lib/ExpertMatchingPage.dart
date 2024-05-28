@@ -141,27 +141,38 @@ class _ExpertMatchingPageState extends State<ExpertMatchingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('전문가 정보'),
-      ),
       body: ListView.builder(
         itemCount: trainers.length,
         itemBuilder: (context, index) {
           final member = trainers[index];
-          return ListTile(
-            title: Text('${member['name']} (${member['email']})'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.person_add),
-                  onPressed: () => confirmAddFriend(member['id']),
-                ),
-                IconButton(
-                  icon: Icon(Icons.block),
-                  onPressed: () => confirmBlockMember(member['id']),
-                ),
-              ],
+          return Card(
+            margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+            child: ListTile(
+              leading: CircleAvatar(
+                backgroundImage: AssetImage('assets/placeholder.png'), // Ensure you have a placeholder image in your assets folder
+              ),
+              title: Text('${member['name']}'),
+              subtitle: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('전문종목: ${member['exerciseType']}'),
+                  Text('트레이닝 가능시간: ${member['possibleTime']}'),
+                  Text('성별: ${member['gender']}'), // Add more fields as necessary
+                ],
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.person_add),
+                    onPressed: () => confirmAddFriend(member['id']),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.block),
+                    onPressed: () => confirmBlockMember(member['id']),
+                  ),
+                ],
+              ),
             ),
           );
         },

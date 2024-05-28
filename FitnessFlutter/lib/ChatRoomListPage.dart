@@ -34,9 +34,6 @@ class _ChatRoomListPageState extends State<ChatRoomListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('My Chat Rooms'),
-      ),
       body: FutureBuilder<List<ChatRoom>>(
         future: fetchChatRooms(),
         builder: (context, snapshot) {
@@ -51,21 +48,39 @@ class _ChatRoomListPageState extends State<ChatRoomListPage> {
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 final chatRoom = snapshot.data![index];
-                return ListTile(
-                  title: Text(chatRoom.otherName ?? '(알 수 없음)'),
-                  trailing: ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => ChatPage(
-                            roomId: chatRoom.roomId,
-                            token: widget.token, // Pass the token to the ChatPage
-                          ),
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ChatPage(
+                          roomId: chatRoom.roomId,
+                          token: widget.token, // Pass the token to the ChatPage
                         ),
-                      );
-                    },
-                    child: Text('Enter'),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    margin: EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+                    padding: EdgeInsets.all(16.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.transparent), // Invisible border
+                      borderRadius: BorderRadius.circular(8.0),
+                      color: Colors.grey[200], // Background color for visibility
+                    ),
+                    child: ListTile(
+                      title: Text(chatRoom.otherName ?? '(알 수 없음)'),
+                      trailing: chatRoom.newMessageCount > 0
+                          ? CircleAvatar(
+                        radius: 12,
+                        backgroundColor: Colors.red,
+                        child: Text(
+                          '${chatRoom.newMessageCount}',
+                          style: TextStyle(color: Colors.white, fontSize: 12),
+                        ),
+                      )
+                          : null,
+                    ),
                   ),
                 );
               },
@@ -80,13 +95,15 @@ class _ChatRoomListPageState extends State<ChatRoomListPage> {
 class ChatRoom {
   final String roomId;
   final String otherName;
+  final int newMessageCount; // Added for new message count
 
-  ChatRoom({required this.roomId, required this.otherName});
+  ChatRoom({required this.roomId, required this.otherName, required this.newMessageCount});
 
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
     return ChatRoom(
       roomId: json['roomId'],
       otherName: json['otherName'] ?? '(알 수 없음)', // Default to "(알 수 없음)" if otherName is null
+      newMessageCount: json['newMessageCount'] ?? 0, // Default to 0 if newMessageCount is null
     );
   }
 }

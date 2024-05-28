@@ -179,7 +179,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Chat Room'),
+        title: Text(otherId),
         actions: [
           IconButton(
             icon: Icon(Icons.exit_to_app),
@@ -196,8 +196,25 @@ class _ChatPageState extends State<ChatPage> {
               itemCount: messages.length,
               itemBuilder: (context, index) {
                 final message = messages[index];
-                return ListTile(
-                  title: Text('${message['sender']}: ${message['content']}'),
+                final isMine = message['sender'] == myName;
+                return Container(
+                  alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
+                  margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                  child: Column(
+                    crossAxisAlignment: isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                    children: [
+                      if (!isMine) Text(message['sender']!, style: TextStyle(fontWeight: FontWeight.bold)),
+                      Container(
+                        padding: EdgeInsets.all(10.0),
+                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
+                        decoration: BoxDecoration(
+                          color: isMine ? Colors.yellow[100] : Colors.grey[200],
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Text(message['content']!),
+                      ),
+                    ],
+                  ),
                 );
               },
             ),
