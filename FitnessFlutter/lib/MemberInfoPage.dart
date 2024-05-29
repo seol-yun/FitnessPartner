@@ -5,6 +5,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'Login.dart';
 import 'FriendsPage.dart';  // 친구 목록 페이지 임포트
 import 'BlockedUsersPage.dart';  // 차단된 사용자 목록 페이지 임포트
+import 'UpdateMemberInfoPage.dart';
+import 'PhysicalInfoPage.dart';
 
 class MemberInfoPage extends StatefulWidget {
   final String token;
@@ -124,6 +126,18 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => PhysicalInfoPage(token: widget.token)),
+                );
+              },
+              child: Text('신체정보 추가'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
                 // 친구 목록 페이지로 이동
                 Navigator.push(
                   context,
@@ -144,6 +158,18 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
                 );
               },
               child: Text('차단된 사용자 목록'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => UpdateMemberInfoPage(token: widget.token)),
+                );
+              },
+              child: Text('회원정보 수정'),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
               ),
