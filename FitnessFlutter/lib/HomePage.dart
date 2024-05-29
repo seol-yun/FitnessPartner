@@ -5,6 +5,22 @@ import 'package:http/http.dart' as http;
 import 'PartnerMatchingPage.dart'; // 운동 파트너 매칭 페이지 임포트
 import 'ExpertMatchingPage.dart'; // 전문가 매칭 페이지 임포트
 
+class UserDataDTO {
+  final DateTime date;
+  final int height;
+  final int weight;
+
+  UserDataDTO({required this.date, required this.height, required this.weight});
+
+  factory UserDataDTO.fromJson(Map<String, dynamic> json) {
+    return UserDataDTO(
+      date: DateTime.parse(json['date']),
+      height: json['height'],
+      weight: json['weight'],
+    );
+  }
+}
+
 class HomePage extends StatefulWidget {
   final String token;
 
@@ -18,71 +34,51 @@ class _HomePageState extends State<HomePage> {
   double height = 0.0;
   double weight = 0.0;
   List<FlSpot> exerciseData = [];
+  List<UserDataDTO> physicalInfo = [];
   int _selectedIndex = 0;
 
   @override
   void initState() {
     super.initState();
-    fetchPhysicalInfo();
-    fetchExerciseInfo();
+    fetchPhysicalInfo(widget.token);
   }
 
-  Future<void> fetchPhysicalInfo() async {
+  Future<void> fetchPhysicalInfo(String token) async {
     try {
-      final response = await http.post(
-        Uri.parse("http://localhost:8080/api/members/addPhysicalInfo"),
+      final response = await http.get(
+        Uri.parse('http://localhost:8080/api/userdata/physicalinfo'),
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${widget.token}',
+          'Authorization': 'Bearer $token',
         },
-        body: json.encode({'date': '2023-05-25', 'height': '180', 'weight': '77'}),
       );
 
       if (response.statusCode == 200) {
-        final data = json.decode(utf8.decode(response.bodyBytes));
+        List<dynamic> body = json.decode(response.body);
+        physicalInfo = body.map((dynamic item) => UserDataDTO.fromJson(item)).toList();
+
+        // Sort physicalInfo by date
+        physicalInfo.sort((a, b) => a.date.compareTo(b.date));
+
+        // Update state with FlSpot list for the chart
         setState(() {
-          height = double.parse(data['height']);
-          weight = double.parse(data['weight']);
+          exerciseData = physicalInfo
+              .map((data) => FlSpot(
+            data.date.millisecondsSinceEpoch.toDouble(),
+            data.weight.toDouble(),
+          ))
+              .toList();
         });
       } else {
         throw Exception('Failed to load physical info');
       }
-    } catch (error) {
-      print('Error: $error');
+    } catch (e) {
+      print('Error: $e');
     }
   }
 
-  Future<void> fetchExerciseInfo() async {
-    try {
-      final response = await http.post(
-        Uri.parse("http://localhost:8080/api/members/addExerciseInfo"),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${widget.token}',
-        },
-        body: json.encode({'date': '2023-05-25', 'exerciseType': 'running', 'durationMinutes': '60'}),
-      );
-
-      if (response.statusCode == 200) {
-        // final data = json.decode(response.body);
-        // 예제 데이터를 기반으로 그래프 데이터를 만듭니다.
-        setState(() {
-          exerciseData = [
-            FlSpot(0, 1000),
-            FlSpot(1, 2000),
-            FlSpot(2, 4000),
-            FlSpot(3, 3000),
-            FlSpot(4, 5000),
-            FlSpot(5, 3500),
-            FlSpot(6, 3000),
-          ];
-        });
-      } else {
-        throw Exception('Failed to load exercise info');
-      }
-    } catch (error) {
-      print('Error: $error');
-    }
+  String getFormattedDate(double value) {
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(value.toInt());
+    return '${date.month}/${date.day}';
   }
 
   @override
@@ -134,7 +130,7 @@ class _HomePageState extends State<HomePage> {
             ),
             SizedBox(height: 20),
             // 하루 운동량 선형 그래프
-            Text('운동량'),
+            Text('몸무게 변화'),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: AspectRatio(
@@ -147,43 +143,27 @@ class _HomePageState extends State<HomePage> {
                         showTitles: true,
                         getTextStyles: (context, value) =>
                         const TextStyle(color: Colors.black, fontSize: 10),
-                        getTitles: (value) {
-                          switch (value.toInt()) {
-                            case 0:
-                              return 'MON';
-                            case 1:
-                              return 'TUE';
-                            case 2:
-                              return 'WED';
-                            case 3:
-                              return 'THU';
-                            case 4:
-                              return 'FRI';
-                            case 5:
-                              return 'SAT';
-                            case 6:
-                              return 'SUN';
-                          }
-                          return '';
-                        },
+                        getTitles: (value) => getFormattedDate(value),
                       ),
                       leftTitles: SideTitles(
                         showTitles: true,
                         getTextStyles: (context, value) =>
                         const TextStyle(color: Colors.black, fontSize: 10),
                         getTitles: (value) {
-                          return '${value.toInt()}kcal';
+                          return '${value.toInt()} kg';
                         },
                       ),
+                      topTitles: SideTitles(showTitles: false), // 위쪽 텍스트 제거
+                      rightTitles: SideTitles(showTitles: false), // 오른쪽 텍스트 제거
                     ),
                     borderData: FlBorderData(show: true),
-                    minX: 0,
-                    maxX: 6,
+                    minX: exerciseData.isNotEmpty ? exerciseData.first.x : 0,
+                    maxX: exerciseData.isNotEmpty ? exerciseData.last.x : 0,
                     minY: 0,
-                    maxY: 5000,
+                    maxY: 200,
                     lineBarsData: [
                       LineChartBarData(
-                        isCurved: true,
+                        isCurved: false, // 곡선을 직선으로 변경
                         colors: [Colors.lightBlue],
                         barWidth: 5,
                         belowBarData: BarAreaData(show: false),
