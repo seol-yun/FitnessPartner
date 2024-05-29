@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -22,11 +23,14 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
   String? _gender;
   String? _isTrainer;
   html.File? _profilePic;
+  Uint8List? _profilePicBytes;
+  String profileImageUrl = '';
 
   @override
   void initState() {
     super.initState();
     fetchMemberInfo();
+    fetchProfileImage();
   }
 
   Future<void> fetchMemberInfo() async {
@@ -58,45 +62,66 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
     }
   }
 
+  Future<void> fetchProfileImage() async {
+    try {
+      final response = await http.get(
+        Uri.parse("http://localhost:8080/api/members/profileImage/${_idController.text}"),
+        headers: {
+          'Authorization': 'Bearer ${widget.token}',
+        },
+      );
+      if (response.statusCode == 200) {
+        setState(() {
+          profileImageUrl = response.body;
+        });
+      } else {
+        print('Failed to load profile image');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
   Future<void> _pickProfilePic() async {
     final picker = html.FileUploadInputElement()..accept = 'image/*';
     picker.click();
     picker.onChange.listen((event) {
       final file = picker.files!.first;
-      setState(() {
-        _profilePic = file;
+      final reader = html.FileReader();
+      reader.readAsArrayBuffer(file);
+      reader.onLoadEnd.listen((event) {
+        setState(() {
+          _profilePic = file;
+          _profilePicBytes = reader.result as Uint8List?;
+        });
       });
     });
   }
 
   Future<void> _uploadProfilePic() async {
-    if (_profilePic == null) {
+    if (_profilePic == null || _profilePicBytes == null) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('프로필 사진을 선택해주세요.')));
       return;
     }
 
     try {
-      final reader = html.FileReader();
-      reader.readAsDataUrl(_profilePic!);
-      reader.onLoadEnd.listen((event) async {
-        final uri = Uri.parse('http://localhost:8080/api/members/uploadProfileImage');
-        final request = http.MultipartRequest('POST', uri)
-          ..headers['Authorization'] = 'Bearer ${widget.token}'
-          ..fields['id'] = _idController.text
-          ..files.add(http.MultipartFile.fromBytes(
-            'file',
-            (reader.result as String).codeUnits,
-            filename: _profilePic!.name,
-          ));
+      final uri = Uri.parse('http://localhost:8080/api/members/uploadProfileImage');
+      final request = http.MultipartRequest('POST', uri)
+        ..headers['Authorization'] = 'Bearer ${widget.token}'
+        ..fields['id'] = _idController.text
+        ..files.add(http.MultipartFile.fromBytes(
+          'file',
+          _profilePicBytes!,
+          filename: _profilePic!.name,
+        ));
 
-        final response = await request.send();
+      final response = await request.send();
 
-        if (response.statusCode == 200) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('프로필 사진 업로드 성공!')));
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('프로필 사진 업로드 실패!')));
-        }
-      });
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('프로필 사진 업로드 성공!')));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('프로필 사진 업로드 실패!')));
+      }
     } catch (error) {
       print('Error: $error');
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('프로필 사진 업로드 중 오류가 발생했습니다.')));

@@ -24,6 +24,7 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
   String memberExerciseType = '';
   String memberAddress = '';
   String memberGender = '';
+  String profileImageUrl = '';
 
   @override
   void initState() {
@@ -49,6 +50,7 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
           memberExerciseType = data['exerciseType'];
           memberGender = data['gender'];
           memberAddress = data['address'];
+          profileImageUrl = 'http://localhost:8080/api/members/profileImage/$memberId';
         });
       } else {
         print('Failed to load member info');
@@ -99,7 +101,7 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
               children: [
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: AssetImage('assets/profile.png'), // 이미지 경로를 올바르게 설정
+                  backgroundImage: NetworkImage(profileImageUrl),
                 ),
                 SizedBox(width: 16.0),
                 Column(

@@ -72,6 +72,7 @@ class _HomePageState extends State<HomePage> {
             data.date.millisecondsSinceEpoch.toDouble(),
             data.weight.toDouble(),
           ))
+              .where((spot) => !spot.y.isNaN)
               .toList();
         });
       } else {
@@ -89,6 +90,10 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    double maxYValue = exerciseData.isNotEmpty
+        ? exerciseData.map((spot) => spot.y).reduce((a, b) => a > b ? a : b)
+        : 200;
+
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -141,7 +146,8 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(16.0),
               child: AspectRatio(
                 aspectRatio: 1.7,
-                child: LineChart(
+                child: exerciseData.isNotEmpty
+                    ? LineChart(
                   LineChartData(
                     gridData: FlGridData(show: true),
                     titlesData: FlTitlesData(
@@ -163,10 +169,10 @@ class _HomePageState extends State<HomePage> {
                       rightTitles: SideTitles(showTitles: false), // 오른쪽 텍스트 제거
                     ),
                     borderData: FlBorderData(show: true),
-                    minX: exerciseData.isNotEmpty ? exerciseData.first.x : 0,
-                    maxX: exerciseData.isNotEmpty ? exerciseData.last.x : 0,
+                    minX: exerciseData.first.x,
+                    maxX: exerciseData.last.x,
                     minY: 0,
-                    maxY: 200,
+                    maxY: maxYValue,
                     lineBarsData: [
                       LineChartBarData(
                         isCurved: false, // 곡선을 직선으로 변경
@@ -178,6 +184,9 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ],
                   ),
+                )
+                    : Center(
+                  child: Text('데이터가 없습니다.'),
                 ),
               ),
             ),
