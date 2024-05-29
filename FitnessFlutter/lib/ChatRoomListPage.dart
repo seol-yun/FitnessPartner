@@ -1,6 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 
 import 'ChatPage.dart';
 
@@ -25,9 +25,29 @@ class _ChatRoomListPageState extends State<ChatRoomListPage> {
 
     if (response.statusCode == 200) {
       List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes)); // utf8.decode 추가
-      return data.map((chatRoom) => ChatRoom.fromJson(chatRoom)).toList();
+      List<ChatRoom> chatRooms = await Future.wait(data.map((chatRoom) async {
+        var room = ChatRoom.fromJson(chatRoom);
+        room.profileImageUrl = await fetchProfileImage(room.roomId);
+        return room;
+      }).toList());
+      return chatRooms;
     } else {
       throw Exception('Failed to load chat rooms');
+    }
+  }
+
+  Future<String> fetchProfileImage(String id) async {
+    final response = await http.get(
+      Uri.parse('http://localhost:8080/api/members/profileImage/$id'),
+      headers: {
+        'Authorization': 'Bearer ${widget.token}',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return 'http://localhost:8080/api/members/profileImage/$id';
+    } else {
+      return ''; // Return an empty string or a default image URL if the image is not found
     }
   }
 
@@ -69,6 +89,14 @@ class _ChatRoomListPageState extends State<ChatRoomListPage> {
                       color: Colors.grey[200], // Background color for visibility
                     ),
                     child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: chatRoom.profileImageUrl.isNotEmpty
+                            ? NetworkImage(chatRoom.profileImageUrl)
+                            : null, // Add default image if needed
+                        child: chatRoom.profileImageUrl.isEmpty
+                            ? Icon(Icons.person) // Default icon if no image
+                            : null,
+                      ),
                       title: Text(chatRoom.otherName ?? '(알 수 없음)'),
                       trailing: chatRoom.newMessageCount > 0
                           ? CircleAvatar(
@@ -95,9 +123,14 @@ class _ChatRoomListPageState extends State<ChatRoomListPage> {
 class ChatRoom {
   final String roomId;
   final String otherName;
-  final int newMessageCount; // Added for new message count
+  final int newMessageCount;
+  String profileImageUrl = '';
 
-  ChatRoom({required this.roomId, required this.otherName, required this.newMessageCount});
+  ChatRoom({
+    required this.roomId,
+    required this.otherName,
+    required this.newMessageCount,
+  });
 
   factory ChatRoom.fromJson(Map<String, dynamic> json) {
     return ChatRoom(

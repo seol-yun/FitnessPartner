@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'PartnerMatchingPage.dart'; // 운동 파트너 매칭 페이지 임포트
-import 'ExpertMatchingPage.dart'; // 전문가 매칭 페이지 임포트
 
 class UserDataDTO {
   final DateTime date;
@@ -43,6 +41,12 @@ class _HomePageState extends State<HomePage> {
     fetchPhysicalInfo(widget.token);
   }
 
+  @override
+  void dispose() {
+    // 여기에 타이머나 애니메이션 콜백을 취소하는 코드를 추가
+    super.dispose();
+  }
+
   Future<void> fetchPhysicalInfo(String token) async {
     try {
       final response = await http.get(
@@ -56,16 +60,13 @@ class _HomePageState extends State<HomePage> {
         List<dynamic> body = json.decode(response.body);
         physicalInfo = body.map((dynamic item) => UserDataDTO.fromJson(item)).toList();
 
-        // physicalInfo를 날짜별로 정렬
         physicalInfo.sort((a, b) => a.date.compareTo(b.date));
 
-        // 최신 키와 몸무게로 상태 업데이트
         if (physicalInfo.isNotEmpty) {
           height = physicalInfo.last.height.toDouble();
           weight = physicalInfo.last.weight.toDouble();
         }
 
-        // 차트에 사용할 FlSpot 리스트로 상태 업데이트
         if (mounted) {
           setState(() {
             exerciseData = physicalInfo
@@ -97,7 +98,6 @@ class _HomePageState extends State<HomePage> {
         child: Column(
           children: [
             SizedBox(height: 20),
-            // BMI 지수 원형 그래프
             Text('BMI'),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -125,7 +125,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            // BMI 정보 텍스트
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -138,7 +137,6 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
             SizedBox(height: 20),
-            // 하루 운동량 선형 그래프
             Text('몸무게 변화'),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -152,28 +150,30 @@ class _HomePageState extends State<HomePage> {
                       bottomTitles: SideTitles(
                         showTitles: true,
                         getTextStyles: (context, value) =>
-                        const TextStyle(color: Colors.black, fontSize: 10),
+                        const TextStyle(
+                            color: Colors.black, fontSize: 10),
                         getTitles: (value) => getFormattedDate(value),
                       ),
                       leftTitles: SideTitles(
                         showTitles: true,
                         getTextStyles: (context, value) =>
-                        const TextStyle(color: Colors.black, fontSize: 10),
+                        const TextStyle(
+                            color: Colors.black, fontSize: 10),
                         getTitles: (value) {
                           return '${value.toInt()} kg';
                         },
                       ),
-                      topTitles: SideTitles(showTitles: false), // 위쪽 텍스트 제거
-                      rightTitles: SideTitles(showTitles: false), // 오른쪽 텍스트 제거
+                      topTitles: SideTitles(showTitles: false),
+                      rightTitles: SideTitles(showTitles: false),
                     ),
                     borderData: FlBorderData(show: true),
                     minX: exerciseData.first.x,
                     maxX: exerciseData.last.x,
                     minY: 0,
-                    maxY: 200, // 최대값을 200으로 설정
+                    maxY: 200,
                     lineBarsData: [
                       LineChartBarData(
-                        isCurved: false, // 곡선을 직선으로 변경
+                        isCurved: false,
                         colors: [Colors.lightBlue],
                         barWidth: 5,
                         belowBarData: BarAreaData(show: false),
