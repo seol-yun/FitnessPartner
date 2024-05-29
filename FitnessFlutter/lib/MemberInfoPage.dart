@@ -24,6 +24,7 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
   String memberExerciseType = '';
   String memberAddress = '';
   String memberGender = '';
+  String profileImageUrl = '';
 
   @override
   void initState() {
@@ -49,6 +50,7 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
           memberExerciseType = data['exerciseType'];
           memberGender = data['gender'];
           memberAddress = data['address'];
+          profileImageUrl = 'http://localhost:8080/api/members/profileImage/$memberId';
         });
       } else {
         print('Failed to load member info');
@@ -90,108 +92,108 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+          Row(
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 50,
-                  backgroundImage: AssetImage('assets/profile.png'), // 이미지 경로를 올바르게 설정
-                ),
-                SizedBox(width: 16.0),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '$memberName · $memberGender',
-                      style: TextStyle(fontSize: 16.0),
-                    ),
-                    Text(
-                      '$memberAddress',
-                      style: TextStyle(fontSize: 16.0),
-                    ),
-                    Text(
-                      '$memberExerciseType',
-                      style: TextStyle(fontSize: 16.0),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-            SizedBox(height: 16.0),
-            Divider(color: Colors.grey.withOpacity(0.5)), // 반투명한 선 추가
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => PhysicalInfoPage(token: widget.token)),
-                );
-              },
-              child: Text('신체정보 추가'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
+          CircleAvatar(
+          radius: 50,
+            backgroundImage: NetworkImage(profileImageUrl),
+          ),
+          SizedBox(width: 16.0),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '$memberName · $memberGender',
+                style: TextStyle(fontSize: 16.0),
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // 친구 목록 페이지로 이동
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => FriendsPage(token: widget.token)),
-                );
-              },
-              child: Text('친구 목록'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
+              Text(
+                '$memberAddress',
+                style: TextStyle(fontSize: 16.0),
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                // 차단된 사용자 목록 페이지로 이동
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => BlockedUsersPage(token: widget.token)),
-                );
-              },
-              child: Text('차단된 사용자 목록'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
+              Text(
+                '$memberExerciseType',
+                style: TextStyle(fontSize: 16.0),
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => UpdateMemberInfoPage(token: widget.token)),
-                );
-              },
-              child: Text('회원정보 수정'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-            ),
-            SizedBox(height: 32.0),
-            Center(
-              child: ElevatedButton(
-                onPressed: logout,
-                child: Text('로그아웃'),
-                style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
-                    foregroundColor: Colors.white,
-                    minimumSize: Size(double.infinity, 50),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    )
-                ),
-              ),
-            ),
+            ],
+          ),
           ],
         ),
-      ),
+        SizedBox(height: 16.0),
+        Divider(color: Colors.grey.withOpacity(0.5)), // 반투명한 선 추가
+        SizedBox(height: 16.0),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => PhysicalInfoPage(token: widget.token)),
+            );
+          },
+          child: Text('신체정보 추가'),
+          style: ElevatedButton.styleFrom(
+            minimumSize: Size(double.infinity, 50),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            // 친구 목록 페이지로 이동
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => FriendsPage(token: widget.token)),
+            );
+          },
+          child: Text('친구 목록'),
+          style: ElevatedButton.styleFrom(
+            minimumSize: Size(double.infinity, 50),
+          ),
+        ),
+        ElevatedButton(
+        onPressed: () {
+      // 차단된 사용자 목록 페이지로 이동
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => BlockedUsersPage(token: widget.token)),
+      );
+    },
+    child: Text('차단된 사용자 목록'),
+    style: ElevatedButton.styleFrom(
+      minimumSize: Size(double.infinity, 50),
+    ),
+        ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => UpdateMemberInfoPage(token: widget.token)),
+                  );
+                },
+                child: Text('회원정보 수정'),
+                style: ElevatedButton.styleFrom(
+                  minimumSize: Size(double.infinity, 50),
+                ),
+              ),
+              SizedBox(height: 32.0),
+              Center(
+                child: ElevatedButton(
+                  onPressed: logout,
+                  child: Text('로그아웃'),
+                  style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.red,
+                      foregroundColor: Colors.white,
+                      minimumSize: Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8.0),
+                      )
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
     );
   }
 }

@@ -1,8 +1,7 @@
 import 'dart:convert';
-import 'dart:io';
+import 'dart:html' as html;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:image_picker/image_picker.dart';
 
 class UpdateMemberInfoPage extends StatefulWidget {
   final String token;
@@ -22,7 +21,7 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
   final TextEditingController _exerciseTypeController = TextEditingController();
   String? _gender;
   String? _isTrainer;
-  File? _profilePic;
+  html.File? _profilePic;
 
   @override
   void initState() {
@@ -60,37 +59,69 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
   }
 
   Future<void> _pickProfilePic() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
+    final picker = html.FileUploadInputElement()..accept = 'image/*';
+    picker.click();
+    picker.onChange.listen((event) {
+      final file = picker.files!.first;
       setState(() {
-        _profilePic = File(pickedFile.path);
+        _profilePic = file;
       });
+    });
+  }
+
+  Future<void> _uploadProfilePic() async {
+    if (_profilePic == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('프로필 사진을 선택해주세요.')));
+      return;
+    }
+
+    try {
+      final reader = html.FileReader();
+      reader.readAsDataUrl(_profilePic!);
+      reader.onLoadEnd.listen((event) async {
+        final uri = Uri.parse('http://localhost:8080/api/members/uploadProfileImage');
+        final request = http.MultipartRequest('POST', uri)
+          ..headers['Authorization'] = 'Bearer ${widget.token}'
+          ..fields['id'] = _idController.text
+          ..files.add(http.MultipartFile.fromBytes(
+            'file',
+            (reader.result as String).codeUnits,
+            filename: _profilePic!.name,
+          ));
+
+        final response = await request.send();
+
+        if (response.statusCode == 200) {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('프로필 사진 업로드 성공!')));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('프로필 사진 업로드 실패!')));
+        }
+      });
+    } catch (error) {
+      print('Error: $error');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('프로필 사진 업로드 중 오류가 발생했습니다.')));
     }
   }
 
   Future<void> updateMemberInfo() async {
     try {
-      var request = http.MultipartRequest(
-        'POST',
+      final response = await http.post(
         Uri.parse('http://localhost:8080/api/members/update'),
+        headers: {
+          'Authorization': 'Bearer ${widget.token}',
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'id': _idController.text,
+          'pw': _passwordController.text,
+          'name': _nameController.text,
+          'email': _emailController.text,
+          'address': _addressController.text,
+          'gender': _gender,
+          'exerciseType': _exerciseTypeController.text,
+          'isTrainer': _isTrainer,
+        }),
       );
-      request.headers['Authorization'] = 'Bearer ${widget.token}';
-      request.fields['id'] = _idController.text;
-      request.fields['pw'] = _passwordController.text;
-      request.fields['name'] = _nameController.text;
-      request.fields['email'] = _emailController.text;
-      request.fields['address'] = _addressController.text;
-      request.fields['gender'] = _gender ?? '';
-      request.fields['exerciseType'] = _exerciseTypeController.text;
-      request.fields['isTrainer'] = _isTrainer ?? '';
-
-      if (_profilePic != null) {
-        request.files.add(
-          await http.MultipartFile.fromPath('profilePic', _profilePic!.path),
-        );
-      }
-
-      final response = await request.send();
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('회원정보 수정 성공!')));
@@ -209,12 +240,20 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
             ),
             ElevatedButton(
               onPressed: _pickProfilePic,
-              child: Text('프로필 사진 수정'),
+              child: Text('프로필 사진 선택'),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: _uploadProfilePic,
+              child: Text('프로필 사진 업로드'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
               onPressed: updateMemberInfo,
-              child: Text('수정'),
+              child: Text('회원정보 수정'),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
               ),
