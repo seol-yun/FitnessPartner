@@ -59,6 +59,12 @@ class _HomePageState extends State<HomePage> {
         // Sort physicalInfo by date
         physicalInfo.sort((a, b) => a.date.compareTo(b.date));
 
+        // Update state with the latest height and weight
+        if (physicalInfo.isNotEmpty) {
+          height = physicalInfo.last.height.toDouble();
+          weight = physicalInfo.last.weight.toDouble();
+        }
+
         // Update state with FlSpot list for the chart
         setState(() {
           exerciseData = physicalInfo
