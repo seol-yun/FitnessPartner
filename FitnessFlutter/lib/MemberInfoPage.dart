@@ -136,6 +136,7 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
                 minimumSize: Size(double.infinity, 50),
               ),
             ),
+            SizedBox(height: 5.0), // 5px 간격 추가
             ElevatedButton(
               onPressed: () {
                 // 친구 목록 페이지로 이동
@@ -149,6 +150,7 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
                 minimumSize: Size(double.infinity, 50),
               ),
             ),
+            SizedBox(height: 5.0), // 5px 간격 추가
             ElevatedButton(
               onPressed: () {
                 // 차단된 사용자 목록 페이지로 이동
@@ -162,6 +164,7 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
                 minimumSize: Size(double.infinity, 50),
               ),
             ),
+            SizedBox(height: 5.0), // 5px 간격 추가
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
