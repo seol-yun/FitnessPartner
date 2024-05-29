@@ -163,7 +163,8 @@ class _ChatPageState extends State<ChatPage> {
       if (response.statusCode == 200) {
         stompClient?.send(
           destination: '/app/send-message/${widget.roomId}',
-          body: json.encode({'content': '($myName님이 채팅에서 나갔습니다.)', 'sender': ''}),
+          body: json.encode(
+              {'content': '($myName님이 채팅에서 나갔습니다.)', 'sender': ''}),
         );
 
         Navigator.pop(context);
@@ -179,7 +180,7 @@ class _ChatPageState extends State<ChatPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(otherId),
+        title: Text(otherName),
         actions: [
           IconButton(
             icon: Icon(Icons.exit_to_app),
@@ -198,17 +199,27 @@ class _ChatPageState extends State<ChatPage> {
                 final message = messages[index];
                 final isMine = message['sender'] == myName;
                 return Container(
-                  alignment: isMine ? Alignment.centerRight : Alignment.centerLeft,
-                  margin: EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
+                  alignment:
+                  isMine ? Alignment.centerRight : Alignment.centerLeft,
+                  margin:
+                  EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
                   child: Column(
-                    crossAxisAlignment: isMine ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+                    crossAxisAlignment: isMine
+                        ? CrossAxisAlignment.end
+                        : CrossAxisAlignment.start,
                     children: [
-                      if (!isMine) Text(message['sender']!, style: TextStyle(fontWeight: FontWeight.bold)),
+                      if (!isMine)
+                        Text(message['sender']!,
+                            style: TextStyle(fontWeight: FontWeight.bold)),
                       Container(
                         padding: EdgeInsets.all(10.0),
-                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.6),
+                        constraints: BoxConstraints(
+                            maxWidth:
+                            MediaQuery.of(context).size.width * 0.6),
                         decoration: BoxDecoration(
-                          color: isMine ? Colors.yellow[100] : Colors.grey[200],
+                          color: isMine
+                              ? Colors.lightBlue[50]
+                              : Colors.grey[200],
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         child: Text(message['content']!),
@@ -219,7 +230,8 @@ class _ChatPageState extends State<ChatPage> {
               },
             ),
           ),
-          Padding(
+          Container(
+            color: Colors.lightBlue[50],
             padding: const EdgeInsets.all(8.0),
             child: Row(
               children: [
@@ -227,7 +239,7 @@ class _ChatPageState extends State<ChatPage> {
                   child: TextField(
                     controller: messageController,
                     decoration: InputDecoration(
-                      hintText: 'Type your message',
+                      hintText: '여기에 메세지를 입력하세요.',
                     ),
                   ),
                 ),

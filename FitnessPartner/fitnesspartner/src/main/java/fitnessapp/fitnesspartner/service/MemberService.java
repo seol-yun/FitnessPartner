@@ -1,8 +1,10 @@
 package fitnessapp.fitnesspartner.service;
 
+import fitnessapp.fitnesspartner.domain.ExerciseData;
 import fitnessapp.fitnesspartner.domain.Friend;
 import fitnessapp.fitnesspartner.domain.Member;
 import fitnessapp.fitnesspartner.domain.UserData;
+import fitnessapp.fitnesspartner.repository.ExerciseDataRepository;
 import fitnessapp.fitnesspartner.repository.FriendRepository;
 import fitnessapp.fitnesspartner.repository.MemberRepository;
 import fitnessapp.fitnesspartner.repository.UserDataRepository;
@@ -23,6 +25,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
     private final FriendRepository friendRepository;
     private final UserDataRepository userDataRepository;
+    private final ExerciseDataRepository exerciseDataRepository;
 
     /**
      * 회원 가입
@@ -137,7 +140,7 @@ public class MemberService {
         int newHeight = Integer.parseInt(height);
         int newWeigth = Integer.parseInt(weight);
         Member newMember = memberRepository.findOne(loginId);
-        UserData userData = new UserData(newMember, newDate, newHeight, newWeigth, null, -1);
+        UserData userData = new UserData(newMember, newDate, newHeight, newWeigth);
         userDataRepository.save(userData);
 
         return userData.getId();
@@ -150,10 +153,10 @@ public class MemberService {
         LocalDate newDate = LocalDate.parse(date);
         int newDurationMinutes = Integer.parseInt(durationMinutes);
         Member newMember = memberRepository.findOne(loginId);
-        UserData userData = new UserData(newMember, newDate, -1, -1, exerciseType, newDurationMinutes);
-        userDataRepository.save(userData);
+        ExerciseData exerciseData = new ExerciseData(newMember, newDate, exerciseType, newDurationMinutes);
+        exerciseDataRepository.save(exerciseData);
 
-        return userData.getId();
+        return exerciseData.getId();
     }
 
     /**

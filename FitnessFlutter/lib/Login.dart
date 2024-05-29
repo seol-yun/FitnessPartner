@@ -128,8 +128,8 @@ class LoginPage extends StatelessWidget {
                       onPressed: () => _login(context),
                       child: Text('로그인'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.lightBlue,
-                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.lightBlue[50],
+                        foregroundColor: Colors.deepPurple,
                         minimumSize: Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
