@@ -56,25 +56,27 @@ class _HomePageState extends State<HomePage> {
         List<dynamic> body = json.decode(response.body);
         physicalInfo = body.map((dynamic item) => UserDataDTO.fromJson(item)).toList();
 
-        // Sort physicalInfo by date
+        // physicalInfo를 날짜별로 정렬
         physicalInfo.sort((a, b) => a.date.compareTo(b.date));
 
-        // Update state with the latest height and weight
+        // 최신 키와 몸무게로 상태 업데이트
         if (physicalInfo.isNotEmpty) {
           height = physicalInfo.last.height.toDouble();
           weight = physicalInfo.last.weight.toDouble();
         }
 
-        // Update state with FlSpot list for the chart
-        setState(() {
-          exerciseData = physicalInfo
-              .map((data) => FlSpot(
-            data.date.millisecondsSinceEpoch.toDouble(),
-            data.weight.toDouble(),
-          ))
-              .where((spot) => !spot.y.isNaN)
-              .toList();
-        });
+        // 차트에 사용할 FlSpot 리스트로 상태 업데이트
+        if (mounted) {
+          setState(() {
+            exerciseData = physicalInfo
+                .map((data) => FlSpot(
+              data.date.millisecondsSinceEpoch.toDouble(),
+              data.weight.toDouble(),
+            ))
+                .where((spot) => !spot.y.isNaN)
+                .toList();
+          });
+        }
       } else {
         throw Exception('Failed to load physical info');
       }
@@ -90,10 +92,6 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    double maxYValue = exerciseData.isNotEmpty
-        ? exerciseData.map((spot) => spot.y).reduce((a, b) => a > b ? a : b)
-        : 200;
-
     return Scaffold(
       body: SingleChildScrollView(
         child: Column(
@@ -172,7 +170,7 @@ class _HomePageState extends State<HomePage> {
                     minX: exerciseData.first.x,
                     maxX: exerciseData.last.x,
                     minY: 0,
-                    maxY: maxYValue,
+                    maxY: 200, // 최대값을 200으로 설정
                     lineBarsData: [
                       LineChartBarData(
                         isCurved: false, // 곡선을 직선으로 변경
