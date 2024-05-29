@@ -93,7 +93,7 @@ public class MemberController {
     })
     public ResponseEntity<Resource> getProfileImage(
             @Parameter(description = "회원 ID", required = true) @PathVariable String id) {
-        String imagePath = "src/main/resources/static/image/memberprofile/" + id + ".jpg";
+        String imagePath = "C://FitnessImage" + id + ".jpg";
         Resource imageResource = new FileSystemResource(imagePath);
 
         if (imageResource.exists() && imageResource.isReadable()) {
@@ -102,6 +102,36 @@ public class MemberController {
                     .body(imageResource);
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/uploadProfileImage")
+    @Operation(summary = "프로필 이미지 업로드", description = "회원 ID와 이미지를 입력받아 프로필 이미지를 업로드합니다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "이미지 업로드 성공"),
+            @ApiResponse(responseCode = "400", description = "이미지 업로드 실패", content = @Content(schema = @Schema(implementation = String.class)))
+    })
+    public ResponseEntity<String> uploadProfileImage(
+            @Parameter(description = "회원 ID", required = true) @RequestParam("id") String id,
+            @Parameter(description = "프로필 이미지", required = true) @RequestParam("file") MultipartFile file) {
+        try {
+            if (file.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("빈 파일입니다.");
+            }
+
+            String directoryPath = "C://FitnessImage";
+            Path directory = Paths.get(directoryPath);
+
+            if (!Files.exists(directory)) {
+                Files.createDirectories(directory);
+            }
+
+            Path filePath = directory.resolve(id + ".jpg");
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            return ResponseEntity.ok("이미지 업로드 성공");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("이미지 업로드 실패: " + e.getMessage());
         }
     }
 
