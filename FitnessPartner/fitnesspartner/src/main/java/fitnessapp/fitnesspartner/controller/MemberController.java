@@ -93,7 +93,7 @@ public class MemberController {
     })
     public ResponseEntity<Resource> getProfileImage(
             @Parameter(description = "회원 ID", required = true) @PathVariable String id) {
-        String imagePath = "C://FitnessImage" + id + ".jpg";
+        String imagePath = "C://FitnessImage/" + id + ".jpg";
         Resource imageResource = new FileSystemResource(imagePath);
 
         if (imageResource.exists() && imageResource.isReadable()) {
@@ -275,15 +275,17 @@ public class MemberController {
             @ApiResponse(responseCode = "400", description = "수정 실패", content = @Content(schema = @Schema(implementation = String.class)))
     })
     public String update(
-            @Parameter(description = "회원 ID", required = true) @RequestParam("id") String id,
             @Parameter(description = "비밀번호", required = true) @RequestParam("pw") String pw,
             @Parameter(description = "이름", required = true) @RequestParam("name") String name,
             @Parameter(description = "이메일", required = true) @RequestParam("email") String email,
             @Parameter(description = "주소", required = true) @RequestParam("address") String address,
             @Parameter(description = "성별", required = true) @RequestParam("gender") String gender,
             @Parameter(description = "운동 유형", required = true) @RequestParam("exerciseType") String exerciseType,
-            @Parameter(description = "트레이너 여부", required = true) @RequestParam("isTrainer") boolean isTrainer) {
-        memberService.update(new Member(id, pw, name, email, address, gender, exerciseType, isTrainer));
+            @Parameter(description = "트레이너 여부", required = true) @RequestParam("isTrainer") boolean isTrainer,
+            HttpServletRequest request) {
+        String token = request.getHeader("Authorization").substring(7);
+        String loginId = jwtUtil.extractUsername(token);
+        memberService.update(new Member(loginId, pw, name, email, address, gender, exerciseType, isTrainer));
         return "수정 성공!";
     }
 
