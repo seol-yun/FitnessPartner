@@ -139,22 +139,21 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
 
   Future<void> updateMemberInfo() async {
     try {
-      final response = await http.post(
-        Uri.parse('http://localhost:8080/api/members/update'),
-        headers: {
-          'Authorization': 'Bearer ${widget.token}',
-          'Content-Type': 'application/json',
-        },
-        body: jsonEncode({
-          'pw': _passwordController.text,
-          'name': _nameController.text,
-          'email': _emailController.text,
-          'address': _addressController.text,
-          'gender': _gender,
-          'exerciseType': _exerciseTypeController.text,
-          'isTrainer': _isTrainer,
-        }),
-      );
+      var uri = Uri.parse('http://localhost:8080/api/members/update');
+
+      // Creating FormData
+      var request = http.MultipartRequest('POST', uri)
+        ..headers['Authorization'] = 'Bearer ${widget.token}'
+        ..fields['pw'] = _passwordController.text
+        ..fields['name'] = _nameController.text
+        ..fields['email'] = _emailController.text
+        ..fields['address'] = _addressController.text
+        ..fields['gender'] = _gender!
+        ..fields['exerciseType'] = _exerciseTypeController.text
+        ..fields['isTrainer'] = _isTrainer.toString();
+
+      // Sending request and getting response
+      var response = await http.Response.fromStream(await request.send());
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('회원정보 수정 성공!')));
