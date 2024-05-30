@@ -27,7 +27,7 @@ class _ChatRoomListPageState extends State<ChatRoomListPage> {
       List<dynamic> data = jsonDecode(utf8.decode(response.bodyBytes)); // utf8.decode 추가
       List<ChatRoom> chatRooms = await Future.wait(data.map((chatRoom) async {
         var room = ChatRoom.fromJson(chatRoom);
-        room.profileImageUrl = await fetchProfileImage(room.roomId);
+        room.profileImageUrl = await fetchProfileImage(room.otherId);
         return room;
       }).toList());
       return chatRooms;
@@ -123,12 +123,14 @@ class _ChatRoomListPageState extends State<ChatRoomListPage> {
 class ChatRoom {
   final String roomId;
   final String otherName;
+  final String otherId;
   final int newMessageCount;
   String profileImageUrl = '';
 
   ChatRoom({
     required this.roomId,
     required this.otherName,
+    required this.otherId,
     required this.newMessageCount,
   });
 
@@ -136,6 +138,7 @@ class ChatRoom {
     return ChatRoom(
       roomId: json['roomId'],
       otherName: json['otherName'] ?? '(알 수 없음)', // Default to "(알 수 없음)" if otherName is null
+      otherId: json['otherId'],
       newMessageCount: json['newMessageCount'] ?? 0, // Default to 0 if newMessageCount is null
     );
   }

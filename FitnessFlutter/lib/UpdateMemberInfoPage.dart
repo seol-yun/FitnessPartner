@@ -20,8 +20,14 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _exerciseTypeController = TextEditingController();
-  String? _gender;
-  String? _isTrainer;
+  String? _gender="male";
+  String pw = "";
+  String name = "";
+  String email = "";
+  String address = "";
+  String exerciseType = "";
+  bool? _isTrainer=false;
+  Image? profileImage;
   html.File? _profilePic;
   Uint8List? _profilePicBytes;
   String profileImageUrl = '';
@@ -30,7 +36,6 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
   void initState() {
     super.initState();
     fetchMemberInfo();
-    fetchProfileImage();
   }
 
   Future<void> fetchMemberInfo() async {
@@ -52,10 +57,11 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
           _addressController.text = data['address'];
           _gender = data['gender'];
           _exerciseTypeController.text = data['exerciseType'];
-          _isTrainer = data['trainer'].toString();
+          _isTrainer = data['trainer'];
         });
+        fetchProfileImage();
       } else {
-        print('Failed to load member info');
+        print('회원정보를 불러오지 못했습니다.');
       }
     } catch (error) {
       print('Error: $error');
@@ -72,10 +78,12 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
       );
       if (response.statusCode == 200) {
         setState(() {
-          profileImageUrl = response.body;
+          setState(() {
+            profileImage = Image.memory(response.bodyBytes);
+          });
         });
       } else {
-        print('Failed to load profile image');
+        print('프로필 사진을 불러오지 못했습니다.');
       }
     } catch (error) {
       print('Error: $error');
@@ -97,6 +105,7 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
       });
     });
   }
+
 
   Future<void> _uploadProfilePic() async {
     if (_profilePic == null || _profilePicBytes == null) {
@@ -137,7 +146,6 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'id': _idController.text,
           'pw': _passwordController.text,
           'name': _nameController.text,
           'email': _emailController.text,
@@ -158,6 +166,18 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('회원정보 수정 중 오류가 발생했습니다.')));
     }
   }
+  // Modify _getProfileImage method to handle both local and network images
+  ImageProvider? _getProfileImage() {
+    if (_profilePicBytes != null) {
+      return MemoryImage(_profilePicBytes!);
+    } else if (profileImage != null) {
+      return profileImage!.image;
+    } else if (profileImageUrl.isNotEmpty) {
+      return NetworkImage(profileImageUrl);
+    } else {
+      return null;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -170,6 +190,29 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Center(
+              child: GestureDetector(
+                onTap: _pickProfilePic,
+                child: CircleAvatar(
+                  radius: 50,
+                  // Use _getProfileImage() method here
+                  backgroundImage: _getProfileImage(),
+                  child: _profilePicBytes == null && profileImageUrl.isEmpty
+                      ? Icon(Icons.person, size: 50)
+                      : null,
+                ),
+              ),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: _uploadProfilePic,
+              child: Text('프로필 사진 업로드'),
+              style: ElevatedButton.styleFrom(
+                minimumSize: Size(double.infinity, 50),
+              ),
+            ),
+
+            SizedBox(height: 16.0),
             TextField(
               controller: _idController,
               decoration: InputDecoration(
@@ -239,8 +282,8 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
               children: [
                 ListTile(
                   title: const Text('운동전문가'),
-                  leading: Radio<String>(
-                    value: 'True',
+                  leading: Radio<bool>(
+                    value: true,
                     groupValue: _isTrainer,
                     onChanged: (value) {
                       setState(() {
@@ -251,8 +294,8 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
                 ),
                 ListTile(
                   title: const Text('일반사용자'),
-                  leading: Radio<String>(
-                    value: 'False',
+                  leading: Radio<bool>(
+                    value: false,
                     groupValue: _isTrainer,
                     onChanged: (value) {
                       setState(() {
@@ -264,25 +307,18 @@ class _UpdateMemberInfoPageState extends State<UpdateMemberInfoPage> {
               ],
             ),
             ElevatedButton(
-              onPressed: _pickProfilePic,
-              child: Text('프로필 사진 선택'),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
-              onPressed: _uploadProfilePic,
-              child: Text('프로필 사진 업로드'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: Size(double.infinity, 50),
-              ),
-            ),
-            SizedBox(height: 16.0),
-            ElevatedButton(
               onPressed: updateMemberInfo,
               child: Text('회원정보 수정'),
               style: ElevatedButton.styleFrom(
                 minimumSize: Size(double.infinity, 50),
               ),
             ),
+            // SizedBox(height: 16.0),
+            // ElevatedButton(
+            //   onPressed: _pickProfilePic,
+            //   child: Text('프로필 사진 선택'),
+            // ),
+
           ],
         ),
       ),

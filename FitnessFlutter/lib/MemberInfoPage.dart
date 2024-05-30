@@ -25,6 +25,7 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
   String memberAddress = '';
   String memberGender = '';
   String profileImageUrl = '';
+  Image? profileImage;
 
   @override
   void initState() {
@@ -52,8 +53,24 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
           memberAddress = data['address'];
           profileImageUrl = 'http://localhost:8080/api/members/profileImage/$memberId';
         });
+        fetchProfileImage();
       } else {
         print('Failed to load member info');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
+  }
+
+  Future<void> fetchProfileImage() async {
+    try {
+      final response = await http.get(Uri.parse(profileImageUrl));
+      if (response.statusCode == 200) {
+        setState(() {
+          profileImage = Image.memory(response.bodyBytes);
+        });
+      } else {
+        print('Failed to load profile image');
       }
     } catch (error) {
       print('Error: $error');
@@ -101,7 +118,7 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
               children: [
                 CircleAvatar(
                   radius: 50,
-                  backgroundImage: NetworkImage(profileImageUrl),
+                  backgroundImage: profileImage?.image,
                 ),
                 SizedBox(width: 16.0),
                 Column(
