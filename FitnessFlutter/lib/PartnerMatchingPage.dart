@@ -149,7 +149,16 @@ class _PartnerMatchingPageState extends State<PartnerMatchingPage> {
             margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: ListTile(
               leading: CircleAvatar(
-                backgroundImage: AssetImage('assets/placeholder.png'), // Ensure you have a placeholder image in your assets folder
+                backgroundImage: NetworkImage(
+                  'http://localhost:8080/api/members/profileImage/${member['id']}',
+                ),
+                onBackgroundImageError: (_, __) {
+                  setState(() {
+                    member['hasImageError'] = true;
+                  });
+                },
+                backgroundColor: member['hasImageError'] == true ? Colors.transparent : null,
+                child: member['hasImageError'] == true ? Icon(Icons.person) : null,
               ),
               title: Text('${member['name']}'),
               subtitle: Column(

@@ -26,6 +26,7 @@ class _ChatPageState extends State<ChatPage> {
   String otherName = '';
   String timeStamp = '';
   bool isLoading = true;
+  String profileImageUrl = '';
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _ChatPageState extends State<ChatPage> {
     fetchChatRoomDetails();
     fetchMessages();
   }
+
 
   void connectToWebSocket() {
     stompClient = StompClient(
@@ -94,11 +96,31 @@ class _ChatPageState extends State<ChatPage> {
           otherName = chatRoom['otherName'];
           timeStamp = chatRoom['timeStamp'];
         });
+        fetchProfileImage();
       } else {
         print('Failed to load chat room details');
       }
     } catch (e) {
       print('Error fetching chat room details: $e');
+    }
+  }
+
+  Future<void> fetchProfileImage() async {
+    final response = await http.get(
+      Uri.parse('http://localhost:8080/api/members/profileImage/$otherId'),
+      headers: {
+        'Authorization': 'Bearer ${widget.token}',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      setState(() {
+        profileImageUrl = 'http://localhost:8080/api/members/profileImage/$otherId';
+      });
+    } else {
+      setState(() {
+        profileImageUrl = ''; // Set an empty string or default image URL if image is not found
+      });
     }
   }
 
@@ -203,26 +225,46 @@ class _ChatPageState extends State<ChatPage> {
                   isMine ? Alignment.centerRight : Alignment.centerLeft,
                   margin:
                   EdgeInsets.symmetric(vertical: 2.0, horizontal: 8.0),
-                  child: Column(
-                    crossAxisAlignment: isMine
-                        ? CrossAxisAlignment.end
-                        : CrossAxisAlignment.start,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       if (!isMine)
-                        Text(message['sender']!,
-                            style: TextStyle(fontWeight: FontWeight.bold)),
-                      Container(
-                        padding: EdgeInsets.all(10.0),
-                        constraints: BoxConstraints(
-                            maxWidth:
-                            MediaQuery.of(context).size.width * 0.6),
-                        decoration: BoxDecoration(
-                          color: isMine
-                              ? Colors.lightBlue[50]
-                              : Colors.grey[200],
-                          borderRadius: BorderRadius.circular(8.0),
+                        CircleAvatar(
+                          // Use profileImageUrl here instead of FutureBuilder
+                          backgroundImage: profileImageUrl.isNotEmpty
+                              ? NetworkImage(profileImageUrl)
+                              : null, // If profileImageUrl is empty, don't show any image
+                          child: profileImageUrl.isEmpty
+                              ? Icon(Icons.person) // Show a default icon if profile image is not available
+                              : null, // Don't show any child if profile image is available
                         ),
-                        child: Text(message['content']!),
+                      SizedBox(width: 8.0),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: isMine
+                              ? CrossAxisAlignment.end
+                              : CrossAxisAlignment.start,
+                          children: [
+                            if (!isMine)
+                              Text(
+                                message['sender']!,
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            Container(
+                              padding: EdgeInsets.all(10.0),
+                              constraints: BoxConstraints(
+                                  maxWidth: MediaQuery.of(context).size.width *
+                                      0.6),
+                              decoration: BoxDecoration(
+                                color: isMine
+                                    ? Colors.lightBlue[50]
+                                    : Colors.grey[200],
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
+                              child: Text(message['content']!),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

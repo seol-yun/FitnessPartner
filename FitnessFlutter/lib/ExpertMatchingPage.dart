@@ -149,7 +149,16 @@ class _ExpertMatchingPageState extends State<ExpertMatchingPage> {
             margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
             child: ListTile(
               leading: CircleAvatar(
-                backgroundImage: AssetImage('assets/placeholder.png'), // Ensure you have a placeholder image in your assets folder
+                backgroundImage: NetworkImage(
+                  'http://localhost:8080/api/members/profileImage/${member['id']}',
+                ),
+                onBackgroundImageError: (_, __) {
+                  setState(() {
+                    member['hasImageError'] = true;
+                  });
+                },
+                backgroundColor: member['hasImageError'] == true ? Colors.transparent : null,
+                child: member['hasImageError'] == true ? Icon(Icons.person) : null,
               ),
               title: Text('${member['name']}'),
               subtitle: Column(
@@ -157,7 +166,7 @@ class _ExpertMatchingPageState extends State<ExpertMatchingPage> {
                 children: [
                   Text('전문종목: ${member['exerciseType']}'),
                   Text('트레이닝 가능시간: ${member['possibleTime']}'),
-                  Text('성별: ${member['gender']}'), // Add more fields as necessary
+                  Text('성별: ${member['gender']}'),
                 ],
               ),
               trailing: Row(
