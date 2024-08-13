@@ -31,7 +31,7 @@ class _SignupPageState extends State<SignupPage> {
     String exerciseType = exerciseTypeController.text;
 
     try {
-      var url = Uri.parse('http://localhost:8080/api/members/signup');
+      var url = Uri.parse('http://localhost:8080/api/auth/signup');
       var response = await http.post(url, body: {
         'id': id,
         'pw': password,

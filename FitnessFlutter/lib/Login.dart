@@ -17,7 +17,7 @@ class LoginPage extends StatelessWidget {
 
     try {
       final response = await http.post(
-        Uri.parse("http://localhost:8080/api/members/login"),
+        Uri.parse("http://localhost:8080/api/auth/login"),
         headers: {'Content-Type': 'application/json'},
         body: json.encode(formData),
       );
