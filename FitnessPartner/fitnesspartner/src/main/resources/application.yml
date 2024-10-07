@@ -47,3 +47,4 @@ logging:
 
 jwt:
   secret: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
+  expiration: 86400000  # 24 hours in milliseconds

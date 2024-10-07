@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/fitnesspartner.iml" filepath="$PROJECT_DIR$/.idea/modules/fitnesspartner.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jpabook.fitnesspartner.iml" filepath="$PROJECT_DIR$/.idea/modules/jpabook.fitnesspartner.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/jpabook.fitnesspartner.main.iml" filepath="$PROJECT_DIR$/.idea/modules/jpabook.fitnesspartner.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/jpabook.fitnesspartner.test.iml" filepath="$PROJECT_DIR$/.idea/modules/jpabook.fitnesspartner.test.iml" />
     </modules>
   </component>
 </project>

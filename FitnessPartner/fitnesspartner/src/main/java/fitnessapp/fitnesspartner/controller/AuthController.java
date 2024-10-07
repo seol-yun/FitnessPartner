@@ -2,11 +2,11 @@ package fitnessapp.fitnesspartner.controller;
 
 import fitnessapp.fitnesspartner.config.JwtUtil;
 import fitnessapp.fitnesspartner.domain.Member;
-import fitnessapp.fitnesspartner.service.EncryptionService;
-import fitnessapp.fitnesspartner.service.FirewallService;
+//import fitnessapp.fitnesspartner.service.EncryptionService;
+//import fitnessapp.fitnesspartner.service.FirewallService;
 import fitnessapp.fitnesspartner.service.LoginService;
 import fitnessapp.fitnesspartner.service.MemberService;
-import fitnessapp.fitnesspartner.service.AuthenticationService;
+//import fitnessapp.fitnesspartner.service.AuthenticationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,12 +31,12 @@ public class AuthController {
 
     @Autowired
     private JwtUtil jwtUtil;
-    @Autowired
-    private EncryptionService encryptionService;
-    @Autowired
-    private FirewallService firewallService;
-    @Autowired
-    private AuthenticationService authenticationService;
+//    @Autowired
+//    private EncryptionService encryptionService;
+//    @Autowired
+//    private FirewallService firewallService;
+//    @Autowired
+//    private AuthenticationService authenticationService;
     @Autowired
     private LoginService loginService;
     @Autowired
