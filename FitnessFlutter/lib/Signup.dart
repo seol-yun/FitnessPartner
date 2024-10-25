@@ -27,11 +27,11 @@ class _SignupPageState extends State<SignupPage> {
     String name = nameController.text;
     String email = emailController.text;
     String address = addressController.text;
-    String gender = selectedGender; // 선택된 성별 사용
+    String gender = selectedGender;
     String exerciseType = exerciseTypeController.text;
 
     try {
-      var url = Uri.parse('http://localhost:8080/api/auth/signup');
+      var url = Uri.parse('http://localhost:8081/api/auth/signup');
       var response = await http.post(url, body: {
         'id': id,
         'pw': password,
@@ -45,52 +45,50 @@ class _SignupPageState extends State<SignupPage> {
 
       if (response.statusCode == 200) {
         var data = response.body;
-        if (data == '중복') {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('중복'),
-                content: Text('이미 가입된 아이디입니다.'),
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text('확인'),
-                  ),
-                ],
-              );
-            },
-          );
-        } else {
-          showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text('성공'),
-                content: Text(data), // 서버에서 받은 메시지 출력
-                actions: [
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop(); // 다이얼로그를 닫습니다.
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                      ); // 로그인 페이지로 이동합니다.
-                    },
-                    child: Text('확인'),
-                  ),
-                ],
-              );
-            },
-          );
-        }
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('성공'),
+              content: Text(data), // 서버에서 받은 성공 메시지 출력
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (context) => LoginPage()),
+                    );
+                  },
+                  child: Text('확인'),
+                ),
+              ],
+            );
+          },
+        );
+      } else if (response.statusCode == 400 && response.body == '중복') {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('중복된 회원'),
+              content: Text('이미 가입된 아이디입니다.'),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: Text('확인'),
+                ),
+              ],
+            );
+          },
+        );
       } else {
         throw Exception('Failed to sign up.');
       }
     } catch (error) {
-      print(error); // 에러 출력
+      print(error);
       showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -110,6 +108,7 @@ class _SignupPageState extends State<SignupPage> {
       );
     }
   }
+
 
   Future<void> setAddressFromLocation() async {
     if (Platform.isAndroid || Platform.isIOS) {

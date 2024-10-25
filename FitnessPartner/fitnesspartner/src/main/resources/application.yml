@@ -9,10 +9,10 @@
 
 spring:
   datasource:
-    url: jdbc:h2:tcp://127.0.0.1/~/fitnessdb;
-    username: sa
-    password:
-    driver-class-name: org.h2.Driver
+    url: jdbc:oracle:thin:@172.18.0.5:1521:xe
+    username: C##yunhwan
+    password: 1234
+    driver-class-name: oracle.jdbc.OracleDriver
 
   jpa:
     hibernate:

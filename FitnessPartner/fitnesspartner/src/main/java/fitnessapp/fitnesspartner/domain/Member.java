@@ -12,7 +12,7 @@ import java.util.List;
 public class Member {
 
     @Id
-    @Column(name = "member_id")
+    @Column(name = "MEMBER_ID")
     private String id;
     private String pw;
     private String name;
@@ -22,11 +22,6 @@ public class Member {
     private String exerciseType;
     private boolean isTrainer;
 
-//    @OneToMany(mappedBy = "member")
-//    private List<Review> reviews;
-//
-//    @OneToMany(mappedBy = "member")
-//    private List<UserData> userDatas;
 
     public Member() {
     }

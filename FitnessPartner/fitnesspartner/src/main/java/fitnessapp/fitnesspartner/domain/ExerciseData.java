@@ -10,20 +10,23 @@ import java.time.LocalDate;
 @Getter
 @Setter
 public class ExerciseData {
+
     @Id
     @GeneratedValue
-    @Column(name = "exerciseData_id")
+    @Column(name = "EXERCISE_DATA_ID") // 대문자로 변경
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "MEMBER_ID") // 대문자로 변경
     private Member member;
 
-    @Column(name = "exercise_type") //진행한 운동 종류
+    @Column(name = "EXERCISE_TYPE") // 대문자로 변경
     private String exerciseType;
-    @Column(name = "duration_minutes") //운동 수행 시간을 분 단위로 표기
+
+    @Column(name = "DURATION_MINUTES") // 대문자로 변경
     private int durationMinutes;
-    @Column(name = "date")  //기록한 날짜
+
+    @Column(name = "Exercise_DATE") // 대문자로 변경
     private LocalDate date;
 
     protected ExerciseData() {}
@@ -35,5 +38,4 @@ public class ExerciseData {
         this.durationMinutes = durationMinutes;
         this.date = date;
     }
-
 }

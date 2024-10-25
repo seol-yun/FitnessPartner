@@ -1,0 +1,29 @@
+<changelist name="Uncommitted_changes_before_rebase2" date="1716344384602" recycled="false" toDelete="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase2/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before rebase" />
+  <binary>
+    <option name="BEFORE_PATH" value="fitnesspartner/build/classes/java/main/fitnessapp/fitnesspartner/controller/MemberForm.class" />
+    <option name="AFTER_PATH" />
+    <option name="SHELVED_PATH" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="fitnesspartner/build/classes/java/main/fitnessapp/fitnesspartner/repository/MemberRepository.class" />
+    <option name="AFTER_PATH" value="fitnesspartner/build/classes/java/main/fitnessapp/fitnesspartner/repository/MemberRepository.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase2/MemberRepository.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="fitnesspartner/build/classes/java/main/fitnessapp/fitnesspartner/repository/FriendRepository.class" />
+    <option name="AFTER_PATH" value="fitnesspartner/build/classes/java/main/fitnessapp/fitnesspartner/repository/FriendRepository.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase2/FriendRepository.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="fitnesspartner/build/classes/java/main/fitnessapp/fitnesspartner/repository/ChatRoomRepository.class" />
+    <option name="AFTER_PATH" value="fitnesspartner/build/classes/java/main/fitnessapp/fitnesspartner/repository/ChatRoomRepository.class" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase2/ChatRoomRepository.class" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="fitnesspartner/.gradle/file-system.probe" />
+    <option name="AFTER_PATH" value="fitnesspartner/.gradle/file-system.probe" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase2/file-system.probe" />
+  </binary>
+</changelist>

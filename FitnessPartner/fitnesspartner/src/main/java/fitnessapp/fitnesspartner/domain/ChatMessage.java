@@ -15,13 +15,12 @@ public class ChatMessage {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "chat_message_seq")
+    @SequenceGenerator(name = "chat_message_seq", sequenceName = "CHAT_MESSAGE_SEQ", allocationSize = 1)
     private Long id;
 
-//    private MessageType type;
     private String roomId;
     private String sender;
     private String message;
     private LocalDateTime timestamp;
-
 }

@@ -1,0 +1,24 @@
+<changelist name="Uncommitted_changes_before_rebase4" date="1716344546405" recycled="false" toDelete="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase4/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before rebase" />
+  <binary>
+    <option name="BEFORE_PATH" value="fitnesspartner/.gradle/8.5/checksums/checksums.lock" />
+    <option name="AFTER_PATH" value="fitnesspartner/.gradle/8.5/checksums/checksums.lock" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase4/checksums.lock" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="fitnesspartner/.gradle/buildOutputCleanup/buildOutputCleanup.lock" />
+    <option name="AFTER_PATH" value="fitnesspartner/.gradle/buildOutputCleanup/buildOutputCleanup.lock" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase4/buildOutputCleanup.lock" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="fitnesspartner/.gradle/8.5/fileHashes/fileHashes.lock" />
+    <option name="AFTER_PATH" value="fitnesspartner/.gradle/8.5/fileHashes/fileHashes.lock" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase4/fileHashes.lock" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="fitnesspartner/.gradle/8.5/executionHistory/executionHistory.lock" />
+    <option name="AFTER_PATH" value="fitnesspartner/.gradle/8.5/executionHistory/executionHistory.lock" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_rebase4/executionHistory.lock" />
+  </binary>
+</changelist>

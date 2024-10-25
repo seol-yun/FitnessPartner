@@ -41,50 +41,6 @@ public class MemberController {
     private final BlockService blockService;
     private final JwtUtil jwtUtil;
 
-    @PostMapping("/signup")
-    @Operation(summary = "회원가입", description = "회원 정보를 입력받아 회원가입을 처리합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "회원가입 성공"),
-            @ApiResponse(responseCode = "400", description = "중복된 회원", content = @Content(schema = @Schema(implementation = String.class)))
-    })
-    public String signup(
-            @Parameter(description = "회원 ID", required = true) @RequestParam("id") String id,
-            @Parameter(description = "비밀번호", required = true) @RequestParam("pw") String pw,
-            @Parameter(description = "이름", required = true) @RequestParam("name") String name,
-            @Parameter(description = "이메일", required = true) @RequestParam("email") String email,
-            @Parameter(description = "주소", required = true) @RequestParam("address") String address,
-            @Parameter(description = "성별", required = true) @RequestParam("gender") String gender,
-            @Parameter(description = "운동 유형", required = true) @RequestParam("exerciseType") String exerciseType,
-            @Parameter(description = "트레이너 여부", required = true) @RequestParam("isTrainer") boolean isTrainer) {
-        int validate = memberService.validateDuplicateMember(new Member(id, pw, name, email, address, gender, exerciseType, isTrainer));
-        if (validate == 0) {
-            return "중복";
-        } else {
-            memberService.join(new Member(id, pw, name, email, address, gender, exerciseType, isTrainer));
-            return "회원가입 성공!";
-        }
-    }
-
-    @PostMapping("/login")
-    @Operation(summary = "로그인", description = "회원 ID와 비밀번호를 입력받아 로그인을 처리합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "로그인 성공", content = @Content(schema = @Schema(implementation = Map.class))),
-            @ApiResponse(responseCode = "401", description = "로그인 실패", content = @Content(schema = @Schema(implementation = String.class)))
-    })
-    public ResponseEntity<?> login(
-            @Parameter(description = "로그인 정보(ID와 비밀번호)", required = true) @RequestBody Map<String, String> credentials) {
-        String id = credentials.get("id");
-        String pw = credentials.get("pw");
-
-        String member = memberService.login(id, pw);
-        if (!member.equals("0")) {
-            String token = jwtUtil.generateToken(id);
-            return ResponseEntity.ok().body(Map.of("token", token));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인 실패");
-        }
-    }
-
     @GetMapping("/profileImage/{id}")
     @Operation(summary = "프로필 이미지 가져오기", description = "회원 ID를 입력받아 해당 회원의 프로필 이미지를 반환합니다.")
     @ApiResponses(value = {
@@ -93,7 +49,8 @@ public class MemberController {
     })
     public ResponseEntity<Resource> getProfileImage(
             @Parameter(description = "회원 ID", required = true) @PathVariable String id) {
-        String imagePath = "C://FitnessImage/" + id + ".jpg";
+        String imagePath = "/app/FitnessImage/" + id + ".jpg";
+
         Resource imageResource = new FileSystemResource(imagePath);
 
         if (imageResource.exists() && imageResource.isReadable()) {
@@ -106,26 +63,23 @@ public class MemberController {
     }
 
     @PostMapping("/uploadProfileImage")
-    @Operation(summary = "프로필 이미지 업로드", description = "회원 ID와 이미지를 입력받아 프로필 이미지를 업로드합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "이미지 업로드 성공"),
-            @ApiResponse(responseCode = "400", description = "이미지 업로드 실패", content = @Content(schema = @Schema(implementation = String.class)))
-    })
     public ResponseEntity<String> uploadProfileImage(
-            @Parameter(description = "회원 ID", required = true) @RequestParam("id") String id,
-            @Parameter(description = "프로필 이미지", required = true) @RequestParam("file") MultipartFile file) {
+            @RequestParam("id") String id,
+            @RequestParam("file") MultipartFile file) {
         try {
             if (file.isEmpty()) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("빈 파일입니다.");
             }
 
-            String directoryPath = "C://FitnessImage";
+            // 도커 컨테이너 내부 경로
+            String directoryPath = "/app/FitnessImage";
             Path directory = Paths.get(directoryPath);
 
             if (!Files.exists(directory)) {
-                Files.createDirectories(directory);
+                Files.createDirectories(directory); // 경로가 없을 경우 생성
             }
 
+            // 파일 저장 경로
             Path filePath = directory.resolve(id + ".jpg");
             Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
 
@@ -135,14 +89,6 @@ public class MemberController {
         }
     }
 
-    @PostMapping("/logout")
-    @Operation(summary = "로그아웃", description = "현재 세션을 무효화하여 로그아웃을 처리합니다.")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "로그아웃 성공")
-    })
-    public void logout() {
-        // No need to handle logout on the server side with JWT
-    }
 
     @GetMapping("/info")
     @Operation(summary = "회원 정보 조회", description = "현재 로그인된 회원의 정보를 반환합니다.")

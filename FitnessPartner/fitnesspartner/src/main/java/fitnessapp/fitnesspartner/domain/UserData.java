@@ -13,16 +13,20 @@ public class UserData {
 
     @Id
     @GeneratedValue
-    @Column(name = "userData_id")
+    @Column(name = "USERDATA_ID") // 대문자로 변경
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "MEMBER_ID") // 대문자로 변경
     private Member member;
+
+    @Column(name = "HEIGHT") // 대문자로 변경
     private int height;
+
+    @Column(name = "WEIGHT") // 대문자로 변경
     private int weight;
 
-    @Column(name = "date")  //기록한 날짜
+    @Column(name = "User_DATE")  // 대문자로 변경
     private LocalDate date;
 
     protected UserData() {}

@@ -80,7 +80,7 @@ class _MemberInfoPageState extends State<MemberInfoPage> {
   Future<void> logout() async {
     try {
       final response = await http.post(
-        Uri.parse('http://localhost:8080/api/members/logout'),
+        Uri.parse('http://localhost:8081/api/auth/logout'),
         headers: {
           'Content-Type': 'application/json',
           'Authorization': 'Bearer ${widget.token}',

@@ -12,7 +12,8 @@ import java.util.UUID;
 @Getter @Setter
 public class ChatRoom {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "chat_room_seq")
+    @SequenceGenerator(name = "chat_room_seq", sequenceName = "CHAT_ROOM_SEQ", allocationSize = 1)
     private Long id;
 
     private String user1;
