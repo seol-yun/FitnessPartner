@@ -4,8 +4,14 @@ import 'package:http/http.dart' as http;
 
 class PartnerMatchingPage extends StatefulWidget {
   final String token;
+  final String? selectedExerciseType; // 선택된 운동 종류
+  final String? selectedAddress; // 선택된 주소
 
-  PartnerMatchingPage({required this.token});
+  PartnerMatchingPage({
+    required this.token,
+    this.selectedExerciseType,
+    this.selectedAddress,
+  });
 
   @override
   _PartnerMatchingPageState createState() => _PartnerMatchingPageState();
@@ -13,22 +19,76 @@ class PartnerMatchingPage extends StatefulWidget {
 
 class _PartnerMatchingPageState extends State<PartnerMatchingPage> {
   List<dynamic> partners = [];
+  String? myAddress;
 
   @override
   void initState() {
     super.initState();
-    fetchAllMembers();
+    fetchMemberInfo();
+  }
+
+  // 주소의 시/도와 구/군만 추출하여 비교할 수 있도록 단순화
+  String getSimplifiedAddress(String address) {
+    List<String> parts = address.split(' ');
+    if (parts.length > 1) {
+      return '${parts[0]} ${parts[1]}';
+    }
+    return address;
+  }
+
+  Future<void> fetchMemberInfo() async {
+    try {
+      final response = await http.get(
+        Uri.parse("http://localhost:8080/api/members/info"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.token}',
+        },
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(utf8.decode(response.bodyBytes));
+        setState(() {
+          myAddress = data['address'];
+        });
+        fetchAllMembers();
+      } else {
+        print('Failed to load member info');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
   }
 
   Future<void> fetchAllMembers() async {
+    if (myAddress == null) return;
+
     try {
       final response = await http.get(
         Uri.parse('http://localhost:8080/api/members/generalUsers'),
         headers: {'Authorization': 'Bearer ${widget.token}'},
       );
+
       if (response.statusCode == 200) {
+        List<dynamic> allMembers = json.decode(utf8.decode(response.bodyBytes));
+
         setState(() {
-          partners = json.decode(utf8.decode(response.bodyBytes));
+          final simplifiedMyAddress = getSimplifiedAddress(myAddress!);
+          partners = allMembers.where((member) {
+            if (member['id'] == widget.token) return false;
+
+            final memberAddress = member['address'];
+            if (memberAddress == null) return false;
+
+            final simplifiedMemberAddress = getSimplifiedAddress(memberAddress);
+
+            if (widget.selectedExerciseType != null || widget.selectedAddress != null) {
+              final matchesExercise = widget.selectedExerciseType == null || member['exerciseType'] == widget.selectedExerciseType;
+              final matchesAddress = widget.selectedAddress == null || simplifiedMemberAddress == getSimplifiedAddress(widget.selectedAddress!);
+              return matchesExercise && matchesAddress;
+            }
+
+            return simplifiedMemberAddress == simplifiedMyAddress;
+          }).toList();
         });
       } else {
         print('Failed to load members');
@@ -165,7 +225,6 @@ class _PartnerMatchingPageState extends State<PartnerMatchingPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('선호종목: ${member['exerciseType']}'),
-                  Text('선호시간: ${member['preferredTime']}'),
                   Text('성별: ${member['gender']}'),
                 ],
               ),
