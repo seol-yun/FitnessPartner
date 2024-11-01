@@ -125,7 +125,7 @@ public class MemberController {
         List<MemberInfo> memberInfos = new ArrayList<>();
         for (Member member : allMembers) {
             if (!blockMembersIds.contains(member.getId())) {
-                memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getExerciseType(), member.getGender()));
+                memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getExerciseType(), member.getGender(), member.getAddress()));
             }
         }
 
@@ -148,7 +148,7 @@ public class MemberController {
         List<MemberInfo> memberInfos = new ArrayList<>();
         for (Member member : allMembers) {
             if (!blockMembersIds.contains(member.getId())) {
-                memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getExerciseType(), member.getGender()));
+                memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getExerciseType(), member.getGender(), member.getAddress()));
             }
         }
 
@@ -171,7 +171,7 @@ public class MemberController {
         List<MemberInfo> memberInfos = new ArrayList<>();
         for (Member member : allMembers) {
             if (!blockMembersIds.contains(member.getId())) {
-                memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getExerciseType(), member.getGender()));
+                memberInfos.add(new MemberInfo(member.getId(), member.getName(), member.getExerciseType(), member.getGender(), member.getAddress()));
             }
         }
 
@@ -242,12 +242,14 @@ public class MemberController {
         private String name;
         private String exerciseType;
         private String gender;
+        private String address;
 
-        public MemberInfo(String id, String name, String exerciseType, String gender) {
+        public MemberInfo(String id, String name, String exerciseType, String gender, String address) {
             this.id = id;
             this.name = name;
             this.exerciseType = exerciseType;
             this.gender = gender;
+            this.address = address;
         }
     }
 }
