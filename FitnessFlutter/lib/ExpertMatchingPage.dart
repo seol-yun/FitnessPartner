@@ -4,8 +4,10 @@ import 'package:http/http.dart' as http;
 
 class ExpertMatchingPage extends StatefulWidget {
   final String token;
+  final String? selectedExerciseType;
+  final String? selectedAddress;
 
-  ExpertMatchingPage({required this.token});
+  ExpertMatchingPage({required this.token, this.selectedExerciseType, this.selectedAddress});
 
   @override
   _ExpertMatchingPageState createState() => _ExpertMatchingPageState();
@@ -13,22 +15,73 @@ class ExpertMatchingPage extends StatefulWidget {
 
 class _ExpertMatchingPageState extends State<ExpertMatchingPage> {
   List<dynamic> trainers = [];
+  String? myAddress;
 
   @override
   void initState() {
     super.initState();
-    fetchTrainerMembers();
+    fetchMemberInfo();
+  }
+
+  String getSimplifiedAddress(String address) {
+    List<String> parts = address.split(' ');
+    if (parts.length > 1) {
+      return '${parts[0]} ${parts[1]}';
+    }
+    return address;
+  }
+
+  Future<void> fetchMemberInfo() async {
+    try {
+      final response = await http.get(
+        Uri.parse("http://localhost:8080/api/members/info"),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ${widget.token}',
+        },
+      );
+      if (response.statusCode == 200) {
+        final data = json.decode(utf8.decode(response.bodyBytes));
+        setState(() {
+          myAddress = data['address'];
+        });
+        fetchTrainerMembers();
+      } else {
+        print('Failed to load member info');
+      }
+    } catch (error) {
+      print('Error: $error');
+    }
   }
 
   Future<void> fetchTrainerMembers() async {
+    if (myAddress == null) return;
+
     try {
       final response = await http.get(
         Uri.parse('http://localhost:8080/api/members/trainerUsers'),
         headers: {'Authorization': 'Bearer ${widget.token}'},
       );
+
       if (response.statusCode == 200) {
+        List<dynamic> allTrainers = json.decode(utf8.decode(response.bodyBytes));
         setState(() {
-          trainers = json.decode(utf8.decode(response.bodyBytes));
+          final simplifiedMyAddress = getSimplifiedAddress(myAddress!);
+          trainers = allTrainers.where((trainer) {
+            final trainerAddress = trainer['address'];
+            if (trainerAddress == null) {
+              return false;
+            }
+
+            final simplifiedTrainerAddress = getSimplifiedAddress(trainerAddress);
+            final matchesAddress = widget.selectedAddress == null
+                ? simplifiedTrainerAddress == simplifiedMyAddress
+                : simplifiedTrainerAddress == widget.selectedAddress;
+            final matchesExercise = widget.selectedExerciseType == null ||
+                widget.selectedExerciseType == trainer['exerciseType'];
+
+            return matchesAddress && matchesExercise;
+          }).toList();
         });
       } else {
         print('Failed to load trainers');
@@ -165,7 +218,6 @@ class _ExpertMatchingPageState extends State<ExpertMatchingPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('전문종목: ${member['exerciseType']}'),
-                  Text('트레이닝 가능시간: ${member['possibleTime']}'),
                   Text('성별: ${member['gender']}'),
                 ],
               ),

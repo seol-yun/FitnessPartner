@@ -16,24 +16,55 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
+  String? selectedExerciseType;
+  String? selectedAddress;
+  bool isExpertMatching = false;
 
-  late final List<Widget> _pages;
-
-  @override
-  void initState() {
-    super.initState();
-    _pages = [
-      HomePage(token: widget.token),
-      PartnerMatchingPage(token: widget.token),
-      ExpertMatchingPage(token: widget.token),
-      ChatRoomListPage(token: widget.token),
-      MemberInfoPage(token: widget.token),
-    ];
+  Widget _getSelectedPage() {
+    switch (_selectedIndex) {
+      case 1:
+        final exerciseType = selectedExerciseType;
+        final address = selectedAddress;
+        selectedExerciseType = null; // 값 초기화
+        selectedAddress = null; // 값 초기화
+        return PartnerMatchingPage(
+          token: widget.token,
+          selectedExerciseType: exerciseType,
+          selectedAddress: address,
+        );
+      case 2:
+        final exerciseType = selectedExerciseType;
+        final address = selectedAddress;
+        selectedExerciseType = null; // 값 초기화
+        selectedAddress = null; // 값 초기화
+        return ExpertMatchingPage(
+          token: widget.token,
+          selectedExerciseType: exerciseType,
+          selectedAddress: address,
+        );
+      case 3:
+        return ChatRoomListPage(token: widget.token);
+      case 4:
+        return MemberInfoPage(token: widget.token);
+      default:
+        return HomePage(
+          token: widget.token,
+          onNavigateToMatching: (String exerciseType, String address, bool isExpert) {
+            setState(() {
+              selectedExerciseType = exerciseType;
+              selectedAddress = address;
+              isExpertMatching = isExpert;
+              _selectedIndex = isExpert ? 2 : 1; // 전문가 매칭이면 2, 아니면 1
+            });
+          },
+        );
+    }
   }
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      if (!isExpertMatching) _selectedIndex = index;
+      isExpertMatching = false; // 다른 경우 이동 후 초기화
     });
   }
 
@@ -41,14 +72,15 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         flexibleSpace: Center(
           child: Image.asset(
             'assets/Logo.png',
-            height: kToolbarHeight - 8, // AppBar의 높이에 맞게 조정
+            height: kToolbarHeight - 8,
           ),
         ),
       ),
-      body: _pages[_selectedIndex],
+      body: _getSelectedPage(),
       bottomNavigationBar: BottomNavigationBar(
         items: [
           BottomNavigationBarItem(
