@@ -410,7 +410,15 @@
       <option name="project" value="LOCAL" />
       <updated>1729852075455</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="address 추가">
+      <option name="closed" value="true" />
+      <created>1730463095316</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1730463095316</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -458,6 +466,7 @@
     <MESSAGE value="빌드" />
     <MESSAGE value="필요없는거 주석" />
     <MESSAGE value="final" />
-    <option name="LAST_COMMIT_MESSAGE" value="final" />
+    <MESSAGE value="address 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="address 추가" />
   </component>
 </project>
