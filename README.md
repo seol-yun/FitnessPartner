@@ -2,7 +2,7 @@
 
 ## 시스템 아키텍쳐(3 tier architecture)
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/74aed667-2d91-49a8-9181-6404c1afa8e5/fc3d549d-b934-4b54-ac71-88dc997ef50c/image.png)
+![image](https://github.com/user-attachments/assets/cd3affa9-49b4-4b86-922d-b288e507f6ef)
 
 1. **프레젠테이션 계층** : 플러터
 2. **어플리케이션 계층**: 자바 스프링 부트(jdk 17)
