@@ -51,17 +51,18 @@ docker run -d -p 8080:8080 -v C:/FitnessImage:/app/FitnessImage --name fitness-m
 
 1. 서버 초기 실행 화면
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/74aed667-2d91-49a8-9181-6404c1afa8e5/dfcaa7ae-cefd-401c-8d98-e503e416f404/image.png)
+![image](https://github.com/user-attachments/assets/5e75f1d5-b97a-411d-85ba-ece4727b8f76)
 
 1. 정상적으로 로그인 후 메인 서버 사용
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/74aed667-2d91-49a8-9181-6404c1afa8e5/6c125d53-847d-4f46-8262-b7babf3e4f32/image.png)
+![image](https://github.com/user-attachments/assets/7998f79f-adba-467e-bbab-e1bd86ef0f26)
 
 보안 서버에서 다른 서버로 패킷을 전달함
 
 ### 일정 시간 안에 일정 횟수 이상 로그인을 시도할 때
 
-![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/74aed667-2d91-49a8-9181-6404c1afa8e5/3852cd09-b327-419b-a789-4f53ea9cec4a/image.png)
+![image](https://github.com/user-attachments/assets/208d6884-6129-486d-9c4c-8b758e7b3c8c)
+
 
 ip를 차단하고 더 이상 다른 서버에 패킷을 전달하지 않는다.
 
@@ -70,3 +71,7 @@ ip를 차단하고 더 이상 다른 서버에 패킷을 전달하지 않는다.
 ![image.png](https://prod-files-secure.s3.us-west-2.amazonaws.com/74aed667-2d91-49a8-9181-6404c1afa8e5/e5069b70-0582-4d5b-8c5c-c9cf05ae2048/image.png)
 
 차단된 ip에서 요청이 올 경우 보안 서버에서 패킷을 드랍함
+
+
+
+
